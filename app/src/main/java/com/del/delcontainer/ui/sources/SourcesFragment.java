@@ -1,5 +1,6 @@
 package com.del.delcontainer.ui.sources;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -15,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -35,7 +37,6 @@ public class SourcesFragment extends Fragment
     // BLE Constraints
     private BluetoothAdapter bluetoothAdapter;
 
-
     RecyclerViewAdapter adapter;
     private ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
 
@@ -52,18 +53,13 @@ public class SourcesFragment extends Fragment
          * The device data can be fetched by services that store the readings in the
          * database till an 'app' requests it
          */
-        initBluetooth();
+        setupBluetooth();
 
         // Pass in the created root view object to ensure
         // inflated views can be found.
         initRecyclerView(rootView);
 
         return rootView;
-    }
-
-    private void initBluetooth() {
-
-        this.setupBluetooth();
     }
 
     // Set up recycler view
@@ -177,6 +173,10 @@ public class SourcesFragment extends Fragment
             Toast.makeText(getContext(), "Disconnecting from "
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
+
+        Intent deviceSelectedIntent = new Intent();
+        deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(deviceSelectedIntent);
 
         // Start BLEDataManagerService to handle BLE device operations
         Intent intent = new Intent(getContext(), BLEDataManagerService.class);

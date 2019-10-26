@@ -13,7 +13,13 @@ public class Constants {
     public static final String UART_PROVIDER = "UART_PROVIDER";
     public static final String ZEPHYR_HR   = "Zephyr HXM200010503";
 
+    // App specific identifiers
+    public static final String APP_IDENT        = "APP_IDENT";
+    public static final String APP_DESCRIPTION  = "APP_DESCRIPTION";
+    public static final String APP_IMAGE        = "APP_IMAGE";
+
     // Numerical types
+    public static final int PERMISSION_REQUEST_CODE = 101;
     public static final long SCAN_PERIOD        = 20000; // 20 seconds
     public static final int REQUEST_ENABLE_BT   = 1;
 
@@ -30,7 +36,7 @@ public class Constants {
 
 
     // Broadcast Events
-    public static final String APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
+    public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.utils.APP_REGISTERED";
 
 
     /**

@@ -8,8 +8,10 @@
     <TextView
         android:id="@+id/device_name"
         android:layout_width="match_parent"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:text="BLE Device Name"
         android:layout_centerInParent="true"
-        android:textSize="15sp"/>
+        android:textSize="15sp"
+        android:padding="3dp"
+        android:textColor="#000"/>
 </RelativeLayout>

@@ -1,19 +1,32 @@
 package com.del.delcontainer.ui.sources;
 
+import android.bluetooth.BluetoothDevice;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import java.util.ArrayList;
+
 public class SourcesModel extends ViewModel {
 
-    private MutableLiveData<String> mText;
+    private MutableLiveData<ArrayList<BluetoothDevice>> bluetoothDeviceList;
 
-    public SourcesModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is sources fragment");
+    public LiveData<ArrayList<BluetoothDevice>> getDevices() {
+
+        if(bluetoothDeviceList == null) {
+            bluetoothDeviceList = new MutableLiveData<>();
+            getBluetoothDevices();
+        }
+
+        return bluetoothDeviceList;
     }
 
-    public LiveData<String> getText() {
-        return mText;
+    /**
+     * Function to get a list of devices that can be connected.
+     *
+     */
+    private void getBluetoothDevices() {
+
     }
 }

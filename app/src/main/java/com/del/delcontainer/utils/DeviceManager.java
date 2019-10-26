@@ -6,7 +6,9 @@ import android.bluetooth.BluetoothGatt;
 import java.util.HashMap;
 
 /**
- * Singleton class to manage bluetooth devices and services
+ * Singleton class to manage bluetooth devices and services.
+ * This pattern ensures only one single list of devices is
+ * maintained throughout the app.
  */
 public class DeviceManager {
 
