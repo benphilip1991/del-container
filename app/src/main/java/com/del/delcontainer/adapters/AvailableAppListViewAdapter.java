@@ -1,9 +1,11 @@
 package com.del.delcontainer.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -83,6 +85,7 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         ImageView availableAppImage;
         TextView availableAppLabel;
         TextView availableAppDescription;
+        Button getAvailableAppButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -90,14 +93,16 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
             this.availableAppImage = itemView.findViewById(R.id.availableAppImage);
             this.availableAppLabel = itemView.findViewById(R.id.availableAppLabel);
             this.availableAppDescription = itemView.findViewById(R.id.availableAppDescription);
+            this.getAvailableAppButton = itemView.findViewById(R.id.getAvailableAppButton);
 
-            itemView.setOnClickListener(this);
+            getAvailableAppButton.setOnClickListener(this);
         }
 
         // Change to add something more useful
         @Override
         public void onClick(View view) {
-            Toast.makeText(context, "Getting app details : "
+            Log.d(TAG, "onClick: getting app : " + appList.get(getAdapterPosition()));
+            Toast.makeText(context, "Getting app : "
                     + appList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
         }
     }

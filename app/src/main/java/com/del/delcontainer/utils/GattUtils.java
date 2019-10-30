@@ -79,7 +79,7 @@ public class GattUtils {
      */
     private void manageUARTProvider(BluetoothGatt gatt) {
 
-        BluetoothGattCharacteristic rCharacteristic = null;
+        BluetoothGattCharacteristic rCharacteristic;
         BluetoothGattCharacteristic tCharacteristic = null;
 
         Log.d(TAG, "manageUARTProvider: Got UART device : " + gatt.getDevice().getName());
@@ -109,6 +109,7 @@ public class GattUtils {
         int format = -1;
         Integer hr = 0;
 
+        // Broadcast on HR read? Might not be efficient
         if ((flag & 0x01) != 0) {
             Log.d(TAG, "onCharacteristicChanged: Heart Rate in UINT16 format");
             format = BluetoothGattCharacteristic.FORMAT_UINT16;

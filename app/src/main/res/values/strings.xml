@@ -12,7 +12,7 @@
     <string name="remove_devices_value">Disconnect Devices</string>
     <string name="connect_bluetooth_devices">Connect to selected device?</string>
     <string name="connect_bluetooth_devices_dialog_title">Device Confirmation</string>
-    <string name="installed_services">Installed Services</string>
+    <string name="installed_services">Added Services</string>
     <string name="more_services">More Services</string>
     <string name="devices_found">Devices Found</string>
 </resources>

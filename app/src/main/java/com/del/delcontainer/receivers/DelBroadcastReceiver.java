@@ -11,8 +11,13 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "DelBroadcastReceiver";
 
+    public DelBroadcastReceiver() {
+        super();
+    }
+
     @Override
     public void onReceive(Context context, Intent intent) {
+
         String action = intent.getAction();
         Log.d(TAG, "onReceive: Received event : " + intent.getAction());
 
@@ -20,6 +25,7 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
             Log.d(TAG, "onReceive: App registration event received : " + action);
 
             // Can do something here
+
         }
     }
 }

@@ -1,6 +1,5 @@
 package com.del.delcontainer.ui.services;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,18 +9,21 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
-import com.del.delcontainer.activities.AppViewActivity;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 public class ServicesFragment extends Fragment implements InstalledAppListViewAdapter.AppClickListener {
 
@@ -102,13 +104,27 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
                 LinearLayoutManager.VERTICAL, false));
     }
 
+    /**
+     * Check if the app already exists in the fragment stack and bring it to the front.
+     * Use the FragmentTraction show and hide methods for existing fragments
+     * Else, create a new fragment object with the required app and launch.
+     *
+     * @param position
+     */
     @Override
     public void onAppClick(int position) {
         Log.d(TAG, "onAppClick: launching " + installedAppList.get(position));
         Toast.makeText(getContext(), "Launching " + installedAppList.get(position), Toast.LENGTH_SHORT).show();
 
-        Intent intent = new Intent(getContext(), AppViewActivity.class);
-        intent.putExtra(Constants.APP_IDENT, installedAppList.get(position));
-        startActivity(intent);
+        // instead of launching a new activity, hide the current one and load a new fragment
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
+        transaction.add(R.id.nav_host_fragment, delAppContainerFragment);
+        transaction.addToBackStack(installedAppList.get(position));
+        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.commit();
+
     }
 }

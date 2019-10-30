@@ -17,6 +17,9 @@ public class Constants {
     public static final String APP_IDENT        = "APP_IDENT";
     public static final String APP_DESCRIPTION  = "APP_DESCRIPTION";
     public static final String APP_IMAGE        = "APP_IMAGE";
+    public static final String APP_ID           = "appId";
+    public static final String APP_NAME         = "appName";
+    public static final String DEL_UTILS        = "DelUtils";
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
@@ -37,6 +40,13 @@ public class Constants {
 
     // Broadcast Events
     public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.utils.APP_REGISTERED";
+
+
+    // IP addresses and hostnames
+    public static final String HTTP_PREFIX      = "http://";
+    public static final String HTTPS_PREFIX     = "https://";
+    public static final String DEL_SERVICE_IP   = "10.140.101.115";
+    public static final String DEL_PORT         = "3000";
 
 
     /**
