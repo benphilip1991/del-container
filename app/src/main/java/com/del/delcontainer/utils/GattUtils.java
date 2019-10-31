@@ -6,7 +6,11 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
+import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 /**
  * Manage BLE Gatt Callbacks here. At present, only an HR device
@@ -16,6 +20,12 @@ public class GattUtils {
 
     private static final String TAG = "GattCallbacks";
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
+    private static Context context;
+
+    public GattUtils(Context context) {
+        this.context = context;
+        Log.d(TAG, "GattUtils: CONTEXT " + context.toString());
+    }
 
     /**
      * Map devices to provided services
@@ -120,6 +130,9 @@ public class GattUtils {
 
         hr = characteristic.getIntValue(format, 1);
         Log.d(TAG, "Heart Rate : " + hr.toString());
+
+        // Broadcast now?
+        broadcastData(hr.toString());
     }
 
     /**
@@ -145,6 +158,20 @@ public class GattUtils {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    /**
+     * Broadcast sensor data to the registered listeners.
+     *
+     * @param data
+     */
+    private void broadcastData(String data) {
+
+        Intent intent = new Intent();
+        intent.setAction(Constants.EVENT_DEVICE_DATA);
+        intent.putExtra(Constants.HR_DATA, data);
+
+        LocalBroadcastManager.getInstance(context).sendBroadcastSync(intent);
     }
 
     // -------------------------------------------------------------------
@@ -200,7 +227,8 @@ public class GattUtils {
         }
 
         /**
-         * Triggered by change in registered characteristic. Fetch
+         * Triggered by change in registered characteristic. Fetch data
+         * from the connected devices
          *
          * @param gatt
          * @param characteristic

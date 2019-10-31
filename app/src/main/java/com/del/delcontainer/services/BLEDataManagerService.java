@@ -17,8 +17,7 @@ public class BLEDataManagerService extends IntentService {
 
     private static final String TAG = "BLEDataManagerService";
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
-    private static GattUtils gattUtils = new GattUtils();
-
+    private GattUtils gattUtils;
 
     public BLEDataManagerService() {
         super("BLEDataManagerService");
@@ -39,6 +38,8 @@ public class BLEDataManagerService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         BluetoothDevice device = null;
+        gattUtils = new GattUtils(this.getApplicationContext());
+
         if (null != intent) {
 
             try {

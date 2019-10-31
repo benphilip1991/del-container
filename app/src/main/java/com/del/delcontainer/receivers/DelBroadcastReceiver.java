@@ -26,6 +26,9 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
 
             // Can do something here
 
+        } else if(action.equals(Constants.EVENT_DEVICE_DATA)) {
+
+            Log.d(TAG, "onReceive: Sensor data received : " + intent.getStringExtra(Constants.HR_DATA));
         }
     }
 }

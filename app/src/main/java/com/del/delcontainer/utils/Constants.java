@@ -21,6 +21,9 @@ public class Constants {
     public static final String APP_NAME         = "appName";
     public static final String DEL_UTILS        = "DelUtils";
 
+    // Data notifications
+    public static final String HR_DATA          = "HR_DATA";
+
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
     public static final long SCAN_PERIOD        = 20000; // 20 seconds
@@ -39,7 +42,8 @@ public class Constants {
 
 
     // Broadcast Events
-    public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.utils.APP_REGISTERED";
+    public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
+    public static final String EVENT_DEVICE_DATA      = "com.del.delcontainer.events.DEVICE_DATA";
 
 
     // IP addresses and hostnames

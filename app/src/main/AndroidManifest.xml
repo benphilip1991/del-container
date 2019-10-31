@@ -22,18 +22,15 @@
         <activity android:name=".activities.AppViewActivity"
             android:parentActivityName=".MainActivity"></activity>
 
-        <receiver
-            android:name=".receivers.DelBroadcastReceiver"
-            android:enabled="true"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.del.delcontainer.utils.APP_REGISTERED" />
-            </intent-filter>
-        </receiver>
-
         <service
             android:name=".services.BLEDataManagerService"
             android:exported="false" />
+
+        <receiver
+            android:name=".receivers.DelBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
+        </receiver>
 
         <activity
             android:name=".MainActivity"

@@ -22,7 +22,6 @@ import com.del.delcontainer.utils.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class ServicesFragment extends Fragment implements InstalledAppListViewAdapter.AppClickListener {
@@ -104,6 +103,8 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
                 LinearLayoutManager.VERTICAL, false));
     }
 
+    // TODO: Need to somehow make sure that apps being added does not result in the
+    // TODO: previous ones getting destroyed
     /**
      * Check if the app already exists in the fragment stack and bring it to the front.
      * Use the FragmentTraction show and hide methods for existing fragments
@@ -121,10 +122,9 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
-        transaction.add(R.id.nav_host_fragment, delAppContainerFragment);
+        transaction.add(R.id.nav_host_fragment, delAppContainerFragment, installedAppList.get(position));
         transaction.addToBackStack(installedAppList.get(position));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
-
     }
 }
