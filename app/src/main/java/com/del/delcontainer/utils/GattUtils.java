@@ -169,7 +169,8 @@ public class GattUtils {
 
         Intent intent = new Intent();
         intent.setAction(Constants.EVENT_DEVICE_DATA);
-        intent.putExtra(Constants.HR_DATA, data);
+        intent.putExtra(Constants.DATA_TYPE, Constants.HR_DATA);
+        intent.putExtra(Constants.DATA_VALUE, data);
 
         LocalBroadcastManager.getInstance(context).sendBroadcastSync(intent);
     }

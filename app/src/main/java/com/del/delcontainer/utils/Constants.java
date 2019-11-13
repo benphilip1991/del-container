@@ -23,6 +23,8 @@ public class Constants {
 
     // Data notifications
     public static final String HR_DATA          = "HR_DATA";
+    public static final String DATA_TYPE        = "DATA_TYPE";
+    public static final String DATA_VALUE       = "DATA_VALUE";
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;

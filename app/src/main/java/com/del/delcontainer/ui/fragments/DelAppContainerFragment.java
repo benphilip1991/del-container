@@ -1,24 +1,28 @@
 package com.del.delcontainer.ui.fragments;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 
 import androidx.fragment.app.Fragment;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
+import com.del.delcontainer.utils.DelAppWebViewClient;
 
 import java.util.UUID;
 
 public class DelAppContainerFragment extends Fragment {
 
+    private static final String TAG = "DelAppContainerFragment";
+
     private UUID appId;
     private String appName;
+    private WebView appView;
 
     public DelAppContainerFragment(UUID appId, String appName) {
         this.appId = appId;
@@ -29,37 +33,41 @@ public class DelAppContainerFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_delappcontainer, container, false);
-        DELUtils delUtils = new DELUtils(getContext());
-
-        WebView appView = view.findViewById(R.id.delAppContainerView);
-        appView.getSettings().setJavaScriptEnabled(true);
-        appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
-
-        // Pass messages
-        appView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public void onPageFinished(WebView view, String message) {
-                view.loadUrl("javascript:displayAppMessage('Test Message from Android App')");
-            }
-        });
-        appView.loadUrl(getAppUrl());
+        loadDelApp(view);
 
         return view;
     }
 
+    /**
+     * Set up the webview for running the DEL app
+     * @param view
+     */
+    private void loadDelApp(View view) {
+
+        DELUtils delUtils = new DELUtils(getContext());
+
+        appView = view.findViewById(R.id.delAppContainerView);
+        appView.getSettings().setJavaScriptEnabled(true);
+        appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
+
+        // Pass messages
+        appView.setWebViewClient(new DelAppWebViewClient());
+        appView.loadUrl(getAppUrl());
+    }
 
     /**
-     * Hardcoded for now
+     * Hardcoded for now.
+     * TODO: Get apps using the provided UUID.
+     *
      * @return
      */
     private String getAppUrl() {
 
         String appIdent = "";
 
-        if(appName.equals("Heart Health"))
+        if (appName.equals("Heart Health"))
             appIdent = "heart_health";
-        else if(appName.equals("Step Counter"))
+        else if (appName.equals("Step Counter"))
             appIdent = "step_counter";
 
         // URL would be fixed and only app names (or UUIDs) would identify apps. Stick with
@@ -67,5 +75,13 @@ public class DelAppContainerFragment extends Fragment {
         String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT
                 + "/" + appIdent;
         return appUrl;
+    }
+
+    private class FetchAppSensorData extends AsyncTask<Void, Integer, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            return null;
+        }
     }
 }

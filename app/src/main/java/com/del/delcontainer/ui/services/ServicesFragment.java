@@ -10,15 +10,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
-import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.DelAppManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +40,7 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
 
         setupServices(rootView);
+        DelAppManager.getInstance().hideAllApps();
         return rootView;
     }
 
@@ -51,6 +51,7 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         initRecyclerView(view);
     }
 
+    // TODO: Get from sqlite database. Apps registered when user gets them
     private void getInstalledAppDetails() {
 
         appDetails.put("Heart Health", R.drawable.heart_health_icon);
@@ -63,6 +64,7 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         }
     }
 
+    // TODO: Get from server
     private void getAvailableAppDetails() {
 
         availableAppDetails.put("Spirometer App", getAppDetail(
@@ -117,14 +119,12 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         Log.d(TAG, "onAppClick: launching " + installedAppList.get(position));
         Toast.makeText(getContext(), "Launching " + installedAppList.get(position), Toast.LENGTH_SHORT).show();
 
-        // instead of launching a new activity, hide the current one and load a new fragment
+        // TODO: instead of launching a new activity, hide the current one and load a new fragment
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        DelAppManager delAppManager = DelAppManager.getInstance();
+        delAppManager.setFragmentManager(fragmentManager);
 
-        DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
-        transaction.add(R.id.nav_host_fragment, delAppContainerFragment, installedAppList.get(position));
-        transaction.addToBackStack(installedAppList.get(position));
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-        transaction.commit();
+        // TODO: App UUIDs must from sqlite database. Apps registered when user gets them
+        delAppManager.launchApp(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
     }
 }

@@ -28,6 +28,7 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
 
         } else if(action.equals(Constants.EVENT_DEVICE_DATA)) {
 
+            // TODO: pass this data to registered apps / store in local database
             Log.d(TAG, "onReceive: Sensor data received : " + intent.getStringExtra(Constants.HR_DATA));
         }
     }
