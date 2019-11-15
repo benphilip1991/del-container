@@ -1,32 +1,40 @@
 package com.del.delcontainer;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
+import com.del.delcontainer.ui.services.ServicesFragment;
+import com.del.delcontainer.ui.settings.SettingsFragment;
+import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.DelAppManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
-import androidx.navigation.ui.AppBarConfiguration;
-import androidx.navigation.ui.NavigationUI;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
+
+    private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
 
     IntentFilter intentFilter;
 
@@ -38,18 +46,72 @@ public class MainActivity extends AppCompatActivity {
         registerBroadcastReceiver();
 
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
+        navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
 
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_services, R.id.navigation_sources, R.id.navigation_settings)
-                .build();
-        NavController navController = Navigation.findNavController(this, nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
-        NavigationUI.setupWithNavController(navView, navController);
+        // Need to ensure that on first launch, the service fragment is registered to the container map
 
+
+        // TODO: intercept button press and do not let the system destroy the service view. Hide instead
         verifyAndGetPermissions();
     }
+
+    /**
+     * Create a custom navigation handler instead of using AppBarConfiguration
+     * This approach gives more flexibility with 'app' lifecycle management
+     */
+    private BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
+            new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+                @Override
+                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+
+                    Fragment selectedFragment = null;
+
+                    switch (menuItem.getItemId()) {
+
+                        case R.id.navigation_services:
+                            Log.d(TAG, "onNavigationItemSelected: Selected Services");
+                            if (containerViewMap.get(R.id.navigation_services) == null) {
+                                containerViewMap.put(R.id.navigation_services, new ServicesFragment());
+                            }
+                            selectedFragment = containerViewMap.get(R.id.navigation_services);
+                            break;
+                        case R.id.navigation_sources:
+                            Log.d(TAG, "onNavigationItemSelected: Selected Sources");
+                            if (containerViewMap.get(R.id.navigation_sources) == null) {
+                                containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
+                            }
+                            selectedFragment = containerViewMap.get(R.id.navigation_sources);
+                            break;
+                        case R.id.navigation_settings:
+                            Log.d(TAG, "onNavigationItemSelected: Selected Settings");
+                            if (containerViewMap.get(R.id.navigation_settings) == null) {
+                                containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
+                            }
+                            selectedFragment = containerViewMap.get(R.id.navigation_settings);
+                            break;
+                    }
+
+                    DelAppManager.getInstance().hideAllApps();
+
+                    // Get the fragment manager and begin transaction. But only hide/show them
+                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                    for (Map.Entry<Integer, Fragment> appView : containerViewMap.entrySet()) {
+
+                        if (appView.getValue().isAdded() && appView.getValue().isVisible()) {
+                            transaction.hide(appView.getValue());
+                        }
+                    }
+
+                    if (!selectedFragment.isAdded()) {
+                        transaction.add(nav_host_fragment, selectedFragment, "HOST_VIEW");
+                    }
+
+                    // Make view visible
+                    transaction.show(selectedFragment).commit();
+                    return true;
+                }
+            };
 
     /**
      * Register broadcast receivers
@@ -69,7 +131,6 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Check if permissions have been granted and obtain if not
      * provided. Add permissions to the list here as needed.
-     *
      */
     private void verifyAndGetPermissions() {
 
@@ -80,38 +141,36 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.INTERNET
         };
 
-        for(String permission : permissionList) {
+        for (String permission : permissionList) {
             getPermissions(permission);
         }
     }
 
     /**
      * Fetch permissions
+     *
      * @param permission
      */
     private void getPermissions(String permission) {
 
         // if permission is not already granted, get it here,
-        if(ContextCompat.checkSelfPermission(this, permission)
+        if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this, new String[] {permission}, Constants.PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{permission}, Constants.PERMISSION_REQUEST_CODE);
         }
     }
 
     /**
-     * Handle back button press to switch applications if there are any in the backstack
+     * Handle the back button - this method makes sure the app runs in the background
+     * when the user presses back - this saves the container state.
      */
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        List<Fragment> fragments = fragmentManager.getFragments();
-        for(Fragment f: fragments) {
-            Log.d(TAG, "onBackPressed: Fragments : " + f.getId());
-        }
-
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_HOME);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
     }
 }

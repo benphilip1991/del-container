@@ -84,12 +84,15 @@ public class DelAppManager {
         }
 
         //transaction.addToBackStack(appName);
-        if(appCache.get(appName).isAdded() && appCache.get(appName).isHidden()) {
+        if(appCache.get(appName).isHidden()) {
             Log.d(TAG, "launchApp: Showing app : " + appName);
             transaction.show(appCache.get(appName));
-        } else if(appCache.get(appName).isAdded() && appCache.get(appName).isVisible()) {
+
+        } else if(appCache.get(appName).isVisible()) {
             Log.d(TAG, "launchApp: App visible : " + appName);
         }
+
+        transaction.hide(fragmentManager.findFragmentByTag("HOST_VIEW"));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }

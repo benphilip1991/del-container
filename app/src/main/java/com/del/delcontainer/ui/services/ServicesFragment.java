@@ -35,12 +35,15 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     private ArrayList<String> installedAppList = new ArrayList<>();
     private ArrayList<String> availableAppList = new ArrayList<>();
 
+
+    //TODO: Major issue - every time you press the service button, a new service fragment
+    //TODO: is created. The apps launched earlier will not attach to this new view.
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_services, container, false);
 
+        View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
-        DelAppManager.getInstance().hideAllApps();
+
         return rootView;
     }
 
