@@ -19,8 +19,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AppViewActivity"
-            android:parentActivityName=".MainActivity"></activity>
 
         <service
             android:name=".services.BLEDataManagerService"

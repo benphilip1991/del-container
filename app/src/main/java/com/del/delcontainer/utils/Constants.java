@@ -5,13 +5,14 @@ import java.util.UUID;
 public class Constants {
 
     // String constants
-    public static final String BLE_DEVICE  = "BLE_DEVICE";
-    public static final String OPERATION   = "OPERATION";
-    public static final String CONNECT     = "CONNECT";
-    public static final String DISCONNECT  = "DISCONNECT";
-    public static final String HR_PROVIDER = "HR_PROVIDER";
-    public static final String UART_PROVIDER = "UART_PROVIDER";
-    public static final String ZEPHYR_HR   = "Zephyr HXM200010503";
+    public static final String HOST_VIEW        = "HOST_VIEW";
+    public static final String BLE_DEVICE       = "BLE_DEVICE";
+    public static final String OPERATION        = "OPERATION";
+    public static final String CONNECT          = "CONNECT";
+    public static final String DISCONNECT       = "DISCONNECT";
+    public static final String HR_PROVIDER      = "HR_PROVIDER";
+    public static final String UART_PROVIDER    = "UART_PROVIDER";
+    public static final String ZEPHYR_HR        = "Zephyr HXM200010503";
 
     // App specific identifiers
     public static final String APP_IDENT        = "APP_IDENT";

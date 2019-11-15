@@ -32,6 +32,8 @@ public class DelAppManager {
     private FragmentManager fragmentManager = null;
     private HashMap<String, Fragment> appCache = new HashMap<>();
 
+    private int containerId = 0;
+
     private DelAppManager() {
         ;
     }
@@ -42,6 +44,14 @@ public class DelAppManager {
         }
 
         return delAppManager;
+    }
+
+    public void setContainerId(int containerId) {
+        this.containerId = containerId;
+    }
+
+    public int getContainerId() {
+        return containerId;
     }
 
     /**
@@ -80,6 +90,7 @@ public class DelAppManager {
             appCache.put(appName, delAppContainerFragment);
 
             Log.d(TAG, "launchApp: Adding to transaction");
+            Log.d("MainActivity", "launchApp: Del APP fragment ID : " + delAppContainerFragment.getId());
             transaction.add(R.id.nav_host_fragment, appCache.get(appName), appName); // last parameter is the app tag
         }
 
@@ -92,7 +103,8 @@ public class DelAppManager {
             Log.d(TAG, "launchApp: App visible : " + appName);
         }
 
-        transaction.hide(fragmentManager.findFragmentByTag("HOST_VIEW"));
+        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
+        transaction.hide(fragmentManager.findFragmentById(containerId));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }

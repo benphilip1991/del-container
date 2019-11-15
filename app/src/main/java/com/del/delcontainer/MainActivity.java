@@ -6,6 +6,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
@@ -14,6 +15,7 @@ import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DelAppManager;
+import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -48,12 +50,27 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
 
-        // Need to ensure that on first launch, the service fragment is registered to the container map
+        // Fix to ake sure the app doesn't crash the container initially
+        BottomNavigationItemView item = findViewById(R.id.navigation_services);
+        item.performClick();
 
+        if(DelAppManager.getInstance().getContainerId() == 0) {
 
-        // TODO: intercept button press and do not let the system destroy the service view. Hide instead
+            List<Fragment> fragments = getSupportFragmentManager().getFragments();
+
+            if(null != fragments) {
+                for(Fragment fragment : fragments) {
+                    if(null != fragment) {
+                        DelAppManager.getInstance().setContainerId(fragment.getId());
+                        Log.d(TAG, "onCreate: Initial Fragment ID : " + fragment.getId());
+                    }
+                }
+            }
+        }
+
         verifyAndGetPermissions();
     }
+
 
     /**
      * Create a custom navigation handler instead of using AppBarConfiguration
@@ -104,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if (!selectedFragment.isAdded()) {
-                        transaction.add(nav_host_fragment, selectedFragment, "HOST_VIEW");
+                        transaction.add(nav_host_fragment, selectedFragment, Constants.HOST_VIEW);
                     }
 
                     // Make view visible
@@ -112,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                     return true;
                 }
             };
+
 
     /**
      * Register broadcast receivers
