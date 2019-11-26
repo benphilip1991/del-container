@@ -2,6 +2,7 @@ package com.del.delcontainer.utils;
 
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -32,8 +33,6 @@ public class DelAppManager {
     private FragmentManager fragmentManager = null;
     private HashMap<String, Fragment> appCache = new HashMap<>();
 
-    private int containerId = 0;
-
     private DelAppManager() {
         ;
     }
@@ -44,14 +43,6 @@ public class DelAppManager {
         }
 
         return delAppManager;
-    }
-
-    public void setContainerId(int containerId) {
-        this.containerId = containerId;
-    }
-
-    public int getContainerId() {
-        return containerId;
     }
 
     /**
@@ -94,7 +85,6 @@ public class DelAppManager {
             transaction.add(R.id.nav_host_fragment, appCache.get(appName), appName); // last parameter is the app tag
         }
 
-        //transaction.addToBackStack(appName);
         if(appCache.get(appName).isHidden()) {
             Log.d(TAG, "launchApp: Showing app : " + appName);
             transaction.show(appCache.get(appName));
@@ -103,9 +93,35 @@ public class DelAppManager {
             Log.d(TAG, "launchApp: App visible : " + appName);
         }
 
-        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
-        transaction.hide(fragmentManager.findFragmentById(containerId));
+        transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
         transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        transaction.commit();
+    }
+
+    /**
+     * Terminate application
+     *
+     * @param appId
+     * @param appName
+     */
+    public void terminateApp(UUID appId, String appName) {
+
+        if(null == appCache.get(appName)) {
+            Log.d(TAG, "terminateApp: Invalid termination request. App doesn't exist.");
+            return;
+        }
+
+        // App exists - hide, detach and remove from map
+        // Has the potential to show a blank screen -> Maybe have an observer to check on open apps
+        // and if closed, show the services view
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+
+        if(appCache.get(appName).isVisible()) {
+            transaction.hide(appCache.get(appName));
+            transaction.detach(appCache.get(appName));
+        }
+
+        appCache.remove(appName);
         transaction.commit();
     }
 

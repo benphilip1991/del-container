@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import androidx.fragment.app.Fragment;
 
@@ -23,10 +24,12 @@ public class DelAppContainerFragment extends Fragment {
     private UUID appId;
     private String appName;
     private WebView appView;
+    private WebViewClient webViewClient;
 
     public DelAppContainerFragment(UUID appId, String appName) {
         this.appId = appId;
         this.appName = appName;
+        webViewClient = new DelAppWebViewClient();
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,7 +54,7 @@ public class DelAppContainerFragment extends Fragment {
         appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
 
         // Pass messages
-        appView.setWebViewClient(new DelAppWebViewClient());
+        appView.setWebViewClient(webViewClient);
         appView.loadUrl(getAppUrl());
     }
 

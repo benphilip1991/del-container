@@ -8,9 +8,14 @@ import android.widget.Toast;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.del.delcontainer.database.entities.Heart;
+import com.del.delcontainer.repositories.HeartRateRepository;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -57,5 +62,68 @@ public class DELUtils {
 
         Log.d(TAG, "registerApp: sending broadcast");
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+    }
+
+    @JavascriptInterface
+    public String getLatestHeartData() {
+
+        JSONObject hrData = new JSONObject();
+
+        Heart heartData = HeartRateRepository.getInstance(context.getApplicationContext()).getLatestHeartData();
+        if(null == heartData) {
+            return "No Data";
+        }
+
+        try {
+            hrData.put("timestamp", heartData.getDate());
+            hrData.put("heartRateValue", heartData.getHeartRate());
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        return hrData.toString();
+    }
+
+    @JavascriptInterface
+    public String getAllHeartRate() {
+
+        JSONArray hrDataArray = new JSONArray();
+
+        List<Heart> heartRateData = HeartRateRepository.getInstance(context.getApplicationContext()).getHeartData();
+
+        if(null == heartRateData) {
+            return "No Data";
+        }
+
+        try {
+            for(Heart heart : heartRateData) {
+                JSONObject heartRateJsonData = new JSONObject();
+                heartRateJsonData.put("timestamp", heart.getDate());
+                heartRateJsonData.put("heartRateValue", heart.getHeartRate());
+                hrDataArray.put(heartRateJsonData);
+            }
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        return hrDataArray.toString();
+    }
+
+    @JavascriptInterface
+    public void terminateApp(String appDetails) {
+        UUID appId = null;
+        String appName = null;
+
+        try {
+            JSONObject appInfo = new JSONObject(appDetails);
+            appId = UUID.fromString(appInfo.getString(Constants.APP_ID));
+            appName = appInfo.getString(Constants.APP_NAME);
+
+        } catch(JSONException e) {
+            e.printStackTrace();
+        }
+
+        Log.d(TAG, "terminateApp: Terminating : " + appName);
+        DelAppManager.getInstance().terminateApp(appId, appName);
     }
 }

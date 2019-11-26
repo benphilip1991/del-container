@@ -18,7 +18,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
  */
 public class GattUtils {
 
-    private static final String TAG = "GattCallbacks";
+    private static final String TAG = "GattUtils";
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
     private static Context context;
 
@@ -132,7 +132,7 @@ public class GattUtils {
         Log.d(TAG, "Heart Rate : " + hr.toString());
 
         // Broadcast now?
-        broadcastData(hr.toString());
+        broadcastData(hr);
     }
 
     /**
@@ -165,7 +165,7 @@ public class GattUtils {
      *
      * @param data
      */
-    private void broadcastData(String data) {
+    private void broadcastData(int data) {
 
         Intent intent = new Intent();
         intent.setAction(Constants.EVENT_DEVICE_DATA);

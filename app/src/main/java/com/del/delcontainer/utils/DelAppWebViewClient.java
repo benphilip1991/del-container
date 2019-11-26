@@ -16,7 +16,8 @@ public class DelAppWebViewClient extends WebViewClient {
     public void onPageFinished(WebView view, String url) {
 
         Log.d(TAG, "onPageFinished: Pushing data to app");
-        String methodUrl = "javascript:displayAppMessage('Heart Rate : " + new Random().nextInt(500) + "')";
+        //String methodUrl = "javascript:displayAppMessage('Heart Rate : " + new Random().nextInt(500) + "')";
+        String methodUrl = "javascript:displayAppMessage('Demo App')";
         view.loadUrl(methodUrl);
     }
 

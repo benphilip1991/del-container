@@ -29,6 +29,8 @@ public class SettingsFragment extends Fragment {
                 ViewModelProviders.of(this).get(SettingsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         final TextView textView = root.findViewById(R.id.text_settings);
+
+        // Attach observer to the viewmodel
         settingsViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -36,15 +38,6 @@ public class SettingsFragment extends Fragment {
             }
         });
 
-        sendBroadcast();
         return root;
-    }
-
-    private void sendBroadcast() {
-        Log.d(TAG, "sendBroadcast: ");
-        Intent intent = new Intent();
-        intent.setAction(Constants.EVENT_DEVICE_DATA);
-        LocalBroadcastManager lmb = LocalBroadcastManager.getInstance(this.getContext().getApplicationContext());
-        getActivity().getApplicationContext().sendBroadcast(intent);
     }
 }

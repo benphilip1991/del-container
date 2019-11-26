@@ -8,12 +8,16 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import com.del.delcontainer.database.DelDatabase;
+import com.del.delcontainer.database.entities.UserProfile;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.DbHelper;
 import com.del.delcontainer.utils.DelAppManager;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -26,16 +30,19 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.room.Room;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
+    // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
 
     IntentFilter intentFilter;
@@ -54,23 +61,8 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationItemView item = findViewById(R.id.navigation_services);
         item.performClick();
 
-        if(DelAppManager.getInstance().getContainerId() == 0) {
-
-            List<Fragment> fragments = getSupportFragmentManager().getFragments();
-
-            if(null != fragments) {
-                for(Fragment fragment : fragments) {
-                    if(null != fragment) {
-                        DelAppManager.getInstance().setContainerId(fragment.getId());
-                        Log.d(TAG, "onCreate: Initial Fragment ID : " + fragment.getId());
-                    }
-                }
-            }
-        }
-
         verifyAndGetPermissions();
     }
-
 
     /**
      * Create a custom navigation handler instead of using AppBarConfiguration

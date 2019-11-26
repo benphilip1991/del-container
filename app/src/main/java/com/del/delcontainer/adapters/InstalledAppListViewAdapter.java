@@ -44,7 +44,7 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
      */
     private void initAppList() {
 
-        for(HashMap.Entry<String, Integer> entry : appDetails.entrySet()) {
+        for (HashMap.Entry<String, Integer> entry : appDetails.entrySet()) {
             appList.add(entry.getKey());
         }
     }
@@ -66,7 +66,7 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
         holder.appLabel.setText(appList.get(position));
         try {
             holder.appImage.setBackgroundResource(appDetails.get(appList.get(position)).intValue());
-        } catch(NullPointerException e) {
+        } catch (NullPointerException e) {
 
             Log.e(TAG, "onBindViewHolder: Exception ", e);
         }
@@ -77,6 +77,15 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
 
         return appList.size();
     }
+
+    /**
+     * Create a method that will add new items to the list
+     */
+//    public void setApps(List<ApplicationObject> obj) {
+//
+//        this.appList = obj;
+//        notifyDataSetChanged();
+//    }
 
 
     /**
