@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -44,6 +45,20 @@ public class SourcesFragment extends Fragment
                              ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_sources, container, false);
+
+        /**
+         * Setup an onClick listener for the sources fragment
+         */
+        TextView rescan = rootView.findViewById(R.id.rescanDevice);
+        rescan.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Log.d(TAG, "rescanBluetooth: rescanning for bluetooth devices");
+                Toast.makeText(getActivity(), "Rescanning for devices", Toast.LENGTH_SHORT).show();
+                setupBluetooth();
+            }
+        });
 
         /**
          * Start searching for bluetooth devices and when the user selects a device,

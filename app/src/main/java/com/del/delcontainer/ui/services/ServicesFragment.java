@@ -58,6 +58,7 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     private void getInstalledAppDetails() {
 
         appDetails.put("Heart Health", R.drawable.heart_health_icon);
+        appDetails.put("Mood Tracker", R.drawable.default_app_icon);
         appDetails.put("Step Counter", R.drawable.step_counter);
         appDetails.put("Oximeter", R.drawable.default_app_icon);
         appDetails.put("My ECG", R.drawable.default_app_icon);

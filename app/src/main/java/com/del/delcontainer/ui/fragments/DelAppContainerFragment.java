@@ -51,6 +51,8 @@ public class DelAppContainerFragment extends Fragment {
 
         appView = view.findViewById(R.id.delAppContainerView);
         appView.getSettings().setJavaScriptEnabled(true);
+        appView.getSettings().setDatabaseEnabled(true);
+        appView.getSettings().setDomStorageEnabled(true);
         appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
 
         // Pass messages
@@ -72,6 +74,10 @@ public class DelAppContainerFragment extends Fragment {
             appIdent = "heart_health";
         else if (appName.equals("Step Counter"))
             appIdent = "step_counter";
+        else if(appName.equals("Mood Tracker")) {
+            String appUrl = Constants.HTTP_PREFIX + Constants.MYMAPS_SERVICE_IP + ":" + Constants.MYMAPS_PORT;
+            return appUrl;
+        }
 
         // URL would be fixed and only app names (or UUIDs) would identify apps. Stick with
         // one single 'app' for now at the root index
@@ -80,11 +86,4 @@ public class DelAppContainerFragment extends Fragment {
         return appUrl;
     }
 
-    private class FetchAppSensorData extends AsyncTask<Void, Integer, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            return null;
-        }
-    }
 }

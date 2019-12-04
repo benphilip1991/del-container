@@ -2,6 +2,7 @@ package com.del.delcontainer.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
@@ -10,6 +11,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.database.entities.Heart;
 import com.del.delcontainer.repositories.HeartRateRepository;
+import com.del.delcontainer.services.LocationService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -88,6 +90,7 @@ public class DELUtils {
     public String getAllHeartRate() {
 
         JSONArray hrDataArray = new JSONArray();
+        JSONObject hrBlock = new JSONObject();
 
         List<Heart> heartRateData = HeartRateRepository.getInstance(context.getApplicationContext()).getHeartData();
 
@@ -106,7 +109,33 @@ public class DELUtils {
             e.printStackTrace();
         }
 
-        return hrDataArray.toString();
+        try {
+            hrBlock.put("hrData", hrDataArray);
+        } catch(Exception e) {
+            ;
+        }
+
+        return hrBlock.toString();
+    }
+
+    @JavascriptInterface
+    public String getCurrentLocation() {
+
+        JSONObject locationObject = new JSONObject();
+        LocationService locationService = LocationService.getInstance();
+
+        Location location = locationService.getLastLocation();
+
+        if(null != location) {
+            try {
+                locationObject.put("latitude", location.getLatitude());
+                locationObject.put("longitude", location.getLongitude());
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return locationObject.toString();
     }
 
     @JavascriptInterface

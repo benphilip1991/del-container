@@ -29,7 +29,7 @@ public class Constants {
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
-    public static final long SCAN_PERIOD        = 20000; // 20 seconds
+    public static final long SCAN_PERIOD        = 10000; // 20 seconds
     public static final int REQUEST_ENABLE_BT   = 1;
 
     // Bluetooth SIG defined UUIDs
@@ -52,8 +52,10 @@ public class Constants {
     // IP addresses and hostnames
     public static final String HTTP_PREFIX      = "http://";
     public static final String HTTPS_PREFIX     = "https://";
-    public static final String DEL_SERVICE_IP   = "10.140.101.115";
+    public static final String DEL_SERVICE_IP   = "10.140.117.71";
+    public static final String MYMAPS_SERVICE_IP   = "10.137.0.157";
     public static final String DEL_PORT         = "3000";
+    public static final String MYMAPS_PORT         = "3026";
 
 
     /**

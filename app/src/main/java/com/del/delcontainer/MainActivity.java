@@ -13,6 +13,7 @@ import android.widget.Toast;
 import com.del.delcontainer.database.DelDatabase;
 import com.del.delcontainer.database.entities.UserProfile;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
+import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -62,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
         item.performClick();
 
         verifyAndGetPermissions();
+
+        LocationService locationService = LocationService.getInstance();
+        locationService.initLocationService(this);
     }
 
     /**
@@ -148,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.BLUETOOTH,
                 Manifest.permission.BLUETOOTH_ADMIN,
                 Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_BACKGROUND_LOCATION,
                 Manifest.permission.INTERNET
         };
 
