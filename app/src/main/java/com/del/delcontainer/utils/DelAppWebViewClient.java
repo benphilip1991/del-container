@@ -6,7 +6,6 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import java.util.Random;
 
 public class DelAppWebViewClient extends WebViewClient {
 
@@ -34,5 +33,11 @@ public class DelAppWebViewClient extends WebViewClient {
         super.onReceivedError(view, request, error);
         view.loadUrl("about:blank");
         view.loadUrl("file:///android_asset/webview_error.html");
+    }
+
+    public void pushDataToApp(WebView view, String data) {
+        Log.d(TAG, "pushDataToApp: Pushing user data to app");
+        String methodUrl = "javascript:sensorDataPush(" + data + ")";
+        view.loadUrl(methodUrl);
     }
 }

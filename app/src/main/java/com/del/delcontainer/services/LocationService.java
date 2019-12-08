@@ -2,12 +2,15 @@ package com.del.delcontainer.services;
 
 import android.content.Context;
 import android.location.Location;
+import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResponse;
@@ -29,6 +32,7 @@ public class LocationService {
     private Context context;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private ArrayList<Location> locationHistory = new ArrayList<>();
+    private boolean getLocationUpdates = true;
 
     private static LocationService instance;
 
@@ -44,6 +48,7 @@ public class LocationService {
         return instance;
     }
 
+    // Context dependency injection
     public void initLocationService(Context context) {
 
         if (null == context) {
@@ -55,6 +60,9 @@ public class LocationService {
 
     public Location getLastLocation() {
 
+        requestLocationUpdates();
+
+        Log.d(TAG, "getLastLocation: called");
         fusedLocationProviderClient.getLastLocation()
                 .addOnSuccessListener(new OnSuccessListener<Location>() {
                     @Override
@@ -76,6 +84,7 @@ public class LocationService {
 
         return locationHistory.get(locationHistory.size() - 1);
     }
+
 
     /**
      * Method to get location and push to calling app.
@@ -109,5 +118,48 @@ public class LocationService {
             }
         });
     }
+
+    /**
+     * Live location updates
+     */
+    public void requestLocationUpdates() {
+
+        // Check if the user has enabled location updates.
+        if(getLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+
+    /**
+     * Start location updates
+     */
+    private void startLocationUpdates() {
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(2000);
+        locationRequest.setFastestInterval(1000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
+    }
+
+    private LocationCallback locationCallback = new LocationCallback() {
+
+        @Override
+        public void onLocationResult(LocationResult locationResult) {
+            if(null == locationResult) {
+                return;
+            }
+
+            // Push data to app
+            for(Location location : locationResult.getLocations()) {
+                Log.d(TAG, "onLocationResult: Latitude : " + location.getLatitude()
+                        + " | Longitude : " + location.getLongitude());
+            }
+        }
+    };
 
 }

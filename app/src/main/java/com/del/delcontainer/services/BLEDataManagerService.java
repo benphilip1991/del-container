@@ -79,7 +79,7 @@ public class BLEDataManagerService extends IntentService {
 
             deviceManager.getBluetoothDevices().put(device.getAddress(), device);
             BluetoothGatt bluetoothGatt = device.connectGatt(
-                    this, true, gattUtils.gattCallback);
+                    getApplicationContext(), true, gattUtils.gattCallback);
 
             // Make the ID a unique key - device MAC address
             deviceManager.getBluetoothGattObjects()
