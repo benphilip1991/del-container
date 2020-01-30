@@ -53,6 +53,7 @@ public class DelAppContainerFragment extends Fragment {
         appView.getSettings().setJavaScriptEnabled(true);
         appView.getSettings().setDatabaseEnabled(true);
         appView.getSettings().setDomStorageEnabled(true);
+        appView.getSettings().setAppCacheEnabled(true);
         appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
 
         // Pass messages

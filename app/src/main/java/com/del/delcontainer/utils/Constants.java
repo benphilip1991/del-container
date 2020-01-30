@@ -12,6 +12,7 @@ public class Constants {
     public static final String DISCONNECT       = "DISCONNECT";
     public static final String HR_PROVIDER      = "HR_PROVIDER";
     public static final String UART_PROVIDER    = "UART_PROVIDER";
+    public static final String ISSC_PROVIDER    = "ISSC_PROVIDER";
     public static final String ZEPHYR_HR        = "Zephyr HXM200010503";
 
     // App specific identifiers
@@ -29,8 +30,8 @@ public class Constants {
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
-    public static final long SCAN_PERIOD        = 10000; // 20 seconds
-    public static final int REQUEST_ENABLE_BT   = 1;
+    public static final long SCAN_PERIOD            = 20000; // 20 seconds
+    public static final int REQUEST_ENABLE_BT       = 1;
 
     // Bluetooth SIG defined UUIDs
     public static final UUID HEART_RATE_SERVICE             = getUUID(0x180D);
@@ -43,6 +44,10 @@ public class Constants {
     public static final UUID UART_TX         = getUartUUID(0x0002);    // WRITE, WRITE WITHOUT RESPONSE -> send to device
     public static final UUID UART_RX         = getUartUUID(0x0003);    // NOTIFY -> read from device
 
+    // ISSC Proprietary Service and Characteristics
+    public static final UUID ISSC_PROP_SERVICE          = UUID.fromString("49535343-FE7D-4AE5-8FA9-9FAFD205E455");
+    public static final UUID ISSC_PROP_CONNECTION_PARAM = UUID.fromString("49535343-6DAA-4D02-ABF6-19569ACA69FE");
+    public static final UUID ISSC_PROP_AIR_PATCH        = UUID.fromString("49535343-ACA3-481C-91EC-D85E28A60318");
 
     // Broadcast Events
     public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
@@ -50,12 +55,12 @@ public class Constants {
 
 
     // IP addresses and hostnames
-    public static final String HTTP_PREFIX      = "http://";
-    public static final String HTTPS_PREFIX     = "https://";
-    public static final String DEL_SERVICE_IP   = "10.140.117.71";
-    public static final String MYMAPS_SERVICE_IP   = "10.137.0.157";
-    public static final String DEL_PORT         = "3000";
-    public static final String MYMAPS_PORT         = "3026";
+    public static final String HTTP_PREFIX          = "http://";
+    public static final String HTTPS_PREFIX         = "https://";
+    public static final String DEL_SERVICE_IP       = "10.140.114.10";
+    public static final String MYMAPS_SERVICE_IP    = "10.137.0.157";
+    public static final String DEL_PORT             = "3000";
+    public static final String MYMAPS_PORT          = "3026";
 
 
     /**

@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.database.entities.Heart;
+import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.repositories.HeartRateRepository;
 import com.del.delcontainer.services.LocationService;
 
@@ -123,6 +124,7 @@ public class DELUtils {
 
         JSONObject locationObject = new JSONObject();
         LocationService locationService = LocationService.getInstance();
+        locationService.setLocationServiceEnabled(true);
 
         Location location = locationService.getLastLocation();
 
@@ -130,12 +132,21 @@ public class DELUtils {
             try {
                 locationObject.put("latitude", location.getLatitude());
                 locationObject.put("longitude", location.getLongitude());
+                locationObject.put("accuracy", location.getAccuracy());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
 
         return locationObject.toString();
+    }
+
+    @JavascriptInterface
+    public void stopLocationUpdates() {
+        Log.d(TAG, "stopLocationUpdates: Terminating location updates");
+        LocationService locationService = LocationService.getInstance();
+        locationService.setLocationServiceEnabled(false);
+        locationService.stopLocationUpdates();
     }
 
     @JavascriptInterface
@@ -154,5 +165,27 @@ public class DELUtils {
 
         Log.d(TAG, "terminateApp: Terminating : " + appName);
         DelAppManager.getInstance().terminateApp(appId, appName);
+    }
+
+
+    // Need to add repository interface in each function here
+    @JavascriptInterface
+    public String getLatestWeight() {
+        return "";
+    }
+
+    @JavascriptInterface
+    public String getBodyMassParams() {
+        return "";
+    }
+
+    @JavascriptInterface
+    public String getLatestStepCount() {
+        return "";
+    }
+
+    @JavascriptInterface
+    public String getStepGoals() {
+        return "";
     }
 }

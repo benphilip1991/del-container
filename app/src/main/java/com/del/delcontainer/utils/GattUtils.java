@@ -12,6 +12,10 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.del.delcontainer.managers.DeviceManager;
+
+import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
+
 /**
  * Manage BLE Gatt Callbacks here. At present, only an HR device
  * is being managed
@@ -28,15 +32,22 @@ public class GattUtils {
     }
 
     /**
-     * Map devices to provided services
+     * Map devices to provided services. Called when devices are
+     * connected to and before BLE services are used
      *
      * @param gatt
      */
     private void manageDeviceServices(BluetoothGatt gatt) {
 
+        Log.d(TAG, "manageDeviceServices: Managing services");
         for (BluetoothGattService service : gatt.getServices()) {
             Log.d(TAG, "manageDeviceServices: Available Service : " + service.getUuid().toString());
 
+
+            // Devices may have more than one service. Need to manage them while making sure
+            // it doesn't break the following services
+            // Hashmap doesn't support multiple values for the same key.
+            // We're in a way overwriting existing values - causing trouble later.
             if (service.getUuid().equals(Constants.HEART_RATE_SERVICE)) {
 
                 deviceManager.getBluetoothServiceMap()
@@ -48,6 +59,14 @@ public class GattUtils {
                 deviceManager.getBluetoothServiceMap()
                         .put(gatt.getDevice().getAddress(), Constants.UART_PROVIDER);
 
+            } else if(service.getUuid().equals(Constants.ISSC_PROP_SERVICE)) {
+                Log.d(TAG, "manageDeviceServices: Found ISSC proprietary service");
+                deviceManager.getBluetoothServiceMap()
+                        .put(gatt.getDevice().getAddress(), Constants.ISSC_PROVIDER);
+            } else {
+
+                // [GENERAL]
+                //deviceManager.getBluetoothServiceMap().put(gatt.getDevice().getAddress(), "GENERAL");
             }
 
             // Add more as devices are added
@@ -105,6 +124,46 @@ public class GattUtils {
                     getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG);
             descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             gatt.writeDescriptor(descriptor);
+        }
+    }
+
+    /**
+     * Handle ISSC proprietary devices. In this instance, MySignals
+     * sensors including their smart scale
+     * @param gatt
+     */
+    private void manageISSCProvider(BluetoothGatt gatt) {
+
+        Log.d(TAG, "manageISSCProvider: Connecting to ISSC provider : " + gatt.getDevice().getName());
+
+        for(BluetoothGattCharacteristic chars : gatt.getService(Constants.ISSC_PROP_SERVICE).getCharacteristics()) {
+            Log.d(TAG, "manageISSCProvider: Characteristics -> " + chars.getUuid());
+
+            if(null != chars.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG)) {
+                Log.d(TAG, "manageISSCProvider: Enabling notifications");
+                gatt.setCharacteristicNotification(chars, true);
+                BluetoothGattDescriptor descriptor = chars.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG);
+                descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+                gatt.writeDescriptor(descriptor);
+            }
+        }
+    }
+
+    /**
+     * Handle general BLE devices
+     * @param gatt
+     */
+    private void manageGeneralDevice(BluetoothGatt gatt) {
+        Log.d(TAG, "manageGeneralDevice: Connecting to general BLE device : " + gatt.getDevice().getName());
+        
+        for(BluetoothGattService service : gatt.getServices()) {
+
+            Log.d(TAG, "manageGeneralDevice: Service ----> " + service.getUuid());
+            // Each service may have more than one characteristic
+            for(BluetoothGattCharacteristic chars : service.getCharacteristics()) {
+
+                Log.d(TAG, "manageGeneralDevice: \t\tCharacteristics ----> " + chars.getUuid());
+            }
         }
     }
 
@@ -195,10 +254,20 @@ public class GattUtils {
         public void onConnectionStateChange(BluetoothGatt gatt, int state, int newState) {
 
             Log.d(TAG, "OnConnectionStateChange : " + newState);
-            if (newState == BluetoothProfile.STATE_CONNECTED) {
-                //Connected - discover services
-                Log.d(TAG, "OnConnectionStateChange - Discovering services");
-                gatt.discoverServices();
+            if(state == GATT_SUCCESS) {
+                if (newState == BluetoothProfile.STATE_CONNECTED) {
+                    //Connected - discover services if there is no bonding issue
+
+                    Log.d(TAG, "OnConnectionStateChange - Discovering services");
+                    gatt.discoverServices();
+
+                } else if(newState == BluetoothProfile.STATE_DISCONNECTED){
+                    Log.d(TAG, "onConnectionStateChange: Closing interface");
+                    //gatt.close();
+                }
+            } else {
+                // error
+                gatt.close();
             }
         }
 
@@ -214,6 +283,8 @@ public class GattUtils {
 
             manageDeviceServices(gatt);
 
+            // TODO: right now, this is based on an assumption that there's only one device.
+            // TODO: the block fails on having multiple entries in the servicemap
             // Is it an HR device?
             if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
                     .equals(Constants.HR_PROVIDER)) {
@@ -224,6 +295,14 @@ public class GattUtils {
                     .equals(Constants.UART_PROVIDER)) {
 
                 manageUARTProvider(gatt);
+            } else if(deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+                    .equals(Constants.ISSC_PROVIDER)) {
+
+                manageISSCProvider(gatt);
+            } else {
+
+                //[GENERAL]
+                //manageGeneralDevice(gatt);
             }
         }
 

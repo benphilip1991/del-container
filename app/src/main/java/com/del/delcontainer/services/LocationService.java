@@ -32,9 +32,10 @@ public class LocationService {
     private Context context;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private ArrayList<Location> locationHistory = new ArrayList<>();
-    private boolean getLocationUpdates = true;
+    private boolean gettingLocationUpdates = false;
+    private boolean isLiveLocationEnabled = false;
 
-    private static LocationService instance;
+    private static LocationService instance = null;
 
     private LocationService() {
         ;
@@ -60,7 +61,7 @@ public class LocationService {
 
     public Location getLastLocation() {
 
-        requestLocationUpdates();
+        startLocationUpdates();
 
         Log.d(TAG, "getLastLocation: called");
         fusedLocationProviderClient.getLastLocation()
@@ -85,6 +86,15 @@ public class LocationService {
         return locationHistory.get(locationHistory.size() - 1);
     }
 
+    /**
+     * If even one app is requesting live location, this remains true.
+     * Else, switch to false.
+     * Can maintain a list of apps requesting location. -> do later
+     * @param flag
+     */
+    public void setLocationServiceEnabled(boolean flag) {
+        isLiveLocationEnabled = flag;
+    }
 
     /**
      * Method to get location and push to calling app.
@@ -119,31 +129,37 @@ public class LocationService {
         });
     }
 
-    /**
-     * Live location updates
-     */
-    public void requestLocationUpdates() {
-
-        // Check if the user has enabled location updates.
-        if(getLocationUpdates) {
-            startLocationUpdates();
-        }
-    }
-
 
     /**
      * Start location updates
      */
-    private void startLocationUpdates() {
+    public void startLocationUpdates() {
 
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(2000);
-        locationRequest.setFastestInterval(1000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // If location is already being fetched, ignore
+        if(!gettingLocationUpdates && isLiveLocationEnabled) {
 
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest,
-                locationCallback,
-                Looper.getMainLooper());
+            gettingLocationUpdates = true;
+            LocationRequest locationRequest = LocationRequest.create();
+            locationRequest.setInterval(2000);
+            locationRequest.setFastestInterval(1000);
+            locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            fusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                    locationCallback,
+                    Looper.getMainLooper());
+        }
+    }
+
+    /**
+     * Stop location updates. Apps can use the last update.
+     */
+    public void stopLocationUpdates() {
+
+        if(gettingLocationUpdates) {
+            gettingLocationUpdates = false;
+            isLiveLocationEnabled = false;
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+        }
     }
 
     private LocationCallback locationCallback = new LocationCallback() {
@@ -157,7 +173,7 @@ public class LocationService {
             // Push data to app
             for(Location location : locationResult.getLocations()) {
                 Log.d(TAG, "onLocationResult: Latitude : " + location.getLatitude()
-                        + " | Longitude : " + location.getLongitude());
+                        + " | Longitude : " + location.getLongitude() + " | Accuracy : " + location.getAccuracy());
             }
         }
     };

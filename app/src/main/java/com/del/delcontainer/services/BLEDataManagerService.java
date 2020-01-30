@@ -9,7 +9,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.utils.DeviceManager;
+import com.del.delcontainer.managers.DeviceManager;
 import com.del.delcontainer.utils.GattUtils;
 
 
@@ -79,7 +79,8 @@ public class BLEDataManagerService extends IntentService {
 
             deviceManager.getBluetoothDevices().put(device.getAddress(), device);
             BluetoothGatt bluetoothGatt = device.connectGatt(
-                    getApplicationContext(), true, gattUtils.gattCallback);
+                    getApplicationContext(), true, gattUtils.gattCallback,
+                    BluetoothDevice.TRANSPORT_LE);
 
             // Make the ID a unique key - device MAC address
             deviceManager.getBluetoothGattObjects()
@@ -104,8 +105,10 @@ public class BLEDataManagerService extends IntentService {
 
         Log.d(TAG, "disconnectBLEDevice: Closing connection to : "
                 + gatt.getDevice().getName());
+        //gatt.disconnect();
         gatt.close();
 
         deviceManager.getBluetoothGattObjects().remove(deviceAddress);
+        deviceManager.getBluetoothServiceMap().remove(deviceAddress);
     }
 }

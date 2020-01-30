@@ -54,7 +54,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         Log.d(TAG, "onBindViewHolder: called");
 
         holder.deviceName.setText(devices.get(position).getName()
-                + " " + devices.get(position).getAddress()); // Fetch names from the list of devices
+                + " (" + devices.get(position).getAddress() + ")"); // Fetch names from the list of devices
         holder.device = devices.get(position);
     }
 

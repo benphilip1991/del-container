@@ -1,4 +1,4 @@
-package com.del.delcontainer.utils;
+package com.del.delcontainer.managers;
 
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;

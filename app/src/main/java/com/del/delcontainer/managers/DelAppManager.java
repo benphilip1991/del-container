@@ -1,8 +1,7 @@
-package com.del.delcontainer.utils;
+package com.del.delcontainer.managers;
 
 
 import android.util.Log;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,6 +9,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
+import com.del.delcontainer.utils.Constants;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ import java.util.UUID;
 
 /**
  * DEL application manager responsible for app fragments
- * running inside the container/
+ * running inside the container
  *
  * Keep track of the following:
  *      What apps are running
@@ -121,6 +121,7 @@ public class DelAppManager {
             transaction.detach(appCache.get(appName));
         }
 
+        transaction.remove(appCache.get(appName));
         appCache.remove(appName);
         transaction.commit();
     }

@@ -50,6 +50,9 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
     /**
      * Method to store incoming data values to the database
      * Dirty approach - stores values every second
+     *
+     * TODO: fix storage time
+     * TODO: use data manager to store data. Do NOT call repository directory
      * @param value
      */
     private void storeHeartRateData(int value) {

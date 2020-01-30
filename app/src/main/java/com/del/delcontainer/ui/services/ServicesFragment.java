@@ -17,7 +17,7 @@ import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.utils.DelAppManager;
+import com.del.delcontainer.managers.DelAppManager;
 
 import java.util.ArrayList;
 import java.util.HashMap;

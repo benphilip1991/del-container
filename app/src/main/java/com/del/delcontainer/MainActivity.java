@@ -6,37 +6,31 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
-import com.del.delcontainer.database.DelDatabase;
-import com.del.delcontainer.database.entities.UserProfile;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.utils.DbHelper;
-import com.del.delcontainer.utils.DelAppManager;
+import com.del.delcontainer.managers.DelAppManager;
 import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.room.Room;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
@@ -46,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
 
+    FloatingActionButton chatButton;
     IntentFilter intentFilter;
 
     @Override
@@ -62,10 +57,45 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationItemView item = findViewById(R.id.navigation_services);
         item.performClick();
 
+        initChatbot();
+
         verifyAndGetPermissions();
 
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
+    }
+
+    /**
+     * Initialize chat button and add event listener
+     */
+    protected void initChatbot() {
+
+        chatButton = findViewById(R.id.chatButton);
+        chatButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(getApplicationContext(), "Launching chatbot", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: Stopping location updates");
+        super.onPause();
+        LocationService locationService = LocationService.getInstance();
+        locationService.stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d(TAG, "onResume: Resuming location service");
+        LocationService locationService = LocationService.getInstance();
+        locationService.startLocationUpdates();
     }
 
     /**
