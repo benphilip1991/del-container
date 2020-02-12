@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:layout_centerInParent="true"
+        app:cardCornerRadius="5dp"
+        app:cardMaxElevation="3dp">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/availableAppImage"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:layout_margin="2dp" />
+
+            <TextView
+                android:id="@+id/availableAppLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@+id/availableAppImage"
+                android:layout_marginTop="5dp"
+                android:layout_marginLeft="10dp"
+                android:autoSizeMaxTextSize="15sp"
+                android:autoSizeMinTextSize="10sp"
+                android:autoSizeTextType="uniform"
+                android:text="App Name"
+                android:textColor="#000"
+                app:layout_constraintLeft_toRightOf="@+id/availableAppImage" />
+
+            <TextView
+                android:id="@+id/availableAppDescription"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/availableAppLabel"
+                android:layout_toEndOf="@+id/availableAppImage"
+                android:autoSizeMaxTextSize="15sp"
+                android:autoSizeMinTextSize="8sp"
+                android:autoSizeTextType="uniform"
+                android:text="App description here"
+                android:textColor="#777"
+                android:layout_marginTop="12dp"
+                android:layout_marginLeft="10dp"
+                app:layout_constraintLeft_toRightOf="@+id/availableAppImage"
+                app:layout_constraintTop_toBottomOf="@+id/availableAppLabel" />
+
+            <Button
+                android:id="@+id/getAvailableAppButton"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginStart="150dp"
+                android:layout_marginTop="2dp"
+                android:layout_marginEnd="5dp"
+                android:background="@android:color/transparent"
+                android:text="Get"
+                android:textSize="13sp" />
+
+        </RelativeLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</RelativeLayout>
