@@ -65,22 +65,22 @@ public class LocationService {
 
         Log.d(TAG, "getLastLocation: called");
         fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(/*new OnSuccessListener<Location>()*/ (location) -> {
-                    //@Override
-                    //public void onSuccess(Location location) {
-                        if (null != location) {
-                            if (0 != locationHistory.size()) {
-                                if (locationHistory.get(locationHistory.size() - 1).getLatitude() != location.getLatitude()
-                                        && locationHistory.get(locationHistory.size() - 1).getLongitude() != location.getLongitude()) {
+                .addOnSuccessListener((location) -> {
+                    if (null != location) {
+                        if (0 != locationHistory.size()) {
+                            if (locationHistory.get(locationHistory.size() - 1)
+                                    .getLatitude() != location.getLatitude()
+                                    && locationHistory.get(locationHistory.size() - 1)
+                                    .getLongitude() != location.getLongitude()) {
 
-                                    Log.d(TAG, "onSuccess: Adding new location : " + location.getLatitude() + " | " + location.getLongitude());
-                                    locationHistory.add(location);
-                                }
-                            } else {
+                                Log.d(TAG, "onSuccess: Adding new location : "
+                                        + location.getLatitude() + " | " + location.getLongitude());
                                 locationHistory.add(location);
                             }
+                        } else {
+                            locationHistory.add(location);
                         }
-                    //}
+                    }
                 });
 
         return locationHistory.get(locationHistory.size() - 1);
@@ -90,6 +90,7 @@ public class LocationService {
      * If even one app is requesting live location, this remains true.
      * Else, switch to false.
      * Can maintain a list of apps requesting location. -> do later
+     *
      * @param flag
      */
     public void setLocationServiceEnabled(boolean flag) {
@@ -114,11 +115,11 @@ public class LocationService {
         Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
 
         task.addOnSuccessListener((locationSettingsResponse) -> {
-                ;
+            ;
         });
 
         task.addOnFailureListener((e) -> {
-                e.printStackTrace();
+            e.printStackTrace();
         });
     }
 
@@ -129,7 +130,7 @@ public class LocationService {
     public void startLocationUpdates() {
 
         // If location is already being fetched, ignore
-        if(!gettingLocationUpdates && isLiveLocationEnabled) {
+        if (!gettingLocationUpdates && isLiveLocationEnabled) {
 
             gettingLocationUpdates = true;
             LocationRequest locationRequest = LocationRequest.create();
@@ -148,7 +149,7 @@ public class LocationService {
      */
     public void stopLocationUpdates() {
 
-        if(gettingLocationUpdates) {
+        if (gettingLocationUpdates) {
             gettingLocationUpdates = false;
             isLiveLocationEnabled = false;
             fusedLocationProviderClient.removeLocationUpdates(locationCallback);
@@ -159,12 +160,12 @@ public class LocationService {
 
         @Override
         public void onLocationResult(LocationResult locationResult) {
-            if(null == locationResult) {
+            if (null == locationResult) {
                 return;
             }
 
             // Push data to app
-            for(Location location : locationResult.getLocations()) {
+            for (Location location : locationResult.getLocations()) {
                 Log.d(TAG, "onLocationResult: Latitude : " + location.getLatitude()
                         + " | Longitude : " + location.getLongitude() + " | Accuracy : " + location.getAccuracy());
             }

@@ -10,14 +10,17 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
+import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,16 +33,19 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     InstalledAppListViewAdapter installedAppListViewAdapter;
     AvailableAppListViewAdapter availableAppListViewAdapter;
 
+    ServicesViewModel servicesViewModel;
+
     private HashMap<String, HashMap<String, String>> availableAppDetails = new HashMap<>();
     private HashMap<String, Integer> appDetails = new HashMap<>();
     private ArrayList<String> installedAppList = new ArrayList<>();
-    private ArrayList<String> availableAppList = new ArrayList<>();
-
 
     //TODO: Major issue - every time you press the service button, a new service fragment
     //TODO: is created. The apps launched earlier will not attach to this new view.
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView: Service Fragment created");
+        servicesViewModel = ViewModelProviders.of(this).get(ServicesViewModel.class);
 
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
@@ -54,7 +60,7 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
         initRecyclerView(view);
     }
 
-    // TODO: Get from sqlite database. Apps registered when user gets them
+    // TODO: Get from del-api. Apps registered when user gets them
     private void getInstalledAppDetails() {
 
         appDetails.put("Heart Health", R.drawable.heart_health_icon);
@@ -71,6 +77,9 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     // TODO: Get from server
     private void getAvailableAppDetails() {
 
+        servicesViewModel.getAllAvailableServices(LoginStateRepo.getInstance().getToken());
+
+        // Changed to fetch app details from del-api
         availableAppDetails.put("Spirometer App", getAppDetail(
                 "Monitor your respiratory functions", R.drawable.lungs_icon));
         availableAppDetails.put("Oximeter App", getAppDetail(
@@ -95,18 +104,31 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     }
 
     private void initRecyclerView(View view) {
+
+        // Set available services fetched from del-api
+        servicesViewModel.getServicesList().observe(this, (servicesList) -> {
+            if(null != servicesList) {
+                for(ApplicationDetails app : servicesList) {
+                    Log.d(TAG, "App detail : " + app.getApplicationName()
+                            + " | " + app.getApplicationDescription());
+                }
+
+                RecyclerView recyclerViewAvailableApps = view.
+                        findViewById(R.id.availableAppListView);
+                availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
+                        servicesList);
+                recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
+                recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.VERTICAL, false));
+            }
+        });
+
+        // Set installed apps
         RecyclerView recyclerView = view.findViewById(R.id.installedAppListView);
         installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(), appDetails, this);
         recyclerView.setAdapter(installedAppListViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false));
-
-        // Set Available apps
-        RecyclerView recyclerViewAvailableApps = view.findViewById(R.id.availableAppListView);
-        availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(), availableAppDetails);
-        recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
-        recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL, false));
     }
 
     // TODO: Need to somehow make sure that apps being added does not result in the

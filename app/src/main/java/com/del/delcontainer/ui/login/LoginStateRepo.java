@@ -13,6 +13,7 @@ public class LoginStateRepo {
     private String lastName = null;
     private String sex = null;
     private String userRole = null;
+    private String errorResponse = null;
     private int age;
 
     private static LoginStateRepo loginStateRepo = null;
@@ -59,6 +60,10 @@ public class LoginStateRepo {
         return userRole;
     }
 
+    public String getErrorResponse() {
+        return errorResponse;
+    }
+
     public void setEmailId(String emailId) {
         this.emailId = emailId;
     }
@@ -77,6 +82,10 @@ public class LoginStateRepo {
 
     public void setAge(int age) {
         this.age = age;
+    }
+
+    public void setErrorResponse(String errorResponse) {
+        this.errorResponse = errorResponse;
     }
 
     public void setToken(String token) {

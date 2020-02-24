@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,26 +24,13 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
 
     private static final String TAG = "AvailableAppListViewAda";
 
-    private HashMap<String, HashMap<String, String>> availableApps;
-    private ArrayList<String> appList = new ArrayList<>();
+    private ArrayList<ApplicationDetails> availableAppsList; // from del-api
     private Context context;
 
-    public AvailableAppListViewAdapter(Context context, HashMap<String, HashMap<String, String>> availableApps) {
-
-        this.availableApps = availableApps;
+    public AvailableAppListViewAdapter(Context context,
+                                       ArrayList<ApplicationDetails> availableApps) {
+        this.availableAppsList = availableApps;
         this.context = context;
-
-        initAvailableAppList();
-    }
-
-    /**
-     * Extract app names from the map
-     */
-    private void initAvailableAppList() {
-
-        for(HashMap.Entry<String, HashMap<String, String>> entry : availableApps.entrySet()) {
-            appList.add(entry.getKey());
-        }
     }
 
     @NonNull
@@ -58,6 +46,7 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
 
     /**
      * Add names, descriptions and images in the cards
+     *
      * @param holder
      * @param position
      */
@@ -66,18 +55,16 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
 
         int imageRes;
 
-        holder.availableAppLabel.setText(appList.get(position));
-        holder.availableAppDescription.setText(availableApps
-                .get(appList.get(position)).get(Constants.APP_DESCRIPTION));
-
-        imageRes = Integer.parseInt(availableApps
-                .get(appList.get(position)).get(Constants.APP_IMAGE));
+        holder.availableAppLabel.setText(availableAppsList.get(position).getApplicationName());
+        holder.availableAppDescription.setText(
+                availableAppsList.get(position).getApplicationDescription());
+        imageRes = R.drawable.default_app_icon;
         holder.availableAppImage.setBackgroundResource(imageRes);
     }
 
     @Override
     public int getItemCount() {
-        return appList.size();
+        return availableAppsList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -101,9 +88,11 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         // Change to add something more useful
         @Override
         public void onClick(View view) {
-            Log.d(TAG, "onClick: getting app : " + appList.get(getAdapterPosition()));
+            Log.d(TAG, "onClick: getting app : " + availableAppsList.get(getAdapterPosition())
+                    .getApplicationName());
             Toast.makeText(context, "Getting app : "
-                    + appList.get(getAdapterPosition()), Toast.LENGTH_SHORT).show();
+                            + availableAppsList.get(getAdapterPosition()).getApplicationName(),
+                    Toast.LENGTH_SHORT).show();
         }
     }
 }
