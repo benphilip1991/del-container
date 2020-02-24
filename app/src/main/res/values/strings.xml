@@ -16,4 +16,8 @@
     <string name="more_services">More Services</string>
     <string name="devices_found">Devices Found</string>
     <string name="rescan_devices">Rescan</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="login_button">Sign In</string>
+    <string name="logout_button">Sign Out</string>
 </resources>

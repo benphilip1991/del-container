@@ -57,10 +57,12 @@ public class Constants {
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "10.140.114.10";
+    public static final String DEL_SERVICE_IP       = "10.140.77.35";
     public static final String MYMAPS_SERVICE_IP    = "10.137.0.157";
-    public static final String DEL_PORT             = "3000";
+    public static final String DEL_SERVICE_PORT     = "3000";
+    public static final String DEL_PORT             = "3050";
     public static final String MYMAPS_PORT          = "3026";
+    public static final String API_BASE_PATH        = "/api/v1/";
 
 
     /**

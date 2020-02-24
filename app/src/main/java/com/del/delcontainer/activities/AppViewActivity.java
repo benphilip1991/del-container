@@ -52,7 +52,7 @@ public class AppViewActivity extends AppCompatActivity {
 
         // URL would be fixed and only app names (or UUIDs) would identify apps. Stick with
         // one single 'app' for now at the root index
-        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT;
+        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_SERVICE_PORT;
         return appUrl;
     }
 }

@@ -1,6 +1,5 @@
 package com.del.delcontainer.ui.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,7 +81,7 @@ public class DelAppContainerFragment extends Fragment {
 
         // URL would be fixed and only app names (or UUIDs) would identify apps. Stick with
         // one single 'app' for now at the root index
-        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT
+        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_SERVICE_PORT
                 + "/" + appIdent;
         return appUrl;
     }

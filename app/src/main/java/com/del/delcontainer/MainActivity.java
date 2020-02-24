@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.ui.services.ServicesFragment;
@@ -53,20 +54,25 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
 
-        // Fix to ake sure the app doesn't crash the container initially
+        // Fix to make sure the app doesn't crash the container initially
         BottomNavigationItemView item = findViewById(R.id.navigation_services);
         item.performClick();
 
+        // Experimental for now
         initChatbot();
 
         verifyAndGetPermissions();
 
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
+
+        Toast.makeText(this, LoginStateRepo.getInstance().getUserId(), Toast.LENGTH_SHORT).show();
     }
 
     /**
      * Initialize chat button and add event listener
+     * <p>
+     * TODO: move to conversation manager and handle everything from there
      */
     protected void initChatbot() {
 
@@ -79,7 +85,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
 
     @Override
     protected void onPause() {
@@ -103,57 +108,52 @@ public class MainActivity extends AppCompatActivity {
      * This approach gives more flexibility with 'app' lifecycle management
      */
     private BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
+            (menuItem) -> {
+                Fragment selectedFragment = null;
 
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
 
-                    Fragment selectedFragment = null;
-
-                    switch (menuItem.getItemId()) {
-
-                        case R.id.navigation_services:
-                            Log.d(TAG, "onNavigationItemSelected: Selected Services");
-                            if (containerViewMap.get(R.id.navigation_services) == null) {
-                                containerViewMap.put(R.id.navigation_services, new ServicesFragment());
-                            }
-                            selectedFragment = containerViewMap.get(R.id.navigation_services);
-                            break;
-                        case R.id.navigation_sources:
-                            Log.d(TAG, "onNavigationItemSelected: Selected Sources");
-                            if (containerViewMap.get(R.id.navigation_sources) == null) {
-                                containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
-                            }
-                            selectedFragment = containerViewMap.get(R.id.navigation_sources);
-                            break;
-                        case R.id.navigation_settings:
-                            Log.d(TAG, "onNavigationItemSelected: Selected Settings");
-                            if (containerViewMap.get(R.id.navigation_settings) == null) {
-                                containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
-                            }
-                            selectedFragment = containerViewMap.get(R.id.navigation_settings);
-                            break;
-                    }
-
-                    DelAppManager.getInstance().hideAllApps();
-
-                    // Get the fragment manager and begin transaction. But only hide/show them
-                    FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-                    for (Map.Entry<Integer, Fragment> appView : containerViewMap.entrySet()) {
-
-                        if (appView.getValue().isAdded() && appView.getValue().isVisible()) {
-                            transaction.hide(appView.getValue());
+                    case R.id.navigation_services:
+                        Log.d(TAG, "onNavigationItemSelected: Selected Services");
+                        if (containerViewMap.get(R.id.navigation_services) == null) {
+                            containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
-                    }
-
-                    if (!selectedFragment.isAdded()) {
-                        transaction.add(nav_host_fragment, selectedFragment, Constants.HOST_VIEW);
-                    }
-
-                    // Make view visible
-                    transaction.show(selectedFragment).commit();
-                    return true;
+                        selectedFragment = containerViewMap.get(R.id.navigation_services);
+                        break;
+                    case R.id.navigation_sources:
+                        Log.d(TAG, "onNavigationItemSelected: Selected Sources");
+                        if (containerViewMap.get(R.id.navigation_sources) == null) {
+                            containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
+                        }
+                        selectedFragment = containerViewMap.get(R.id.navigation_sources);
+                        break;
+                    case R.id.navigation_settings:
+                        Log.d(TAG, "onNavigationItemSelected: Selected Settings");
+                        if (containerViewMap.get(R.id.navigation_settings) == null) {
+                            containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
+                        }
+                        selectedFragment = containerViewMap.get(R.id.navigation_settings);
+                        break;
                 }
+
+                DelAppManager.getInstance().hideAllApps();
+
+                // Get the fragment manager and begin transaction. But only hide/show them
+                FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+                for (Map.Entry<Integer, Fragment> appView : containerViewMap.entrySet()) {
+
+                    if (appView.getValue().isAdded() && appView.getValue().isVisible()) {
+                        transaction.hide(appView.getValue());
+                    }
+                }
+
+                if (!selectedFragment.isAdded()) {
+                    transaction.add(nav_host_fragment, selectedFragment, Constants.HOST_VIEW);
+                }
+
+                // Make view visible
+                transaction.show(selectedFragment).commit();
+                return true;
             };
 
 

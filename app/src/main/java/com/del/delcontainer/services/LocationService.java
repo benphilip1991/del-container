@@ -65,9 +65,9 @@ public class LocationService {
 
         Log.d(TAG, "getLastLocation: called");
         fusedLocationProviderClient.getLastLocation()
-                .addOnSuccessListener(new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
+                .addOnSuccessListener(/*new OnSuccessListener<Location>()*/ (location) -> {
+                    //@Override
+                    //public void onSuccess(Location location) {
                         if (null != location) {
                             if (0 != locationHistory.size()) {
                                 if (locationHistory.get(locationHistory.size() - 1).getLatitude() != location.getLatitude()
@@ -80,7 +80,7 @@ public class LocationService {
                                 locationHistory.add(location);
                             }
                         }
-                    }
+                    //}
                 });
 
         return locationHistory.get(locationHistory.size() - 1);
@@ -113,19 +113,12 @@ public class LocationService {
         SettingsClient settingsClient = LocationServices.getSettingsClient(context.getApplicationContext());
         Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
 
-        task.addOnSuccessListener(new OnSuccessListener<LocationSettingsResponse>() {
-            @Override
-            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
-
+        task.addOnSuccessListener((locationSettingsResponse) -> {
                 ;
-            }
         });
 
-        task.addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
+        task.addOnFailureListener((e) -> {
                 e.printStackTrace();
-            }
         });
     }
 
