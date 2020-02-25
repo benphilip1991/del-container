@@ -149,14 +149,15 @@ public class DELUtils {
         locationService.stopLocationUpdates();
     }
 
+    // TODO: Need to get this information from the fragment containing the app
     @JavascriptInterface
     public void terminateApp(String appDetails) {
-        UUID appId = null;
+        String appId = null;
         String appName = null;
 
         try {
             JSONObject appInfo = new JSONObject(appDetails);
-            appId = UUID.fromString(appInfo.getString(Constants.APP_ID));
+            appId = appInfo.getString(Constants.APP_ID);
             appName = appInfo.getString(Constants.APP_NAME);
 
         } catch(JSONException e) {

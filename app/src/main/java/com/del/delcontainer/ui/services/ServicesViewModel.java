@@ -7,8 +7,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.ApplicationApi;
+import com.del.delcontainer.utils.apiUtils.interfaces.UserApplicationsApi;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.Applications;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
+import com.del.delcontainer.utils.apiUtils.pojo.UserApplicationDetails;
 
 import java.util.ArrayList;
 
@@ -21,12 +24,17 @@ public class ServicesViewModel extends ViewModel {
 
     private static final String TAG = "ServicesViewModel";
     private MutableLiveData<ArrayList<ApplicationDetails>> servicesList = new MutableLiveData<>();
+    private MutableLiveData<ArrayList<LinkedApplicationDetails>> userServicesList =
+            new MutableLiveData<>();
 
     Retrofit retrofit = APIUtils.getApiClient();
-    ApplicationApi applicationApi = retrofit.create(ApplicationApi.class);
 
     public MutableLiveData<ArrayList<ApplicationDetails>> getServicesList() {
         return servicesList;
+    }
+
+    public MutableLiveData<ArrayList<LinkedApplicationDetails>> getUserServicesList() {
+        return userServicesList;
     }
 
     /**
@@ -37,11 +45,12 @@ public class ServicesViewModel extends ViewModel {
      */
     public void getAllAvailableServices(String token) {
 
+        ApplicationApi applicationApi = retrofit.create(ApplicationApi.class);
         Call<Applications> call = applicationApi.getAllApplications(token);
         call.enqueue(new Callback<Applications>() {
             @Override
             public void onResponse(Call<Applications> call, Response<Applications> response) {
-                if(response.code() == 200) {
+                if (response.code() == 200) {
                     Log.d(TAG, "onResponse: Got applications.");
                     servicesList.setValue(response.body().getApplications());
                 } else {
@@ -52,6 +61,37 @@ public class ServicesViewModel extends ViewModel {
             @Override
             public void onFailure(Call<Applications> call, Throwable t) {
                 Log.e(TAG, "onResponse: Error " + t.getMessage());
+            }
+        });
+    }
+
+    /**
+     * Fetch list of applications linked to a user account. The response is a
+     *
+     * @param token
+     * @param userId
+     */
+    public void getAllUserServices(String token, String userId) {
+
+        UserApplicationsApi userApplicationsApi = retrofit.create(UserApplicationsApi.class);
+        Call<UserApplicationDetails> call = userApplicationsApi
+                .getUserApplicationDetails(token, userId);
+
+        call.enqueue(new Callback<UserApplicationDetails>() {
+            @Override
+            public void onResponse(Call<UserApplicationDetails> call,
+                                   Response<UserApplicationDetails> response) {
+                if (response.code() == 200) {
+                    Log.d(TAG, "onResponse: Got linked applications");
+                    userServicesList.setValue(response.body().getApplications());
+                } else {
+                    Log.e(TAG, "onResponse: Error linked applications " + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserApplicationDetails> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
             }
         });
     }

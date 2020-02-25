@@ -13,12 +13,12 @@ import retrofit2.http.Path;
 
 public interface UserApplicationsApi {
 
-    @GET("{userId}/userApplication")
+    @GET("user/{userId}/userApplication")
     @Headers({"Content-Type: application/json"})
     Call<UserApplicationDetails> getUserApplicationDetails(@Header("Authorization") String token,
                                                            @Path("userId") String userId);
 
-    @PUT("{userId}/userApplication")
+    @PUT("user/{userId}/userApplication")
     @Headers({"Content-Type: application/json"})
     Call<UserApplicationDetails> updateUserApplicationDetails(
             @Header("Authorization") String token,

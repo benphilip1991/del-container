@@ -1,11 +1,7 @@
 package com.del.delcontainer.ui.login;
 
-import android.app.Application;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
@@ -87,5 +83,4 @@ public class LoginViewModel extends ViewModel {
 
         return true;
     }
-
 }

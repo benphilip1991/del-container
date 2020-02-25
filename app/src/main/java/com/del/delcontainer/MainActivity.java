@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
-
-        Toast.makeText(this, LoginStateRepo.getInstance().getUserId(), Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -77,12 +75,9 @@ public class MainActivity extends AppCompatActivity {
     protected void initChatbot() {
 
         chatButton = findViewById(R.id.chatButton);
-        chatButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getApplicationContext(), "Launching chatbot", Toast.LENGTH_SHORT).show();
-            }
+        chatButton.setOnClickListener((v) -> {
+            Toast.makeText(getApplicationContext(), "Launching chatbot",
+                    Toast.LENGTH_SHORT).show();
         });
     }
 

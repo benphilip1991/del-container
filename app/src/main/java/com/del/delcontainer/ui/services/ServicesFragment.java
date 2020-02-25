@@ -21,12 +21,13 @@ import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ServicesFragment extends Fragment implements InstalledAppListViewAdapter.AppClickListener {
+public class ServicesFragment extends Fragment {
 
     private static final String TAG = "ServicesFragment";
 
@@ -34,10 +35,6 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
     AvailableAppListViewAdapter availableAppListViewAdapter;
 
     ServicesViewModel servicesViewModel;
-
-    private HashMap<String, HashMap<String, String>> availableAppDetails = new HashMap<>();
-    private HashMap<String, Integer> appDetails = new HashMap<>();
-    private ArrayList<String> installedAppList = new ArrayList<>();
 
     //TODO: Major issue - every time you press the service button, a new service fragment
     //TODO: is created. The apps launched earlier will not attach to this new view.
@@ -55,63 +52,31 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
 
     private void setupServices(View view) {
 
-        getInstalledAppDetails();
-        getAvailableAppDetails();
+        getAppsList();
         initRecyclerView(view);
     }
 
-    // TODO: Get from del-api. Apps registered when user gets them
-    private void getInstalledAppDetails() {
+    /**
+     * Calls the del-api service to get the list of all linked services
+     * and all available services
+     */
+    private void getAppsList() {
 
-        appDetails.put("Heart Health", R.drawable.heart_health_icon);
-        appDetails.put("Mood Tracker", R.drawable.default_app_icon);
-        appDetails.put("Step Counter", R.drawable.step_counter);
-        appDetails.put("Oximeter", R.drawable.default_app_icon);
-        appDetails.put("My ECG", R.drawable.default_app_icon);
-
-        for(HashMap.Entry<String, Integer> app : appDetails.entrySet()) {
-            installedAppList.add(app.getKey());
-        }
-    }
-
-    // TODO: Get from server
-    private void getAvailableAppDetails() {
-
+        servicesViewModel.getAllUserServices(LoginStateRepo.getInstance().getToken(),
+                LoginStateRepo.getInstance().getUserId());
         servicesViewModel.getAllAvailableServices(LoginStateRepo.getInstance().getToken());
-
-        // Changed to fetch app details from del-api
-        availableAppDetails.put("Spirometer App", getAppDetail(
-                "Monitor your respiratory functions", R.drawable.lungs_icon));
-        availableAppDetails.put("Oximeter App", getAppDetail(
-                "Monitor blood oxygen saturation", R.drawable.spo2_icon));
-        availableAppDetails.put("Core Temp", getAppDetail(
-                "Monitor your core temperature", R.drawable.temperature_icon));
-        availableAppDetails.put("Random App 1", getAppDetail(
-                "Random description 1", R.drawable.default_app_icon));
-        availableAppDetails.put("Random App 2", getAppDetail(
-                "Random description 2", R.drawable.default_app_icon));
-        availableAppDetails.put("Random App 3", getAppDetail(
-                "Random description 3", R.drawable.default_app_icon));
     }
 
-    private HashMap<String, String> getAppDetail(String appDescription, int resource) {
-
-        HashMap<String, String> appDetail = new HashMap<>();
-        appDetail.put(Constants.APP_DESCRIPTION, appDescription);
-        appDetail.put(Constants.APP_IMAGE, Integer.toString(resource));
-
-        return appDetail;
-    }
-
+    /**
+     * Initialize recycler view and setup
+     *
+     * @param view
+     */
     private void initRecyclerView(View view) {
 
         // Set available services fetched from del-api
         servicesViewModel.getServicesList().observe(this, (servicesList) -> {
-            if(null != servicesList) {
-                for(ApplicationDetails app : servicesList) {
-                    Log.d(TAG, "App detail : " + app.getApplicationName()
-                            + " | " + app.getApplicationDescription());
-                }
+            if (null != servicesList) {
 
                 RecyclerView recyclerViewAvailableApps = view.
                         findViewById(R.id.availableAppListView);
@@ -123,34 +88,39 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
             }
         });
 
-        // Set installed apps
-        RecyclerView recyclerView = view.findViewById(R.id.installedAppListView);
-        installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(), appDetails, this);
-        recyclerView.setAdapter(installedAppListViewAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false));
-    }
+        // Set linked services fetched from del-api
+        servicesViewModel.getUserServicesList().observe(this, (userServicesList) -> {
+            if (null != userServicesList) {
 
-    // TODO: Need to somehow make sure that apps being added does not result in the
-    // TODO: previous ones getting destroyed
-    /**
-     * Check if the app already exists in the fragment stack and bring it to the front.
-     * Use the FragmentTraction show and hide methods for existing fragments
-     * Else, create a new fragment object with the required app and launch.
-     *
-     * @param position
-     */
-    @Override
-    public void onAppClick(int position) {
-        Log.d(TAG, "onAppClick: launching " + installedAppList.get(position));
-        Toast.makeText(getContext(), "Launching " + installedAppList.get(position), Toast.LENGTH_SHORT).show();
+                RecyclerView recyclerView = view.
+                        findViewById(R.id.installedAppListView);
+                installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
+                        userServicesList, (position) -> {
 
-        // TODO: instead of launching a new activity, hide the current one and load a new fragment
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        DelAppManager delAppManager = DelAppManager.getInstance();
-        delAppManager.setFragmentManager(fragmentManager);
+                    /**
+                     * Handle clicks events on each service card
+                     * Check if the service already exists in the fragment stack and bring it to
+                     * the foreground. If not, create a new fragment object.
+                     */
+                    Log.d(TAG, "onAppClick: launching " + userServicesList.get(position)
+                            .getApplicationName());
+                    Toast.makeText(getContext(), "Launching " + userServicesList
+                                    .get(position).getApplicationName(), Toast.LENGTH_SHORT).show();
 
-        // TODO: App UUIDs must from sqlite database. Apps registered when user gets them
-        delAppManager.launchApp(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
+                    // Get fragment manager instance and launch app
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    DelAppManager delAppManager = DelAppManager.getInstance();
+                    delAppManager.setFragmentManager(fragmentManager);
+
+                    // Launch app.
+                    delAppManager.launchApp(userServicesList.get(position).getApplicationId(),
+                            userServicesList.get(position).getApplicationName());
+                });
+
+                recyclerView.setAdapter(installedAppListViewAdapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL, false));
+            }
+        });
     }
 }
