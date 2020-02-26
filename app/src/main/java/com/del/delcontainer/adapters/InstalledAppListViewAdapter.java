@@ -13,40 +13,35 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<InstalledAppListViewAdapter.ViewHolder> {
+public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledAppListViewAdapter.ViewHolder> {
 
     private static final String TAG = "InstalledAppListViewAda";
 
-    private ArrayList<String> appList = new ArrayList<>();
-    private HashMap<String, Integer> appDetails;
+    private ArrayList<LinkedApplicationDetails> linkedAppDetails;
     private AppClickListener appClickListener;
+    private AppLongClickListener appLongClickListener;
     private Context context;
 
     /**
-     * Constructor to initialize the Adapter.
+     * Constructor to initialize the adapter
+     *
+     * @param context
+     * @param linkedAppDetails
+     * @param appClickListener
      */
-    public InstalledAppListViewAdapter(Context context, HashMap<String, Integer> appDetails,
-                                       AppClickListener appClickListener) {
-
-        this.appClickListener = appClickListener;
-        this.appDetails = appDetails;
+    public InstalledAppListViewAdapter(Context context,
+                                       ArrayList<LinkedApplicationDetails> linkedAppDetails,
+                                       AppClickListener appClickListener,
+                                       AppLongClickListener appLongClickListener) {
         this.context = context;
-
-        initAppList();
-    }
-
-    /**
-     * Extracts app names from the HashMap
-     */
-    private void initAppList() {
-
-        for (HashMap.Entry<String, Integer> entry : appDetails.entrySet()) {
-            appList.add(entry.getKey());
-        }
+        this.linkedAppDetails = linkedAppDetails;
+        this.appClickListener = appClickListener;
+        this.appLongClickListener = appLongClickListener;
     }
 
     @NonNull
@@ -63,30 +58,18 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        holder.appLabel.setText(appList.get(position));
+        holder.appLabel.setText(linkedAppDetails.get(position).getApplicationName());
         try {
-            holder.appImage.setBackgroundResource(appDetails.get(appList.get(position)).intValue());
+            holder.appImage.setBackgroundResource(R.drawable.default_app_icon);
         } catch (NullPointerException e) {
-
             Log.e(TAG, "onBindViewHolder: Exception ", e);
         }
     }
 
     @Override
     public int getItemCount() {
-
-        return appList.size();
+        return linkedAppDetails.size();
     }
-
-    /**
-     * Create a method that will add new items to the list
-     */
-//    public void setApps(List<ApplicationObject> obj) {
-//
-//        this.appList = obj;
-//        notifyDataSetChanged();
-//    }
-
 
     /**
      * ViewHolder that represents each individual item in the list
@@ -106,16 +89,20 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
             this.appClickListener = appClickListener;
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener((view) -> {
+                appLongClickListener.onAppLongClick(getAdapterPosition(), view);
+                return true; // the long press was consumed
+            });
         }
 
         @Override
         public void onClick(View view) {
 
-            Toast.makeText(context, "Launching " + appList.get(getAdapterPosition()),
+            Toast.makeText(context, "Launching " + linkedAppDetails
+                            .get(getAdapterPosition()).getApplicationName(),
                     Toast.LENGTH_SHORT).show();
             appClickListener.onAppClick(getAdapterPosition());
         }
-
     }
 
     /**
@@ -124,5 +111,13 @@ public class InstalledAppListViewAdapter  extends RecyclerView.Adapter<Installed
      */
     public interface AppClickListener {
         void onAppClick(int position);
+    }
+
+    /**
+     * Interface to handle long click events on installed apps
+     * The view is passed to identify where to place the menu
+     */
+    public interface AppLongClickListener {
+        void onAppLongClick(int position, View view);
     }
 }

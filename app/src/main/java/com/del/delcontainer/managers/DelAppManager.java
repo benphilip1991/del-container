@@ -11,6 +11,7 @@ import com.del.delcontainer.R;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +28,7 @@ import java.util.UUID;
 public class DelAppManager {
 
     private static final String TAG = "DelAppManager";
-    
+
     // Singleton app manager object
     private static DelAppManager delAppManager = null;
     private FragmentManager fragmentManager = null;
@@ -59,37 +60,34 @@ public class DelAppManager {
         }
     }
 
-
     /**
      * Housekeeping methods for managing app states.
      * Launch app can be used for bringing running apps to the foreground
      * or launching a new instance of an app.
      */
-    public void launchApp(UUID appId, String appName) {
+    public void launchApp(String appId, String appName) {
 
         Log.d(TAG, "launchApp: Launching : " + appName);
-
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
         // Create new fragment instances only if the app is being launched for the first time
         // Check in the app manager cache
-        if(null == appCache.get(appName)) {
+        if(null == appCache.get(appId)) { // appName
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
-            // TODO: replace appName with AppId later when implemented
             DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(appId, appName);
-            appCache.put(appName, delAppContainerFragment);
+            appCache.put(appId, delAppContainerFragment);
 
             Log.d(TAG, "launchApp: Adding to transaction");
             Log.d("MainActivity", "launchApp: Del APP fragment ID : " + delAppContainerFragment.getId());
-            transaction.add(R.id.nav_host_fragment, appCache.get(appName), appName); // last parameter is the app tag
+            transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId); // last parameter is the app tag
         }
 
-        if(appCache.get(appName).isHidden()) {
+        if(appCache.get(appId).isHidden()) {
             Log.d(TAG, "launchApp: Showing app : " + appName);
-            transaction.show(appCache.get(appName));
+            transaction.show(appCache.get(appId));
 
-        } else if(appCache.get(appName).isVisible()) {
+        } else if(appCache.get(appId).isVisible()) {
             Log.d(TAG, "launchApp: App visible : " + appName);
         }
 
@@ -104,10 +102,11 @@ public class DelAppManager {
      * @param appId
      * @param appName
      */
-    public void terminateApp(UUID appId, String appName) {
+    public void terminateApp(String appId, String appName) {
 
-        if(null == appCache.get(appName)) {
-            Log.d(TAG, "terminateApp: Invalid termination request. App doesn't exist.");
+        if(null == appCache.get(appId)) {
+            Log.d(TAG, "terminateApp: Invalid termination request. " + appName +
+                    " doesn't exist.");
             return;
         }
 
@@ -116,14 +115,32 @@ public class DelAppManager {
         // and if closed, show the services view
         FragmentTransaction transaction = fragmentManager.beginTransaction();
 
-        if(appCache.get(appName).isVisible()) {
-            transaction.hide(appCache.get(appName));
-            transaction.detach(appCache.get(appName));
+        if(appCache.get(appId).isVisible()) {
+            transaction.hide(appCache.get(appId));
+            transaction.detach(appCache.get(appId));
         }
 
-        transaction.remove(appCache.get(appName));
-        appCache.remove(appName);
+        transaction.remove(appCache.get(appId));
+        appCache.remove(appId);
         transaction.commit();
+    }
+
+    /**
+     * Kill all apps - usually called when logging out
+     */
+    public void terminateAllApps() {
+
+        ArrayList<String> appIds = new ArrayList<>();
+        // Need to push into another list, else this will throw
+        // a concurrentmodificationexception
+        for(String appId : appCache.keySet()) {
+            Log.d(TAG, "terminateAllApps: Terminating  ---> " + appId);
+            appIds.add(appId);
+        }
+
+        for(String appId : appIds) {
+            terminateApp(appId, "");
+        }
     }
 
     /**

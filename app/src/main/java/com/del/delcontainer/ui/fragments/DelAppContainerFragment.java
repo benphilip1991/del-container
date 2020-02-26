@@ -1,7 +1,7 @@
 package com.del.delcontainer.ui.fragments;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,12 +21,12 @@ public class DelAppContainerFragment extends Fragment {
 
     private static final String TAG = "DelAppContainerFragment";
 
-    private UUID appId;
+    private String appId;
     private String appName;
     private WebView appView;
     private WebViewClient webViewClient;
 
-    public DelAppContainerFragment(UUID appId, String appName) {
+    public DelAppContainerFragment(String appId, String appName) {
         this.appId = appId;
         this.appName = appName;
         webViewClient = new DelAppWebViewClient(); // unique for every new sub-app
@@ -62,29 +62,17 @@ public class DelAppContainerFragment extends Fragment {
     }
 
     /**
-     * Hardcoded for now.
-     * TODO: Get apps using the provided UUID.
+     * Get application URLs - apps are fetched using the appId
+     * eg: http://hostname:port/app/appId
      *
      * @return
      */
     private String getAppUrl() {
 
-        String appIdent = "";
+        Log.d(TAG, "getAppUrl: Getting application url for " + appName);
 
-        if (appName.equals("Heart Health"))
-            appIdent = "heart_health";
-        else if (appName.equals("Step Counter"))
-            appIdent = "step_counter";
-        else if(appName.equals("Mood Tracker")) {
-            String appUrl = Constants.HTTP_PREFIX + Constants.MYMAPS_SERVICE_IP + ":" + Constants.MYMAPS_PORT;
-            return appUrl;
-        }
-
-        // URL would be fixed and only app names (or UUIDs) would identify apps. Stick with
-        // one single 'app' for now at the root index
-        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT
-                + "/" + appIdent;
+        String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
+                + Constants.DEL_SERVICE_PORT + "/" + appId;
         return appUrl;
     }
-
 }

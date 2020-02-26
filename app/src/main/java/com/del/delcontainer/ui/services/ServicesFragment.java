@@ -2,44 +2,47 @@ package com.del.delcontainer.ui.services;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.PopupMenu;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
+import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-public class ServicesFragment extends Fragment implements InstalledAppListViewAdapter.AppClickListener {
+public class ServicesFragment extends Fragment {
 
     private static final String TAG = "ServicesFragment";
 
     InstalledAppListViewAdapter installedAppListViewAdapter;
     AvailableAppListViewAdapter availableAppListViewAdapter;
 
-    private HashMap<String, HashMap<String, String>> availableAppDetails = new HashMap<>();
-    private HashMap<String, Integer> appDetails = new HashMap<>();
-    private ArrayList<String> installedAppList = new ArrayList<>();
-    private ArrayList<String> availableAppList = new ArrayList<>();
+    ServicesViewModel servicesViewModel;
 
-
-    //TODO: Major issue - every time you press the service button, a new service fragment
-    //TODO: is created. The apps launched earlier will not attach to this new view.
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        Log.d(TAG, "onCreateView: Service Fragment created");
+        servicesViewModel = ViewModelProviders.of(this).get(ServicesViewModel.class);
 
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
@@ -49,86 +52,127 @@ public class ServicesFragment extends Fragment implements InstalledAppListViewAd
 
     private void setupServices(View view) {
 
-        getInstalledAppDetails();
-        getAvailableAppDetails();
+        getAppsList();
         initRecyclerView(view);
     }
 
-    // TODO: Get from sqlite database. Apps registered when user gets them
-    private void getInstalledAppDetails() {
-
-        appDetails.put("Heart Health", R.drawable.heart_health_icon);
-        appDetails.put("Mood Tracker", R.drawable.default_app_icon);
-        appDetails.put("Step Counter", R.drawable.step_counter);
-        appDetails.put("Oximeter", R.drawable.default_app_icon);
-        appDetails.put("My ECG", R.drawable.default_app_icon);
-
-        for(HashMap.Entry<String, Integer> app : appDetails.entrySet()) {
-            installedAppList.add(app.getKey());
-        }
-    }
-
-    // TODO: Get from server
-    private void getAvailableAppDetails() {
-
-        availableAppDetails.put("Spirometer App", getAppDetail(
-                "Monitor your respiratory functions", R.drawable.lungs_icon));
-        availableAppDetails.put("Oximeter App", getAppDetail(
-                "Monitor blood oxygen saturation", R.drawable.spo2_icon));
-        availableAppDetails.put("Core Temp", getAppDetail(
-                "Monitor your core temperature", R.drawable.temperature_icon));
-        availableAppDetails.put("Random App 1", getAppDetail(
-                "Random description 1", R.drawable.default_app_icon));
-        availableAppDetails.put("Random App 2", getAppDetail(
-                "Random description 2", R.drawable.default_app_icon));
-        availableAppDetails.put("Random App 3", getAppDetail(
-                "Random description 3", R.drawable.default_app_icon));
-    }
-
-    private HashMap<String, String> getAppDetail(String appDescription, int resource) {
-
-        HashMap<String, String> appDetail = new HashMap<>();
-        appDetail.put(Constants.APP_DESCRIPTION, appDescription);
-        appDetail.put(Constants.APP_IMAGE, Integer.toString(resource));
-
-        return appDetail;
-    }
-
-    private void initRecyclerView(View view) {
-        RecyclerView recyclerView = view.findViewById(R.id.installedAppListView);
-        installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(), appDetails, this);
-        recyclerView.setAdapter(installedAppListViewAdapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.HORIZONTAL, false));
-
-        // Set Available apps
-        RecyclerView recyclerViewAvailableApps = view.findViewById(R.id.availableAppListView);
-        availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(), availableAppDetails);
-        recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
-        recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL, false));
-    }
-
-    // TODO: Need to somehow make sure that apps being added does not result in the
-    // TODO: previous ones getting destroyed
     /**
-     * Check if the app already exists in the fragment stack and bring it to the front.
-     * Use the FragmentTraction show and hide methods for existing fragments
-     * Else, create a new fragment object with the required app and launch.
-     *
-     * @param position
+     * Calls the del-api service to get the list of all linked services
+     * and all available services
      */
-    @Override
-    public void onAppClick(int position) {
-        Log.d(TAG, "onAppClick: launching " + installedAppList.get(position));
-        Toast.makeText(getContext(), "Launching " + installedAppList.get(position), Toast.LENGTH_SHORT).show();
+    private void getAppsList() {
 
-        // TODO: instead of launching a new activity, hide the current one and load a new fragment
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        DelAppManager delAppManager = DelAppManager.getInstance();
-        delAppManager.setFragmentManager(fragmentManager);
+        servicesViewModel.getAllUserServices(LoginStateRepo.getInstance().getToken(),
+                LoginStateRepo.getInstance().getUserId());
+        servicesViewModel.getAllAvailableServices(LoginStateRepo.getInstance().getToken());
+    }
 
-        // TODO: App UUIDs must from sqlite database. Apps registered when user gets them
-        delAppManager.launchApp(UUID.fromString("23666d29-7254-48b9-8104-862de11bdd75"), installedAppList.get(position));
+    /**
+     * Initialize recycler view and setup
+     *
+     * @param view
+     */
+    private void initRecyclerView(View view) {
+
+        // Set available services fetched from del-api
+        servicesViewModel.getServicesList().observe(this, (servicesList) -> {
+            if (null != servicesList) {
+
+                RecyclerView recyclerViewAvailableApps = view.
+                        findViewById(R.id.availableAppListView);
+                availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
+                        servicesList,
+                        (position) -> {
+
+                            /**
+                             * Handle click events when the user taps the GET button on
+                             * the available apps card. Add app to user's linked services.
+                             */
+                            Log.d(TAG, "initRecyclerView: Fetching app : " +
+                                    servicesList.get(position).getApplicationName());
+                            Toast.makeText(getContext(), "Getting App : " + servicesList.get(position)
+                                    .getApplicationName(), Toast.LENGTH_LONG).show();
+
+                            try {
+                                servicesViewModel.updateUserApplicationsList(
+                                        LoginStateRepo.getInstance().getToken(),
+                                        LoginStateRepo.getInstance().getUserId(),
+                                        servicesList.get(position)
+                                                .get_id(), Constants.APP_ADD);
+                            } catch (Exception e) {
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
+                recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.VERTICAL, false));
+            }
+        });
+
+        // Set linked services fetched from del-api
+        servicesViewModel.getUserServicesList().observe(this, (userServicesList) -> {
+            if (null != userServicesList) {
+
+                RecyclerView recyclerView = view.
+                        findViewById(R.id.installedAppListView);
+                installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
+                        userServicesList,
+                        (position) -> {
+                            /**
+                             * Handle clicks events on each service card
+                             * Check if the service already exists in the fragment stack and bring it to
+                             * the foreground. If not, create a new fragment object.
+                             */
+                            Log.d(TAG, "onAppClick: launching " + userServicesList.get(position)
+                                    .getApplicationName());
+                            Toast.makeText(getContext(), "Launching " + userServicesList
+                                    .get(position).getApplicationName(), Toast.LENGTH_SHORT).show();
+
+                            // Get fragment manager instance and launch app
+                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                            DelAppManager delAppManager = DelAppManager.getInstance();
+                            delAppManager.setFragmentManager(fragmentManager);
+
+                            // Launch app.
+                            delAppManager.launchApp(userServicesList.get(position).getApplicationId(),
+                                    userServicesList.get(position).getApplicationName());
+                        },
+                        (position, cardView) -> {
+                            /**
+                             * Listen for long click and provide option to delete app
+                             * This function shows a popup menu with a delete option.
+                             */
+                            PopupMenu deletePopup = new PopupMenu(getContext(), cardView);
+                            deletePopup.getMenuInflater().inflate(R.menu.delete_app_menu,
+                                    deletePopup.getMenu());
+
+                            deletePopup.setOnMenuItemClickListener((menuItem) -> {
+                                if (menuItem.getItemId() == R.id.delete_app) {
+                                    Toast.makeText(getContext(), "Deleting : " +
+                                                    userServicesList.get(position)
+                                                            .getApplicationName(),
+                                            Toast.LENGTH_LONG).show();
+                                    try {
+                                        servicesViewModel.updateUserApplicationsList(
+                                                LoginStateRepo.getInstance().getToken(),
+                                                LoginStateRepo.getInstance().getUserId(),
+                                                userServicesList.get(position).getApplicationId(),
+                                                Constants.APP_DELETE);
+                                    } catch (Exception e) {
+                                        Toast.makeText(getContext(),
+                                                e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                return true;
+                            });
+                            // Menu set up. Show on long click
+                            deletePopup.show();
+                        });
+
+                recyclerView.setAdapter(installedAppListViewAdapter);
+                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
+                        LinearLayoutManager.HORIZONTAL, false));
+            }
+        });
     }
 }
