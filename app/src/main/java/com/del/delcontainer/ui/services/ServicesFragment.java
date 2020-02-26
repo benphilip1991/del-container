@@ -2,6 +2,7 @@ package com.del.delcontainer.ui.services;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,27 +81,28 @@ public class ServicesFragment extends Fragment {
                 RecyclerView recyclerViewAvailableApps = view.
                         findViewById(R.id.availableAppListView);
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
-                        servicesList, (position) -> {
+                        servicesList,
+                        (position) -> {
 
-                    /**
-                     * Handle click events when the user taps the GET button on
-                     * the available apps card. Add app to user's linked services.
-                     */
-                    Log.d(TAG, "initRecyclerView: Fetching app : " +
-                            servicesList.get(position).getApplicationName());
-                    Toast.makeText(getContext(), "Getting App : " + servicesList.get(position)
-                            .getApplicationName(), Toast.LENGTH_LONG).show();
+                            /**
+                             * Handle click events when the user taps the GET button on
+                             * the available apps card. Add app to user's linked services.
+                             */
+                            Log.d(TAG, "initRecyclerView: Fetching app : " +
+                                    servicesList.get(position).getApplicationName());
+                            Toast.makeText(getContext(), "Getting App : " + servicesList.get(position)
+                                    .getApplicationName(), Toast.LENGTH_LONG).show();
 
-                    try {
-                        servicesViewModel.updateUserApplicationsList(
-                                LoginStateRepo.getInstance().getToken(),
-                                LoginStateRepo.getInstance().getUserId(),
-                                servicesList.get(position)
-                                        .get_id(), Constants.APP_ADD);
-                    } catch (Exception e) {
-                        Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                            try {
+                                servicesViewModel.updateUserApplicationsList(
+                                        LoginStateRepo.getInstance().getToken(),
+                                        LoginStateRepo.getInstance().getUserId(),
+                                        servicesList.get(position)
+                                                .get_id(), Constants.APP_ADD);
+                            } catch (Exception e) {
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
                 recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
                         LinearLayoutManager.VERTICAL, false));
@@ -135,26 +137,31 @@ public class ServicesFragment extends Fragment {
                             delAppManager.launchApp(userServicesList.get(position).getApplicationId(),
                                     userServicesList.get(position).getApplicationName());
                         },
-                        (position) -> {
+                        (position, cardView) -> {
                             /**
                              * Listen for long click and provide option to delete app
-                             * This function shows a popout menu with a delete option.
+                             * This function shows a popup menu with a delete option.
                              */
-                            PopupMenu deletePopup = new PopupMenu(getContext(), view);
+                            PopupMenu deletePopup = new PopupMenu(getContext(), cardView);
                             deletePopup.getMenuInflater().inflate(R.menu.delete_app_menu,
                                     deletePopup.getMenu());
 
                             deletePopup.setOnMenuItemClickListener((menuItem) -> {
                                 if (menuItem.getItemId() == R.id.delete_app) {
                                     Toast.makeText(getContext(), "Deleting : " +
-                                                    userServicesList.get(position).getApplicationName(),
+                                                    userServicesList.get(position)
+                                                            .getApplicationName(),
                                             Toast.LENGTH_LONG).show();
-                                    servicesViewModel.updateUserApplicationsList(
-                                            LoginStateRepo.getInstance().getToken(),
-                                            LoginStateRepo.getInstance().getUserId(),
-                                            userServicesList.get(position).getApplicationId(),
-                                            Constants.APP_DELETE
-                                    );
+                                    try {
+                                        servicesViewModel.updateUserApplicationsList(
+                                                LoginStateRepo.getInstance().getToken(),
+                                                LoginStateRepo.getInstance().getUserId(),
+                                                userServicesList.get(position).getApplicationId(),
+                                                Constants.APP_DELETE);
+                                    } catch (Exception e) {
+                                        Toast.makeText(getContext(),
+                                                e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                                 return true;
                             });

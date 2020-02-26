@@ -121,7 +121,9 @@ public class ServicesViewModel extends ViewModel {
                 if(response.code() == 200) {
                     userServicesList.setValue(response.body().getApplications());
                 } else {
-                    throw new HttpException(response);
+                    if(response.code() == 400) {
+                        Log.e(TAG, "App already linked");
+                    }
                 }
             }
 

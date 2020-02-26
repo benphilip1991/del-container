@@ -68,7 +68,6 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
     @Override
     public int getItemCount() {
-
         return linkedAppDetails.size();
     }
 
@@ -91,7 +90,7 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener((view) -> {
-                appLongClickListener.onAppLongClick(getAdapterPosition());
+                appLongClickListener.onAppLongClick(getAdapterPosition(), view);
                 return true; // the long press was consumed
             });
         }
@@ -115,9 +114,10 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
     }
 
     /**
-     * Interface to handle
+     * Interface to handle long click events on installed apps
+     * The view is passed to identify where to place the menu
      */
     public interface AppLongClickListener {
-        void onAppLongClick(int position);
+        void onAppLongClick(int position, View view);
     }
 }
