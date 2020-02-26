@@ -71,17 +71,6 @@ public class DelAppContainerFragment extends Fragment {
 
         Log.d(TAG, "getAppUrl: Getting application url for " + appName);
 
-//        String appIdent = "";
-//
-//        if (appName.equals("Heart Health"))
-//            appIdent = "heart_health";
-//        else if (appName.equals("Step Counter"))
-//            appIdent = "step_counter";
-//        else if(appName.equals("Mood Tracker")) {
-//            String appUrl = Constants.HTTP_PREFIX + Constants.MYMAPS_SERVICE_IP + ":" + Constants.MYMAPS_PORT;
-//            return appUrl;
-//        }
-
         String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
                 + Constants.DEL_SERVICE_PORT + "/" + appId;
         return appUrl;

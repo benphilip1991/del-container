@@ -197,7 +197,8 @@ public class MainActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            ActivityCompat.requestPermissions(this, new String[]{permission}, Constants.PERMISSION_REQUEST_CODE);
+            ActivityCompat.requestPermissions(this, new String[]{permission},
+                    Constants.PERMISSION_REQUEST_CODE);
         }
     }
 

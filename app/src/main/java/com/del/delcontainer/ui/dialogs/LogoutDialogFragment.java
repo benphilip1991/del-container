@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
+import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.ui.login.LoginActivity;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 
@@ -31,6 +32,9 @@ public class LogoutDialogFragment extends DialogFragment {
             Log.d(TAG, "onCreateDialog: Signing out");
             LoginStateRepo.getInstance().setUserId(null);
             LoginStateRepo.getInstance().setToken(null);
+
+            // Kill all running apps
+            DelAppManager.getInstance().terminateAllApps();
 
             Intent intent = new Intent(this.getActivity().getApplicationContext(),
                     LoginActivity.class);

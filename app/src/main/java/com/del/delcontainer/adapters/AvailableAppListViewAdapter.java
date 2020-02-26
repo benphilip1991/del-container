@@ -25,12 +25,21 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
     private static final String TAG = "AvailableAppListViewAda";
 
     private ArrayList<ApplicationDetails> availableAppsList; // from del-api
+    private GetAppClickListener getAppClickListener;
     private Context context;
 
+    /**
+     * Initialize the available apps list adapter
+     * @param context
+     * @param availableApps
+     * @param getAppClickListener
+     */
     public AvailableAppListViewAdapter(Context context,
-                                       ArrayList<ApplicationDetails> availableApps) {
-        this.availableAppsList = availableApps;
+                                       ArrayList<ApplicationDetails> availableApps,
+                                       GetAppClickListener getAppClickListener) {
         this.context = context;
+        this.availableAppsList = availableApps;
+        this.getAppClickListener = getAppClickListener;
     }
 
     @NonNull
@@ -90,9 +99,14 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         public void onClick(View view) {
             Log.d(TAG, "onClick: getting app : " + availableAppsList.get(getAdapterPosition())
                     .getApplicationName());
-            Toast.makeText(context, "Getting app : "
-                            + availableAppsList.get(getAdapterPosition()).getApplicationName(),
-                    Toast.LENGTH_SHORT).show();
+            getAppClickListener.onGetAppClick(getAdapterPosition());
         }
+    }
+
+    /**
+     * Interface providing app linking functionality
+     */
+    public interface GetAppClickListener {
+        void onGetAppClick(int position);
     }
 }

@@ -24,6 +24,7 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
     private ArrayList<LinkedApplicationDetails> linkedAppDetails;
     private AppClickListener appClickListener;
+    private AppLongClickListener appLongClickListener;
     private Context context;
 
     /**
@@ -35,11 +36,12 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
      */
     public InstalledAppListViewAdapter(Context context,
                                        ArrayList<LinkedApplicationDetails> linkedAppDetails,
-                                       AppClickListener appClickListener) {
-
+                                       AppClickListener appClickListener,
+                                       AppLongClickListener appLongClickListener) {
         this.context = context;
-        this.appClickListener = appClickListener;
         this.linkedAppDetails = linkedAppDetails;
+        this.appClickListener = appClickListener;
+        this.appLongClickListener = appLongClickListener;
     }
 
     @NonNull
@@ -88,6 +90,10 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
             this.appClickListener = appClickListener;
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener((view) -> {
+                appLongClickListener.onAppLongClick(getAdapterPosition());
+                return true; // the long press was consumed
+            });
         }
 
         @Override
@@ -98,7 +104,6 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
                     Toast.LENGTH_SHORT).show();
             appClickListener.onAppClick(getAdapterPosition());
         }
-
     }
 
     /**
@@ -107,5 +112,12 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
      */
     public interface AppClickListener {
         void onAppClick(int position);
+    }
+
+    /**
+     * Interface to handle
+     */
+    public interface AppLongClickListener {
+        void onAppLongClick(int position);
     }
 }

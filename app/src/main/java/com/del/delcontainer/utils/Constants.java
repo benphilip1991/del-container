@@ -53,15 +53,16 @@ public class Constants {
     public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
     public static final String EVENT_DEVICE_DATA      = "com.del.delcontainer.events.DEVICE_DATA";
 
+    // User application operations
+    public static final String APP_ADD          = "add";
+    public static final String APP_DELETE       = "delete";
 
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
     public static final String DEL_SERVICE_IP       = "10.140.77.35";
-    public static final String MYMAPS_SERVICE_IP    = "10.137.0.157";
     public static final String DEL_SERVICE_PORT     = "3000";
     public static final String DEL_PORT             = "3050";
-    public static final String MYMAPS_PORT          = "3026";
     public static final String API_BASE_PATH        = "/api/v1/";
 
 

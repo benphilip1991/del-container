@@ -1,23 +1,17 @@
 package com.del.delcontainer.utils.apiUtils.pojo;
 
+import com.google.gson.annotations.SerializedName;
+
 public class UpdateUserApplications {
 
+    @SerializedName("applicationId")
     final String applicationId;
-    final Operations operation;
 
-    public UpdateUserApplications(String applicationId, Operations operation) {
+    @SerializedName("operation")
+    final String operation;
+
+    public UpdateUserApplications(String applicationId, String operation) {
         this.applicationId = applicationId;
         this.operation = operation;
-    }
-
-    public enum Operations {
-        ADD("add"),
-        DELETE("delete");
-
-        public final String value;
-
-        private Operations(String value) {
-            this.value = value;
-        }
     }
 }

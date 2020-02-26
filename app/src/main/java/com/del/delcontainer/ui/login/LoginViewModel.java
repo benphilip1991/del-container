@@ -12,6 +12,7 @@ import com.del.delcontainer.utils.apiUtils.pojo.TokenDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UserCredentials;
 
 import retrofit2.Callback;
+import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.Call;
@@ -59,7 +60,7 @@ public class LoginViewModel extends ViewModel {
         });
     }
 
-    public boolean getUserTokenDetails(String token) {
+    public void getUserTokenDetails(String token) {
 
         Call<TokenDetails> call = authTokenApi.getTokenDetails(token);
         call.enqueue(new Callback<TokenDetails>() {
@@ -80,7 +81,5 @@ public class LoginViewModel extends ViewModel {
                 Log.e(TAG, "onResponse: Error " + t.getMessage());
             }
         });
-
-        return true;
     }
 }

@@ -11,6 +11,7 @@ import com.del.delcontainer.R;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -27,7 +28,7 @@ import java.util.UUID;
 public class DelAppManager {
 
     private static final String TAG = "DelAppManager";
-    
+
     // Singleton app manager object
     private static DelAppManager delAppManager = null;
     private FragmentManager fragmentManager = null;
@@ -74,7 +75,6 @@ public class DelAppManager {
         if(null == appCache.get(appId)) { // appName
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
-            // TODO: replace appName with AppId later when implemented
             DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(appId, appName);
             appCache.put(appId, delAppContainerFragment);
 
@@ -123,6 +123,24 @@ public class DelAppManager {
         transaction.remove(appCache.get(appId));
         appCache.remove(appId);
         transaction.commit();
+    }
+
+    /**
+     * Kill all apps - usually called when logging out
+     */
+    public void terminateAllApps() {
+
+        ArrayList<String> appIds = new ArrayList<>();
+        // Need to push into another list, else this will throw
+        // a concurrentmodificationexception
+        for(String appId : appCache.keySet()) {
+            Log.d(TAG, "terminateAllApps: Terminating  ---> " + appId);
+            appIds.add(appId);
+        }
+
+        for(String appId : appIds) {
+            terminateApp(appId, "");
+        }
     }
 
     /**
