@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -16,9 +15,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableAppListViewAdapter.ViewHolder> {
 
@@ -62,13 +61,13 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
-        int imageRes;
-
+        String imageUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
+                + Constants.DEL_SERVICE_PORT + "/" + availableAppsList.get(position).get_id()
+                + "/icon";
+        Picasso.with(this.context).load(imageUrl).into(holder.availableAppImage);
         holder.availableAppLabel.setText(availableAppsList.get(position).getApplicationName());
         holder.availableAppDescription.setText(
                 availableAppsList.get(position).getApplicationDescription());
-        imageRes = R.drawable.default_app_icon;
-        holder.availableAppImage.setBackgroundResource(imageRes);
     }
 
     @Override
@@ -94,7 +93,7 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
             getAvailableAppButton.setOnClickListener(this);
         }
 
-        // Change to add something more useful
+        // Adds application to user's list
         @Override
         public void onClick(View view) {
             Log.d(TAG, "onClick: getting app : " + availableAppsList.get(getAdapterPosition())

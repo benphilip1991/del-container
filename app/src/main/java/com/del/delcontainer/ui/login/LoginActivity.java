@@ -6,11 +6,9 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.del.delcontainer.MainActivity;
 import com.del.delcontainer.R;
@@ -39,9 +37,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // Lambda implements the Observer method OnChanged
         loginViewModel.getLoginStateRepo().observe(this, (loginStateRepo) -> {
-
             if(null != loginStateRepo.getToken() && null == loginStateRepo.getUserId()) {
-
                 // Get user token details and then log in
                 loginViewModel.getUserTokenDetails(loginStateRepo.getToken());
             }

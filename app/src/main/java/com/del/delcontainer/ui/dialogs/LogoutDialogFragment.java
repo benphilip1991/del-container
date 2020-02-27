@@ -35,6 +35,7 @@ public class LogoutDialogFragment extends DialogFragment {
 
             // Kill all running apps
             DelAppManager.getInstance().terminateAllApps();
+            DelAppManager.getInstance().clearFragmentManager();
 
             Intent intent = new Intent(this.getActivity().getApplicationContext(),
                     LoginActivity.class);

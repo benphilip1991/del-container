@@ -2,7 +2,6 @@ package com.del.delcontainer.ui.services;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,12 +21,6 @@ import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
-import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
-import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 public class ServicesFragment extends Fragment {
 
@@ -83,7 +76,6 @@ public class ServicesFragment extends Fragment {
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
                         servicesList,
                         (position) -> {
-
                             /**
                              * Handle click events when the user taps the GET button on
                              * the available apps card. Add app to user's linked services.

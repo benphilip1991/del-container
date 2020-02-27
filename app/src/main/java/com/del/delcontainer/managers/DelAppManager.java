@@ -53,10 +53,19 @@ public class DelAppManager {
      * @param fragmentManager
      */
     public void setFragmentManager(FragmentManager fragmentManager) {
-
+        // Another potential point of crash - clear on logout
         if(null == this.fragmentManager) {
             this.fragmentManager = fragmentManager;
             Log.d(TAG, "setFragmentManager: set new FragmentManager in app manager");
+        }
+    }
+
+    /**
+     * Clear the fragment manager
+     */
+    public void clearFragmentManager() {
+        if(null != this.fragmentManager) {
+            this.fragmentManager = null;
         }
     }
 
@@ -92,7 +101,7 @@ public class DelAppManager {
         }
 
         transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
-        transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+        //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
 

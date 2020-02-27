@@ -4,13 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.ui.services.ServicesFragment;
@@ -18,19 +16,20 @@ import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
@@ -44,32 +43,42 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton chatButton;
     IntentFilter intentFilter;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         registerBroadcastReceiver();
-
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
 
-        // Fix to make sure the app doesn't crash the container initially
-        BottomNavigationItemView item = findViewById(R.id.navigation_services);
-        item.performClick();
+        /**
+         * Explicitly setting the default view to the services on first run
+         * This ensures the containerViewMap tracks the first view as well.
+         * Issue - launches two fragment instances
+         */
+        if (null == savedInstanceState) {
+            navView.setSelectedItemId(R.id.navigation_services); // remove. Need to find a proper fix
+            List<Fragment> fragList = getSupportFragmentManager().getFragments();
+            for(Fragment frag : fragList) {
+
+                if(frag instanceof NavHostFragment) {
+                    Log.d(TAG, "[FRAG_ID] onCreate: Instance of NavHostFragment" );
+                }
+                Log.d(TAG, "[FRAG_ID] onCreate: Fragment ID : " + frag);
+            }
+        }
 
         // Experimental for now
         initChatbot();
-
         verifyAndGetPermissions();
-
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
     }
 
     /**
      * Initialize chat button and add event listener
-     * <p>
      * TODO: move to conversation manager and handle everything from there
      */
     protected void initChatbot() {
@@ -107,13 +116,13 @@ public class MainActivity extends AppCompatActivity {
                 Fragment selectedFragment = null;
 
                 switch (menuItem.getItemId()) {
-
                     case R.id.navigation_services:
                         Log.d(TAG, "onNavigationItemSelected: Selected Services");
                         if (containerViewMap.get(R.id.navigation_services) == null) {
                             containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
+                        Log.d(TAG, "[FRAG_ID] Created Fragment : " + selectedFragment);
                         break;
                     case R.id.navigation_sources:
                         Log.d(TAG, "onNavigationItemSelected: Selected Sources");
@@ -130,13 +139,11 @@ public class MainActivity extends AppCompatActivity {
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
                         break;
                 }
-
                 DelAppManager.getInstance().hideAllApps();
 
                 // Get the fragment manager and begin transaction. But only hide/show them
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 for (Map.Entry<Integer, Fragment> appView : containerViewMap.entrySet()) {
-
                     if (appView.getValue().isAdded() && appView.getValue().isVisible()) {
                         transaction.hide(appView.getValue());
                     }
