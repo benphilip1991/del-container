@@ -8,6 +8,7 @@
 
     <Button
         android:id="@+id/login_button"
+        android:visibility="invisible"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
@@ -19,6 +20,7 @@
 
     <EditText
         android:id="@+id/password"
+        android:visibility="invisible"
         android:layout_width="320dp"
         android:layout_height="50dp"
         android:layout_marginStart="15dp"
@@ -34,6 +36,7 @@
 
     <EditText
         android:id="@+id/emailId"
+        android:visibility="invisible"
         android:layout_width="320dp"
         android:layout_height="50dp"
         android:layout_marginStart="15dp"
@@ -55,5 +58,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/del_image" />
+
+    <ProgressBar
+        android:id="@+id/login_progress"
+        style="?android:attr/progressBarStyle"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="56dp"
+        app:layout_constraintBottom_toTopOf="@+id/login_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

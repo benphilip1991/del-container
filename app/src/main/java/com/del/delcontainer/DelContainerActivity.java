@@ -34,7 +34,7 @@ import java.util.Map;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
-public class MainActivity extends AppCompatActivity {
+public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     // May have to move to another global fragment manager
