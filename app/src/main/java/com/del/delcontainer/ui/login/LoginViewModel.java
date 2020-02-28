@@ -12,7 +12,6 @@ import com.del.delcontainer.utils.apiUtils.pojo.TokenDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UserCredentials;
 
 import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.Call;
@@ -70,10 +69,16 @@ public class LoginViewModel extends ViewModel {
                     Log.d(TAG, "onResponse: Got user details");
                     LoginStateRepo.getInstance().setUserId(response.body().getUserId());
                     LoginStateRepo.getInstance().setUserRole(response.body().getUserRole());
-                    loginStateRepo.setValue(LoginStateRepo.getInstance());
+                    LoginStateRepo.getInstance().setToken(token);
                 } else {
-                    Log.e(TAG, "onResponse: Error " + response.message());
+
+                    // Invalid token. Clear login state
+                    LoginStateRepo.getInstance().setToken(null);
+                    LoginStateRepo.getInstance().setUserId(null);
+                    LoginStateRepo.getInstance().setUserRole(null);
+                    Log.e(TAG, "onResponse: Error validating token " + response.message());
                 }
+                loginStateRepo.setValue(LoginStateRepo.getInstance());
             }
 
             @Override

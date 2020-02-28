@@ -1,10 +1,8 @@
 package com.del.delcontainer.database.entities;
 
-
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
 
 @Entity(tableName = "heart")
 public class Heart {
