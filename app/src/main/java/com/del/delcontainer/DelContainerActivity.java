@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
+import com.del.delcontainer.services.SensorsService;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -73,8 +74,18 @@ public class DelContainerActivity extends AppCompatActivity {
         // Experimental for now
         initChatbot();
         verifyAndGetPermissions();
+        initServices();
+    }
+
+    /**
+     * Initialize container services
+     */
+    private void initServices() {
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
+
+        SensorsService sensorsService = SensorsService.getInstance();
+        sensorsService.initSensorService(this);
     }
 
     /**
@@ -185,7 +196,8 @@ public class DelContainerActivity extends AppCompatActivity {
                 Manifest.permission.BLUETOOTH_ADMIN,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                Manifest.permission.INTERNET
+                Manifest.permission.INTERNET,
+                Manifest.permission.ACTIVITY_RECOGNITION
         };
 
         for (String permission : permissionList) {

@@ -46,6 +46,13 @@ dependencies {
     // Picasso Image fetch library
     implementation 'com.squareup.picasso:picasso:2.5.2'
 
+    // Dagger DI library
+    implementation 'com.google.dagger:dagger:2.26'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.26'
+    api 'com.google.dagger:dagger-android:2.26'
+    api 'com.google.dagger:dagger-android-support:2.26'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.26'
+
     def room_version = "2.2.2"
     implementation "androidx.room:room-runtime:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"

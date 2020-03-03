@@ -13,6 +13,7 @@ import com.del.delcontainer.database.entities.Heart;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.repositories.HeartRateRepository;
 import com.del.delcontainer.services.LocationService;
+import com.del.delcontainer.services.SensorsService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -120,6 +121,11 @@ public class DELUtils {
     }
 
     @JavascriptInterface
+    public String getStepsCount() {
+        return String.valueOf(SensorsService.getInstance().getStepCount());
+    }
+
+    @JavascriptInterface
     public String getCurrentLocation() {
 
         JSONObject locationObject = new JSONObject();
@@ -141,6 +147,7 @@ public class DELUtils {
         return locationObject.toString();
     }
 
+    // TODO: If there are more than one apps requesting the location, this fails
     @JavascriptInterface
     public void stopLocationUpdates() {
         Log.d(TAG, "stopLocationUpdates: Terminating location updates");
