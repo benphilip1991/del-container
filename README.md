@@ -14,7 +14,7 @@ _Please note that the repositories may be private at the moment and will be made
 
 ## Architecture
 The container is based on the following architecture -  
-<p align="center"><img src="./assets/del-container-arch.png" width="60%" height="60%"></p>
+<p align="center"><img src="./assets/del-container-arch.png" width="80%" height="80%"></p>
 
 ## Container APIs
 _Details to come soon!_
