@@ -31,7 +31,7 @@ import java.util.ArrayList;
 
 public class SourcesFragment extends Fragment
         implements RecyclerViewAdapter.DeviceClickListener,
-                    ConnectDeviceDialogFragment.DialogClickListener {
+        ConnectDeviceDialogFragment.DialogClickListener {
 
     private static final String TAG = "SourcesFragment";
 
@@ -55,7 +55,8 @@ public class SourcesFragment extends Fragment
             @Override
             public void onClick(View view) {
                 Log.d(TAG, "rescanBluetooth: rescanning for bluetooth devices");
-                Toast.makeText(getActivity(), "Rescanning for devices", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "Rescanning for devices", Toast.LENGTH_SHORT)
+                        .show();
                 setupBluetooth();
             }
         });
@@ -103,10 +104,11 @@ public class SourcesFragment extends Fragment
     public void setupBluetooth() {
         Log.d(TAG, "Setting up Bluetooth scan.");
 
-        final BluetoothManager bluetoothManager = (BluetoothManager) getContext().getSystemService(Context.BLUETOOTH_SERVICE);
+        final BluetoothManager bluetoothManager = (BluetoothManager) getContext()
+                .getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
-        if(null == bluetoothAdapter || !bluetoothAdapter.isEnabled()) {
+        if (null == bluetoothAdapter || !bluetoothAdapter.isEnabled()) {
             Intent enableBluetoothIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBluetoothIntent, Constants.REQUEST_ENABLE_BT);
         }
@@ -120,7 +122,7 @@ public class SourcesFragment extends Fragment
     private void scanBLEDevices(final boolean enable) {
 
         Log.d(TAG, "Scanning for bluetooth peripherals");
-        if(enable) {
+        if (enable) {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -142,7 +144,8 @@ public class SourcesFragment extends Fragment
                 @Override
                 public void run() {
 
-                    if(null != bluetoothDevice && bluetoothDevice.getName() != null && !bluetoothDeviceList.contains((bluetoothDevice))) {
+                    if (null != bluetoothDevice && bluetoothDevice.getName() != null &&
+                            !bluetoothDeviceList.contains((bluetoothDevice))) {
                         Log.d(TAG, "Adding new Device : " + bluetoothDevice.getName()
                                 + " | " + bluetoothDevice.getAddress());
                         bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
@@ -157,6 +160,7 @@ public class SourcesFragment extends Fragment
 
     /**
      * Implement interface from Adapter to hold selected device
+     *
      * @param position
      */
     @Override
@@ -181,17 +185,18 @@ public class SourcesFragment extends Fragment
 
         Log.d(TAG, "onDialogButtonPressed: " + device.getName() + " " + operation);
 
-        if(operation.equals(Constants.CONNECT)) {
+        if (operation.equals(Constants.CONNECT)) {
             Toast.makeText(getContext(), "Connecting to "
                     + device.getName(), Toast.LENGTH_SHORT).show();
-        } else if(operation.equals(Constants.DISCONNECT)) {
+        } else if (operation.equals(Constants.DISCONNECT)) {
             Toast.makeText(getContext(), "Disconnecting from "
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
 
         Intent deviceSelectedIntent = new Intent();
         deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
-        LocalBroadcastManager.getInstance(getActivity().getApplicationContext()).sendBroadcast(deviceSelectedIntent);
+        LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
+                .sendBroadcast(deviceSelectedIntent);
 
         // Start BLEDataManagerService to handle BLE device operations
         Intent intent = new Intent(getContext(), BLEDataManagerService.class);

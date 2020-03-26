@@ -70,6 +70,13 @@ public class DelAppManager {
     }
 
     /**
+     * Get app cache
+     */
+    public HashMap<String, Fragment> getAppCache() {
+        return appCache;
+    }
+
+    /**
      * Housekeeping methods for managing app states.
      * Launch app can be used for bringing running apps to the foreground
      * or launching a new instance of an app.
@@ -101,7 +108,6 @@ public class DelAppManager {
         }
 
         transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
-        //transaction.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         transaction.commit();
     }
 

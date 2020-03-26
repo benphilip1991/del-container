@@ -47,7 +47,9 @@ public class DelAppContainerFragment extends Fragment {
      */
     private void loadDelApp(View view) {
 
-        DELUtils delUtils = new DELUtils(getContext());
+        //DELUtils delUtils = new DELUtils(getContext());
+        DELUtils delUtils = DELUtils.getInstance();
+        delUtils.setContext(getContext());
 
         appView = view.findViewById(R.id.delAppContainerView);
         appView.getSettings().setJavaScriptEnabled(true);
@@ -59,6 +61,15 @@ public class DelAppContainerFragment extends Fragment {
         // Pass messages
         appView.setWebViewClient(webViewClient);
         appView.loadUrl(getAppUrl());
+    }
+
+    /**
+     * Return the contained WebView object.
+     * This can be used for calling a function in the
+     * app.
+     */
+    public WebView getAppView() {
+        return appView;
     }
 
     /**
