@@ -1,6 +1,5 @@
 package com.del.delcontainer.ui.sources;
 
-import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -22,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
-import com.del.delcontainer.adapters.RecyclerViewAdapter;
+import com.del.delcontainer.adapters.SourcesListViewAdapter;
 import com.del.delcontainer.services.BLEDataManagerService;
 import com.del.delcontainer.ui.dialogs.ConnectDeviceDialogFragment;
 import com.del.delcontainer.utils.Constants;
@@ -30,7 +29,7 @@ import com.del.delcontainer.utils.Constants;
 import java.util.ArrayList;
 
 public class SourcesFragment extends Fragment
-        implements RecyclerViewAdapter.DeviceClickListener,
+        implements SourcesListViewAdapter.DeviceClickListener,
         ConnectDeviceDialogFragment.DialogClickListener {
 
     private static final String TAG = "SourcesFragment";
@@ -38,7 +37,7 @@ public class SourcesFragment extends Fragment
     // BLE Constraints
     private BluetoothAdapter bluetoothAdapter;
 
-    RecyclerViewAdapter adapter;
+    SourcesListViewAdapter adapter;
     private ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -82,7 +81,7 @@ public class SourcesFragment extends Fragment
     private void initRecyclerView(View view) {
 
         RecyclerView recyclerView = view.findViewById(R.id.bleRecyclerView);
-        adapter = new RecyclerViewAdapter(getContext(), bluetoothDeviceList, this);
+        adapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }

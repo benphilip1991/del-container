@@ -1,14 +1,19 @@
 package com.del.delcontainer.managers;
 
 
+import android.app.Activity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
+import com.del.delcontainer.ui.dialogs.RunningAppsDialogFragment;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
 
@@ -34,6 +39,7 @@ public class DelAppManager {
     private static DelAppManager delAppManager = null;
     private FragmentManager fragmentManager = null;
     private HashMap<String, Fragment> appCache = new HashMap<>();
+    private HashMap<String, String> appNameMap = new HashMap<>();
 
     private DelAppManager() {
         ;
@@ -78,6 +84,13 @@ public class DelAppManager {
     }
 
     /**
+     * Get app name map
+     */
+    public HashMap<String, String> getAppNameMap() {
+        return appNameMap;
+    }
+
+    /**
      * Housekeeping methods for managing app states.
      * Launch app can be used for bringing running apps to the foreground
      * or launching a new instance of an app.
@@ -95,6 +108,7 @@ public class DelAppManager {
             DelAppContainerFragment delAppContainerFragment =
                     new DelAppContainerFragment(appId, appName);
             appCache.put(appId, delAppContainerFragment);
+            appNameMap.put(appId, appName);
 
             Log.d(TAG, "launchApp: Adding to transaction");
             Log.d("MainActivity", "launchApp: Del APP fragment ID : "
@@ -119,23 +133,26 @@ public class DelAppManager {
     }
 
     /**
-     * Display running apps
+     * Display running apps inside a dialog
      */
     public void showRunningApps() {
-        ;
+        if(null != fragmentManager && null != appNameMap) {
+            RunningAppsDialogFragment runningApps = new RunningAppsDialogFragment();
+            runningApps.show(fragmentManager, "RUNNING_APPS");    
+        } else {
+            Log.d(TAG, "showRunningApps: Empty app list");
+        }
     }
 
     /**
      * Terminate application
      *
      * @param appId
-     * @param appName
      */
-    public void terminateApp(String appId, String appName) {
+    public void terminateApp(String appId) {
 
         if(null == appCache.get(appId)) {
-            Log.d(TAG, "terminateApp: Invalid termination request. " + appName +
-                    " doesn't exist.");
+            Log.d(TAG, "terminateApp: Invalid termination request. App doesn't exist.");
             return;
         }
 
@@ -151,6 +168,7 @@ public class DelAppManager {
 
         transaction.remove(appCache.get(appId));
         appCache.remove(appId);
+        appNameMap.remove(appId);
         transaction.commit();
     }
 
@@ -168,7 +186,7 @@ public class DelAppManager {
         }
 
         for(String appId : appIds) {
-            terminateApp(appId, "");
+            terminateApp(appId);
         }
     }
 

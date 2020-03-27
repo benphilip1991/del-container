@@ -97,7 +97,7 @@ public class DelAppContainerFragment extends Fragment {
             case R.id.close_app:
                 Toast.makeText(getContext().getApplicationContext(),
                         "Closing " + appName, Toast.LENGTH_SHORT).show();
-                DelAppManager.getInstance().terminateApp(appId, appName);
+                DelAppManager.getInstance().terminateApp(appId);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

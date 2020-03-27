@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.adapters.RunningAppsListViewAdapter;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
@@ -91,6 +92,7 @@ public class ServicesFragment extends Fragment {
                                         LoginStateRepo.getInstance().getUserId(),
                                         servicesList.get(position)
                                                 .get_id(), Constants.APP_ADD);
+                                installedAppListViewAdapter.notifyDataSetChanged();
                             } catch (Exception e) {
                                 Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                         .show();
@@ -146,13 +148,14 @@ public class ServicesFragment extends Fragment {
                                     Toast.makeText(getContext(), "Deleting : " +
                                                     userServicesList.get(position)
                                                             .getApplicationName(),
-                                            Toast.LENGTH_LONG).show();
+                                            Toast.LENGTH_SHORT).show();
                                     try {
                                         servicesViewModel.updateUserApplicationsList(
                                                 LoginStateRepo.getInstance().getToken(),
                                                 LoginStateRepo.getInstance().getUserId(),
                                                 userServicesList.get(position).getApplicationId(),
                                                 Constants.APP_DELETE);
+                                        installedAppListViewAdapter.notifyDataSetChanged();
                                     } catch (Exception e) {
                                         Toast.makeText(getContext(),
                                                 e.getMessage(), Toast.LENGTH_SHORT).show();
