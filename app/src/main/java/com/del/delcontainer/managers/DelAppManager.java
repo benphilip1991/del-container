@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.Constants;
@@ -91,12 +92,16 @@ public class DelAppManager {
         if(null == appCache.get(appId)) { // appName
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
-            DelAppContainerFragment delAppContainerFragment = new DelAppContainerFragment(appId, appName);
+            DelAppContainerFragment delAppContainerFragment =
+                    new DelAppContainerFragment(appId, appName);
             appCache.put(appId, delAppContainerFragment);
 
             Log.d(TAG, "launchApp: Adding to transaction");
-            Log.d("MainActivity", "launchApp: Del APP fragment ID : " + delAppContainerFragment.getId());
-            transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId); // last parameter is the app tag
+            Log.d("MainActivity", "launchApp: Del APP fragment ID : "
+                    + delAppContainerFragment.getId());
+
+            // last parameter is the app tag
+            transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId);
         }
 
         if(appCache.get(appId).isHidden()) {

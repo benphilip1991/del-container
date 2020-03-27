@@ -41,6 +41,7 @@ public class LocationService {
     private Location lastLocation = null;
 
     private LocationService() {
+        ;
     }
 
     public static synchronized LocationService getInstance() {
@@ -113,8 +114,8 @@ public class LocationService {
             if (null != locationResult) {
                 lastLocation = locationResult.getLastLocation();
                 Log.d(TAG, "onLocationResult: Latitude : " + lastLocation.getLatitude()
-                + " | Longitude : " + lastLocation.getLongitude()
-                + " | Accuracy : " + lastLocation.getAccuracy());
+                        + " | Longitude : " + lastLocation.getLongitude()
+                        + " | Accuracy : " + lastLocation.getAccuracy());
 
                 // TODO: test to check data push to app from container
                 sendDataUpdate(locationResult);
@@ -127,10 +128,11 @@ public class LocationService {
         Log.d(TAG, "sendDataUpdate: Sending data update");
 
         // Get container details and request details with appId
-        HashMap<String, ArrayList<String>> requestMap = DataManager.getInstance().getDataRequestMap();
+        HashMap<String, ArrayList<String>> requestMap = DataManager.getInstance()
+                .getDataRequestMap();
 
         // Get each UUID and value from
-        for(Map.Entry<String, ArrayList<String>> entry : requestMap.entrySet()) {
+        for (Map.Entry<String, ArrayList<String>> entry : requestMap.entrySet()) {
             String appId = entry.getKey();
             ArrayList<String> requests = entry.getValue();
 
@@ -141,27 +143,30 @@ public class LocationService {
 
     /**
      * Performing test call to app inside container
+     *
      * @param appId
      * @param requests
      */
-    private void performRequest(String appId, ArrayList<String> requests, LocationResult locationResult) {
+    private void performRequest(String appId, ArrayList<String> requests,
+                                LocationResult locationResult) {
 
         // App fragments
         HashMap<String, Fragment> appCache = DelAppManager.getInstance().getAppCache();
-        DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache.get(appId.toString());
+        DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache
+                .get(appId.toString());
 
         JSONObject data = new JSONObject();
         try {
             data.put("lat", locationResult.getLastLocation().getLatitude());
             data.put("long", locationResult.getLastLocation().getLongitude());
-        } catch(Exception e) {
+        } catch (Exception e) {
             ;
         }
 
         String[] params = new String[]{"location", data.toString()};
 
         Log.d(TAG, "performRequest: Performing request");
-        if(null != targetFrag) {
+        if (null != targetFrag) {
             WebView appView = targetFrag.getAppView();
 
             String functionCall = DELUtils.getInstance()

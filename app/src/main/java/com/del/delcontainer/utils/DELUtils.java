@@ -107,6 +107,16 @@ public class DELUtils {
         });
     }
 
+    /**
+     * Inject the registered app ID and app name to the service
+     * when launched. This will be used by the services when terminating
+     * @param appId
+     * @param appName
+     */
+    public void setAppIdAndName(String appId, String appName) {
+
+    }
+
     @JavascriptInterface
     public void makeToast(String message) {
         Log.d(TAG, "makeToast: Called MakeToast");
@@ -173,7 +183,8 @@ public class DELUtils {
 
         JSONObject hrData = new JSONObject();
 
-        Heart heartData = HeartRateRepository.getInstance(context.getApplicationContext()).getLatestHeartData();
+        Heart heartData = HeartRateRepository.getInstance(context.getApplicationContext())
+                .getLatestHeartData();
         if (null == heartData) {
             return "No Data";
         }
@@ -194,7 +205,8 @@ public class DELUtils {
         JSONArray hrDataArray = new JSONArray();
         JSONObject hrBlock = new JSONObject();
 
-        List<Heart> heartRateData = HeartRateRepository.getInstance(context.getApplicationContext()).getHeartData();
+        List<Heart> heartRateData = HeartRateRepository.getInstance(
+                context.getApplicationContext()).getHeartData();
 
         if (null == heartRateData) {
             return "No Data";

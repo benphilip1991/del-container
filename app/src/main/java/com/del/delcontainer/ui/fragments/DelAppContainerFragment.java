@@ -1,5 +1,7 @@
 package com.del.delcontainer.ui.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -8,8 +10,10 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
@@ -42,12 +46,27 @@ public class DelAppContainerFragment extends Fragment {
     }
 
     /**
+     * Set the app title to the service name when it attaches to the
+     * container activity
+     * @param context
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        DelContainerActivity activity;
+        if(context instanceof DelContainerActivity) {
+            activity = (DelContainerActivity) context;
+            activity.setTitle(appName);
+        }
+    }
+
+    /**
      * Set up the webview for running the DEL app
      * @param view
      */
     private void loadDelApp(View view) {
 
-        //DELUtils delUtils = new DELUtils(getContext());
         DELUtils delUtils = DELUtils.getInstance();
         delUtils.setContext(getContext());
 

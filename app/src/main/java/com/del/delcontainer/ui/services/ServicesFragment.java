@@ -82,8 +82,8 @@ public class ServicesFragment extends Fragment {
                              */
                             Log.d(TAG, "initRecyclerView: Fetching app : " +
                                     servicesList.get(position).getApplicationName());
-                            Toast.makeText(getContext(), "Getting App : " + servicesList.get(position)
-                                    .getApplicationName(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Getting App : " + servicesList
+                                    .get(position).getApplicationName(), Toast.LENGTH_LONG).show();
 
                             try {
                                 servicesViewModel.updateUserApplicationsList(
@@ -92,7 +92,8 @@ public class ServicesFragment extends Fragment {
                                         servicesList.get(position)
                                                 .get_id(), Constants.APP_ADD);
                             } catch (Exception e) {
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
+                                        .show();
                             }
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
@@ -112,21 +113,23 @@ public class ServicesFragment extends Fragment {
                         (position) -> {
                             /**
                              * Handle clicks events on each service card
-                             * Check if the service already exists in the fragment stack and bring it to
-                             * the foreground. If not, create a new fragment object.
+                             * Check if the service already exists in the fragment stack and bring
+                             * it to the foreground. If not, create a new fragment object.
                              */
-                            Log.d(TAG, "onAppClick: launching " + userServicesList.get(position)
-                                    .getApplicationName());
+                            Log.d(TAG, "onAppClick: launching " + userServicesList
+                                    .get(position).getApplicationName());
                             Toast.makeText(getContext(), "Launching " + userServicesList
                                     .get(position).getApplicationName(), Toast.LENGTH_SHORT).show();
 
                             // Get fragment manager instance and launch app
-                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                            FragmentManager fragmentManager = getActivity()
+                                    .getSupportFragmentManager();
                             DelAppManager delAppManager = DelAppManager.getInstance();
                             delAppManager.setFragmentManager(fragmentManager);
 
                             // Launch app.
-                            delAppManager.launchApp(userServicesList.get(position).getApplicationId(),
+                            delAppManager.launchApp(
+                                    userServicesList.get(position).getApplicationId(),
                                     userServicesList.get(position).getApplicationName());
                         },
                         (position, cardView) -> {

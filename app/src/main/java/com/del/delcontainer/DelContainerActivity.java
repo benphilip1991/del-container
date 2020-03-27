@@ -7,6 +7,9 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
@@ -20,6 +23,7 @@ import com.del.delcontainer.managers.DelAppManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -77,6 +81,56 @@ public class DelContainerActivity extends AppCompatActivity {
         initServices();
     }
 
+    @Override
+    protected void onPause() {
+        Log.d(TAG, "onPause: Stopping location updates");
+        super.onPause();
+        LocationService locationService = LocationService.getInstance();
+        locationService.stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        Log.d(TAG, "onResume: Resuming location service");
+        LocationService locationService = LocationService.getInstance();
+        locationService.startLocationUpdates();
+    }
+
+    /**
+     * To show the close action bar menu button
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.app_options, menu);
+        return true;
+    }
+
+    /**
+     * Handle close button clicks
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.close_app:
+                Toast.makeText(this, "Closing App", Toast.LENGTH_SHORT).show();
+                return true;
+            case R.id.close_all_apps:
+                Toast.makeText(this, "Closing all Apps", Toast.LENGTH_SHORT).show();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
     /**
      * Initialize container services
      */
@@ -101,31 +155,16 @@ public class DelContainerActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onPause() {
-        Log.d(TAG, "onPause: Stopping location updates");
-        super.onPause();
-        LocationService locationService = LocationService.getInstance();
-        locationService.stopLocationUpdates();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        Log.d(TAG, "onResume: Resuming location service");
-        LocationService locationService = LocationService.getInstance();
-        locationService.startLocationUpdates();
-    }
-
     /**
      * Create a custom navigation handler instead of using AppBarConfiguration
      * This approach gives more flexibility with 'app' lifecycle management
      */
     private BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
             (menuItem) -> {
-                Fragment selectedFragment = null;
 
+                this.setTitle(R.string.app_name);
+
+                Fragment selectedFragment = null;
                 switch (menuItem.getItemId()) {
                     case R.id.navigation_services:
                         Log.d(TAG, "onNavigationItemSelected: Selected Services");
@@ -133,7 +172,7 @@ public class DelContainerActivity extends AppCompatActivity {
                             containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
-                        Log.d(TAG, "[FRAG_ID] Created Fragment : " + selectedFragment);
+                        this.setTitle(R.string.title_services);
                         break;
                     case R.id.navigation_sources:
                         Log.d(TAG, "onNavigationItemSelected: Selected Sources");
@@ -141,6 +180,7 @@ public class DelContainerActivity extends AppCompatActivity {
                             containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_sources);
+                        this.setTitle(R.string.title_sources);
                         break;
                     case R.id.navigation_settings:
                         Log.d(TAG, "onNavigationItemSelected: Selected Settings");
@@ -148,6 +188,7 @@ public class DelContainerActivity extends AppCompatActivity {
                             containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
+                        this.setTitle(R.string.title_settings);
                         break;
                 }
                 DelAppManager.getInstance().hideAllApps();
