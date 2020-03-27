@@ -108,6 +108,7 @@ public class DelContainerActivity extends AppCompatActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.app_options, menu);
+
         return true;
     }
 
@@ -121,11 +122,9 @@ public class DelContainerActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.close_app:
-                Toast.makeText(this, "Closing App", Toast.LENGTH_SHORT).show();
-                return true;
             case R.id.close_all_apps:
-                Toast.makeText(this, "Closing all Apps", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Closing All Apps", Toast.LENGTH_SHORT).show();
+                DelAppManager.getInstance().terminateAllApps();
             default:
                 return super.onOptionsItemSelected(item);
         }

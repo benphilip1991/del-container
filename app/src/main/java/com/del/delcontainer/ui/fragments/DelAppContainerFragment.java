@@ -5,16 +5,21 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
+import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 import com.del.delcontainer.utils.DelAppWebViewClient;
@@ -42,7 +47,27 @@ public class DelAppContainerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_delappcontainer, container, false);
         loadDelApp(view);
 
+        setHasOptionsMenu(true);
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.close_app_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.close_app:
+                Toast.makeText(getContext().getApplicationContext(),
+                        "Closing " + appName, Toast.LENGTH_SHORT).show();
+                DelAppManager.getInstance().terminateApp(appId, appName);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
