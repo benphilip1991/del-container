@@ -16,7 +16,7 @@ import com.del.delcontainer.R;
 
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
+public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
     private ArrayList<BluetoothDevice> devices;
@@ -24,8 +24,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     private DeviceClickListener deviceClickListener;
 
-    public RecyclerViewAdapter(Context mContext, ArrayList<BluetoothDevice> devices,
-                               DeviceClickListener deviceClickListener) {
+    public SourcesListViewAdapter(Context mContext, ArrayList<BluetoothDevice> devices,
+                                  DeviceClickListener deviceClickListener) {
         this.devices = devices;
         this.mContext = mContext;
         this.deviceClickListener = deviceClickListener;
@@ -42,7 +42,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_listitem, parent, false);
+                .inflate(R.layout.sources_listitem, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(view, deviceClickListener);
 

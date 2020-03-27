@@ -4,8 +4,8 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
     defaultConfig {
-        applicationId "com.example.delcontainer"
-        minSdkVersion 24
+        applicationId 'com.del.delcontainer'
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -42,6 +42,16 @@ dependencies {
     // Retrofit REST library and JSON converter
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
+
+    // Picasso Image fetch library
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+
+    // Dagger DI library
+    implementation 'com.google.dagger:dagger:2.26'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.26'
+    api 'com.google.dagger:dagger-android:2.26'
+    api 'com.google.dagger:dagger-android-support:2.26'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.26'
 
     def room_version = "2.2.2"
     implementation "androidx.room:room-runtime:$room_version"

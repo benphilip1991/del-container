@@ -2,7 +2,6 @@ package com.del.delcontainer.ui.services;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,15 +18,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.adapters.RunningAppsListViewAdapter;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
-import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
-import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 public class ServicesFragment extends Fragment {
 
@@ -83,15 +77,14 @@ public class ServicesFragment extends Fragment {
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
                         servicesList,
                         (position) -> {
-
                             /**
                              * Handle click events when the user taps the GET button on
                              * the available apps card. Add app to user's linked services.
                              */
                             Log.d(TAG, "initRecyclerView: Fetching app : " +
                                     servicesList.get(position).getApplicationName());
-                            Toast.makeText(getContext(), "Getting App : " + servicesList.get(position)
-                                    .getApplicationName(), Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Getting App : " + servicesList
+                                    .get(position).getApplicationName(), Toast.LENGTH_LONG).show();
 
                             try {
                                 servicesViewModel.updateUserApplicationsList(
@@ -99,8 +92,10 @@ public class ServicesFragment extends Fragment {
                                         LoginStateRepo.getInstance().getUserId(),
                                         servicesList.get(position)
                                                 .get_id(), Constants.APP_ADD);
+                                installedAppListViewAdapter.notifyDataSetChanged();
                             } catch (Exception e) {
-                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
+                                        .show();
                             }
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
@@ -120,21 +115,23 @@ public class ServicesFragment extends Fragment {
                         (position) -> {
                             /**
                              * Handle clicks events on each service card
-                             * Check if the service already exists in the fragment stack and bring it to
-                             * the foreground. If not, create a new fragment object.
+                             * Check if the service already exists in the fragment stack and bring
+                             * it to the foreground. If not, create a new fragment object.
                              */
-                            Log.d(TAG, "onAppClick: launching " + userServicesList.get(position)
-                                    .getApplicationName());
+                            Log.d(TAG, "onAppClick: launching " + userServicesList
+                                    .get(position).getApplicationName());
                             Toast.makeText(getContext(), "Launching " + userServicesList
                                     .get(position).getApplicationName(), Toast.LENGTH_SHORT).show();
 
                             // Get fragment manager instance and launch app
-                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                            FragmentManager fragmentManager = getActivity()
+                                    .getSupportFragmentManager();
                             DelAppManager delAppManager = DelAppManager.getInstance();
                             delAppManager.setFragmentManager(fragmentManager);
 
                             // Launch app.
-                            delAppManager.launchApp(userServicesList.get(position).getApplicationId(),
+                            delAppManager.launchApp(
+                                    userServicesList.get(position).getApplicationId(),
                                     userServicesList.get(position).getApplicationName());
                         },
                         (position, cardView) -> {
@@ -151,13 +148,14 @@ public class ServicesFragment extends Fragment {
                                     Toast.makeText(getContext(), "Deleting : " +
                                                     userServicesList.get(position)
                                                             .getApplicationName(),
-                                            Toast.LENGTH_LONG).show();
+                                            Toast.LENGTH_SHORT).show();
                                     try {
                                         servicesViewModel.updateUserApplicationsList(
                                                 LoginStateRepo.getInstance().getToken(),
                                                 LoginStateRepo.getInstance().getUserId(),
                                                 userServicesList.get(position).getApplicationId(),
                                                 Constants.APP_DELETE);
+                                        installedAppListViewAdapter.notifyDataSetChanged();
                                     } catch (Exception e) {
                                         Toast.makeText(getContext(),
                                                 e.getMessage(), Toast.LENGTH_SHORT).show();

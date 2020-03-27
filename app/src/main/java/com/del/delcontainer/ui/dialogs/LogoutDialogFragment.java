@@ -2,7 +2,6 @@ package com.del.delcontainer.ui.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -11,7 +10,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
 import com.del.delcontainer.managers.DelAppManager;
-import com.del.delcontainer.ui.login.LoginActivity;
+import com.del.delcontainer.repositories.AuthRepository;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 
 public class LogoutDialogFragment extends DialogFragment {
@@ -33,12 +32,15 @@ public class LogoutDialogFragment extends DialogFragment {
             LoginStateRepo.getInstance().setUserId(null);
             LoginStateRepo.getInstance().setToken(null);
 
+            // Clear auth info
+            AuthRepository.getInstance(getContext().getApplicationContext()).clearAuthInfo();
+
             // Kill all running apps
             DelAppManager.getInstance().terminateAllApps();
+            DelAppManager.getInstance().clearFragmentManager();
 
-            Intent intent = new Intent(this.getActivity().getApplicationContext(),
-                    LoginActivity.class);
-            startActivity(intent);
+            // Clear the stack and return to login activity
+            getActivity().finish();
 
         }).setNegativeButton("Cancel", (dialogInterface, i) -> {
             dialogInterface.cancel();

@@ -9,18 +9,21 @@ import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
+import com.del.delcontainer.database.dao.AuthDao;
 import com.del.delcontainer.database.dao.HeartDao;
 import com.del.delcontainer.database.dao.UserProfileDao;
+import com.del.delcontainer.database.entities.Auth;
 import com.del.delcontainer.database.entities.Heart;
 import com.del.delcontainer.database.entities.UserProfile;
 
-@Database(entities = {UserProfile.class, Heart.class}, version = 1)
+@Database(entities = {UserProfile.class, Heart.class, Auth.class}, version = 1)
 public abstract class DelDatabase extends RoomDatabase {
 
     private static DelDatabase instance;
 
     public abstract UserProfileDao userProfileDao();
     public abstract HeartDao heartDao();
+    public abstract AuthDao authDao();
 
     public static synchronized DelDatabase getInstance(Context context) {
         if(null == instance) {

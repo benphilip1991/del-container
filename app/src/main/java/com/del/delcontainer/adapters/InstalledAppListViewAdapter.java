@@ -13,10 +13,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledAppListViewAdapter.ViewHolder> {
 
@@ -58,12 +59,11 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
+        String imageUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
+                + Constants.DEL_SERVICE_PORT + "/" + linkedAppDetails.get(position)
+                .getApplicationId() + "/icon";
+        Picasso.with(this.context).load(imageUrl).into(holder.appImage);
         holder.appLabel.setText(linkedAppDetails.get(position).getApplicationName());
-        try {
-            holder.appImage.setBackgroundResource(R.drawable.default_app_icon);
-        } catch (NullPointerException e) {
-            Log.e(TAG, "onBindViewHolder: Exception ", e);
-        }
     }
 
     @Override
@@ -98,6 +98,8 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
         @Override
         public void onClick(View view) {
 
+            Log.d(TAG, "onClick: Launching : " + linkedAppDetails.get(getAdapterPosition())
+                    .getApplicationName());
             Toast.makeText(context, "Launching " + linkedAppDetails
                             .get(getAdapterPosition()).getApplicationName(),
                     Toast.LENGTH_SHORT).show();

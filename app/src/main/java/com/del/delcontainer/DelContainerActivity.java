@@ -4,38 +4,42 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
-import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
+import com.del.delcontainer.services.SensorsService;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
-import com.google.android.material.bottomnavigation.BottomNavigationItemView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
-public class MainActivity extends AppCompatActivity {
+public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
 
     // May have to move to another global fragment manager
@@ -44,41 +48,37 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton chatButton;
     IntentFilter intentFilter;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         registerBroadcastReceiver();
-
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
 
-        // Fix to make sure the app doesn't crash the container initially
-        BottomNavigationItemView item = findViewById(R.id.navigation_services);
-        item.performClick();
+        /**
+         * Explicitly setting the default view to the services on first run
+         * This ensures the containerViewMap tracks the first view as well.
+         * Issue - launches two fragment instances
+         */
+        if (null == savedInstanceState) {
+            navView.setSelectedItemId(R.id.navigation_services); // remove. Need to find a proper fix
+            List<Fragment> fragList = getSupportFragmentManager().getFragments();
+            for(Fragment frag : fragList) {
+
+                if(frag instanceof NavHostFragment) {
+                    Log.d(TAG, "[FRAG_ID] onCreate: Instance of NavHostFragment" );
+                }
+                Log.d(TAG, "[FRAG_ID] onCreate: Fragment ID : " + frag);
+            }
+        }
 
         // Experimental for now
         initChatbot();
-
         verifyAndGetPermissions();
-
-        LocationService locationService = LocationService.getInstance();
-        locationService.initLocationService(this);
-    }
-
-    /**
-     * Initialize chat button and add event listener
-     * <p>
-     * TODO: move to conversation manager and handle everything from there
-     */
-    protected void initChatbot() {
-
-        chatButton = findViewById(R.id.chatButton);
-        chatButton.setOnClickListener((v) -> {
-            Toast.makeText(getApplicationContext(), "Launching chatbot",
-                    Toast.LENGTH_SHORT).show();
-        });
+        initServices();
     }
 
     @Override
@@ -99,21 +99,83 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
+     * To show the close action bar menu button
+     * @param menu
+     * @return
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.app_options, menu);
+
+        return true;
+    }
+
+    /**
+     * Handle close button clicks
+     *
+     * @param item
+     * @return
+     */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.show_running_apps:
+                Toast.makeText(this, "Showing Running Apps", Toast.LENGTH_SHORT)
+                        .show();
+                DelAppManager.getInstance().showRunningApps();
+                return true;
+            case R.id.close_all_apps:
+                Toast.makeText(this, "Closing All Apps", Toast.LENGTH_SHORT).show();
+                DelAppManager.getInstance().terminateAllApps();
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    /**
+     * Initialize container services
+     */
+    private void initServices() {
+        LocationService locationService = LocationService.getInstance();
+        locationService.initLocationService(this);
+
+        SensorsService sensorsService = SensorsService.getInstance();
+        sensorsService.initSensorService(this);
+    }
+
+    /**
+     * Initialize chat button and add event listener
+     * TODO: move to conversation manager and handle everything from there
+     */
+    protected void initChatbot() {
+
+        chatButton = findViewById(R.id.chatButton);
+        chatButton.setOnClickListener((v) -> {
+            Toast.makeText(getApplicationContext(), "Launching chatbot",
+                    Toast.LENGTH_SHORT).show();
+        });
+    }
+
+    /**
      * Create a custom navigation handler instead of using AppBarConfiguration
      * This approach gives more flexibility with 'app' lifecycle management
      */
     private BottomNavigationView.OnNavigationItemSelectedListener navigationListener =
             (menuItem) -> {
+
+                this.setTitle(R.string.app_name);
+
                 Fragment selectedFragment = null;
-
                 switch (menuItem.getItemId()) {
-
                     case R.id.navigation_services:
                         Log.d(TAG, "onNavigationItemSelected: Selected Services");
                         if (containerViewMap.get(R.id.navigation_services) == null) {
                             containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
+                        this.setTitle(R.string.title_services);
                         break;
                     case R.id.navigation_sources:
                         Log.d(TAG, "onNavigationItemSelected: Selected Sources");
@@ -121,6 +183,7 @@ public class MainActivity extends AppCompatActivity {
                             containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_sources);
+                        this.setTitle(R.string.title_sources);
                         break;
                     case R.id.navigation_settings:
                         Log.d(TAG, "onNavigationItemSelected: Selected Settings");
@@ -128,15 +191,14 @@ public class MainActivity extends AppCompatActivity {
                             containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
+                        this.setTitle(R.string.title_settings);
                         break;
                 }
-
                 DelAppManager.getInstance().hideAllApps();
 
                 // Get the fragment manager and begin transaction. But only hide/show them
                 FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
                 for (Map.Entry<Integer, Fragment> appView : containerViewMap.entrySet()) {
-
                     if (appView.getValue().isAdded() && appView.getValue().isVisible()) {
                         transaction.hide(appView.getValue());
                     }
@@ -178,7 +240,8 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.BLUETOOTH_ADMIN,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
-                Manifest.permission.INTERNET
+                Manifest.permission.INTERNET,
+                Manifest.permission.ACTIVITY_RECOGNITION
         };
 
         for (String permission : permissionList) {

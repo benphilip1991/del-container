@@ -1,16 +1,25 @@
 package com.del.delcontainer.ui.fragments;
 
+import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
+import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 import com.del.delcontainer.utils.DelAppWebViewClient;
@@ -21,15 +30,30 @@ public class DelAppContainerFragment extends Fragment {
 
     private static final String TAG = "DelAppContainerFragment";
 
-    private String appId;
-    private String appName;
+    private String appId = null;
+    private String appName = null;
     private WebView appView;
     private WebViewClient webViewClient;
+    DelContainerActivity activity;
 
     public DelAppContainerFragment(String appId, String appName) {
         this.appId = appId;
         this.appName = appName;
         webViewClient = new DelAppWebViewClient(); // unique for every new sub-app
+    }
+
+    /**
+     * Set the app title to the service name when it attaches to the
+     * container activity
+     * @param context
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if(context instanceof DelContainerActivity) {
+            activity = (DelContainerActivity) context;
+        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,7 +62,46 @@ public class DelAppContainerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_delappcontainer, container, false);
         loadDelApp(view);
 
+        activity.setTitle(appName);
+        setHasOptionsMenu(true);
         return view;
+    }
+
+    /**
+     * Call to set application title on resume
+     */
+    public void setAppTitle() {
+        if(null != appName) {
+            activity.setTitle(appName);
+        }
+    }
+
+    /**
+     * Set title back to Services when closing app
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        activity.setTitle(R.string.title_services);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.close_app_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.close_app:
+                Toast.makeText(getContext().getApplicationContext(),
+                        "Closing " + appName, Toast.LENGTH_SHORT).show();
+                DelAppManager.getInstance().terminateApp(appId);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**
@@ -47,7 +110,8 @@ public class DelAppContainerFragment extends Fragment {
      */
     private void loadDelApp(View view) {
 
-        DELUtils delUtils = new DELUtils(getContext());
+        DELUtils delUtils = DELUtils.getInstance();
+        delUtils.setContext(getContext());
 
         appView = view.findViewById(R.id.delAppContainerView);
         appView.getSettings().setJavaScriptEnabled(true);
@@ -59,6 +123,15 @@ public class DelAppContainerFragment extends Fragment {
         // Pass messages
         appView.setWebViewClient(webViewClient);
         appView.loadUrl(getAppUrl());
+    }
+
+    /**
+     * Return the contained WebView object.
+     * This can be used for calling a function in the
+     * app.
+     */
+    public WebView getAppView() {
+        return appView;
     }
 
     /**
