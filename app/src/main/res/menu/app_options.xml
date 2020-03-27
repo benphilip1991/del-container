@@ -3,6 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/show_running_apps"
+        android:title="Show Running Apps"
+        app:showAsAction="never"/>
+    <item
         android:id="@+id/close_all_apps"
         android:title="Close all Apps"
         app:showAsAction="never" />

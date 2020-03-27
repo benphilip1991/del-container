@@ -30,15 +30,30 @@ public class DelAppContainerFragment extends Fragment {
 
     private static final String TAG = "DelAppContainerFragment";
 
-    private String appId;
-    private String appName;
+    private String appId = null;
+    private String appName = null;
     private WebView appView;
     private WebViewClient webViewClient;
+    DelContainerActivity activity;
 
     public DelAppContainerFragment(String appId, String appName) {
         this.appId = appId;
         this.appName = appName;
         webViewClient = new DelAppWebViewClient(); // unique for every new sub-app
+    }
+
+    /**
+     * Set the app title to the service name when it attaches to the
+     * container activity
+     * @param context
+     */
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+        if(context instanceof DelContainerActivity) {
+            activity = (DelContainerActivity) context;
+        }
     }
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -47,8 +62,27 @@ public class DelAppContainerFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_delappcontainer, container, false);
         loadDelApp(view);
 
+        activity.setTitle(appName);
         setHasOptionsMenu(true);
         return view;
+    }
+
+    /**
+     * Call to set application title on resume
+     */
+    public void setAppTitle() {
+        if(null != appName) {
+            activity.setTitle(appName);
+        }
+    }
+
+    /**
+     * Set title back to Services when closing app
+     */
+    @Override
+    public void onPause() {
+        super.onPause();
+        activity.setTitle(R.string.title_services);
     }
 
     @Override
@@ -67,22 +101,6 @@ public class DelAppContainerFragment extends Fragment {
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * Set the app title to the service name when it attaches to the
-     * container activity
-     * @param context
-     */
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-
-        DelContainerActivity activity;
-        if(context instanceof DelContainerActivity) {
-            activity = (DelContainerActivity) context;
-            activity.setTitle(appName);
         }
     }
 

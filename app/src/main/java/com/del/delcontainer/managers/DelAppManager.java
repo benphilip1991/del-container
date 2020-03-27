@@ -89,7 +89,7 @@ public class DelAppManager {
 
         // Create new fragment instances only if the app is being launched for the first time
         // Check in the app manager cache
-        if(null == appCache.get(appId)) { // appName
+        if(null == appCache.get(appId)) {
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
             DelAppContainerFragment delAppContainerFragment =
@@ -104,16 +104,25 @@ public class DelAppManager {
             transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId);
         }
 
-        if(appCache.get(appId).isHidden()) {
+        DelAppContainerFragment app = (DelAppContainerFragment) appCache.get(appId);
+        if(app.isHidden()) {
             Log.d(TAG, "launchApp: Showing app : " + appName);
             transaction.show(appCache.get(appId));
-
-        } else if(appCache.get(appId).isVisible()) {
+            app.setAppTitle();
+        } else if(app.isVisible()) {
             Log.d(TAG, "launchApp: App visible : " + appName);
+            app.setAppTitle();
         }
 
         transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
         transaction.commit();
+    }
+
+    /**
+     * Display running apps
+     */
+    public void showRunningApps() {
+        ;
     }
 
     /**

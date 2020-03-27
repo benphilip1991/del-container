@@ -120,8 +120,12 @@ public class DelContainerActivity extends AppCompatActivity {
      */
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-
         switch (item.getItemId()) {
+            case R.id.show_running_apps:
+                Toast.makeText(this, "Showing Running Apps", Toast.LENGTH_SHORT)
+                        .show();
+                DelAppManager.getInstance().showRunningApps();
+                return true;
             case R.id.close_all_apps:
                 Toast.makeText(this, "Closing All Apps", Toast.LENGTH_SHORT).show();
                 DelAppManager.getInstance().terminateAllApps();

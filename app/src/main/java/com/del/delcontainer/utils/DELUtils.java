@@ -268,26 +268,6 @@ public class DELUtils {
         locationService.stopLocationUpdates();
     }
 
-    // TODO: Need to get this information from the fragment containing the app
-    @JavascriptInterface
-    public void terminateApp(String appDetails) {
-        String appId = null;
-        String appName = null;
-
-        try {
-            JSONObject appInfo = new JSONObject(appDetails);
-            appId = appInfo.getString(Constants.APP_ID);
-            appName = appInfo.getString(Constants.APP_NAME);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        Log.d(TAG, "terminateApp: Terminating : " + appName);
-        DelAppManager.getInstance().terminateApp(appId, appName);
-    }
-
-
     // Need to add repository interface in each function here
     @JavascriptInterface
     public String getLatestWeight() {
