@@ -1,17 +1,12 @@
 package com.del.delcontainer.ui.settings;
 
 import android.util.Log;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import com.del.delcontainer.database.entities.UserProfile;
-import com.del.delcontainer.repositories.UserProfileRepository;
-import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.UserApi;
 import com.del.delcontainer.utils.apiUtils.pojo.UserDetails;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,11 +16,6 @@ public class SettingsViewModel extends ViewModel {
 
     private static final String TAG = "SettingsViewModel";
     private MutableLiveData<String> firstName = new MutableLiveData<>();
-    private MutableLiveData<LoginStateRepo> loginStateRepo = new MutableLiveData<>();
-    public MutableLiveData<LoginStateRepo> getLoginStateRepo() {
-        return loginStateRepo;
-    }
-
     Retrofit retrofit = APIUtils.getApiClient();
 
     /**

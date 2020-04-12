@@ -1,9 +1,6 @@
 package com.del.delcontainer.ui.settings;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,30 +11,21 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.del.delcontainer.R;
-import com.del.delcontainer.repositories.AuthRepository;
 import com.del.delcontainer.ui.dialogs.LogoutDialogFragment;
-import com.del.delcontainer.ui.login.LoginActivity;
 import com.del.delcontainer.ui.login.LoginStateRepo;
-import com.del.delcontainer.utils.Constants;
 
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = "SettingsFragment";
     private SettingsViewModel settingsViewModel;
-    private AuthRepository authRepository;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        authRepository = AuthRepository.getInstance(getContext());
         settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
     }
 
@@ -101,7 +89,6 @@ public class SettingsFragment extends Fragment {
      * Calls the del-api service to get the first name linked to the current user
      */
     private void getFirstName(){
-        //settingsViewModel.getUserFirstName(authRepository.getAccessToken(), authRepository.getUserId());
         settingsViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
     }
 }
