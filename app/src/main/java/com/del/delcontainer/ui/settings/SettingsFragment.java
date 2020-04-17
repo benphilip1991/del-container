@@ -1,9 +1,6 @@
 package com.del.delcontainer.ui.settings;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,27 +11,27 @@ import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-
 import com.del.delcontainer.R;
 import com.del.delcontainer.ui.dialogs.LogoutDialogFragment;
-import com.del.delcontainer.ui.login.LoginActivity;
 import com.del.delcontainer.ui.login.LoginStateRepo;
-import com.del.delcontainer.utils.Constants;
 
 public class SettingsFragment extends Fragment {
 
     private static final String TAG = "SettingsFragment";
     private SettingsViewModel settingsViewModel;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        settingsViewModel = ViewModelProviders.of(this).get(SettingsViewModel.class);
+    }
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        settingsViewModel =
-                ViewModelProviders.of(this).get(SettingsViewModel.class);
+
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
         final TextView textView = root.findViewById(R.id.text_settings);
         final TextView userName = root.findViewById(R.id.user_name);
@@ -46,8 +43,10 @@ public class SettingsFragment extends Fragment {
         final LinearLayout notificationButton = (LinearLayout) root.findViewById(R.id.notification_button);
         final LinearLayout helpButton = (LinearLayout) root.findViewById(R.id.help_button);
 
+        getFirstName();
+
         // Attach observer to the viewmodel
-        settingsViewModel.getText().observe(this, new Observer<String>() {
+        settingsViewModel.getFirstName().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 userName.setText(s);
@@ -84,5 +83,12 @@ public class SettingsFragment extends Fragment {
         });
 
         return root;
+    }
+
+    /**
+     * Calls the del-api service to get the first name linked to the current user
+     */
+    private void getFirstName(){
+        settingsViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
     }
 }
