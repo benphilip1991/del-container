@@ -40,7 +40,7 @@ import java.util.Map;
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DelContainerActivity";
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
@@ -79,6 +79,7 @@ public class DelContainerActivity extends AppCompatActivity {
         initChatbot();
         verifyAndGetPermissions();
         initServices();
+        scheduleProviderJobs();
     }
 
     @Override
@@ -156,6 +157,13 @@ public class DelContainerActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(), "Launching chatbot",
                     Toast.LENGTH_SHORT).show();
         });
+    }
+
+    /**
+     * Initialize data provider jobs
+     */
+    protected void scheduleProviderJobs() {
+        ;
     }
 
     /**
