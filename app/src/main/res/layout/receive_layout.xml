@@ -15,9 +15,12 @@
         android:background="@drawable/receive_box"
         android:elevation="3dp"
         android:fontFamily="sans-serif"
+        android:freezesText="true"
+        android:isScrollContainer="false"
         android:padding="15dp"
         android:textColor="#ffffff"
         android:textSize="18sp"
+        android:maxWidth="270dp"
         app:layout_constraintEnd_toStartOf="@+id/circleImageView"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,6 +36,6 @@
         app:civ_border_width="1dp"
         app:civ_circle_background_color="#8d8d8d"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>

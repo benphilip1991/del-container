@@ -205,6 +205,7 @@ public class DelContainerActivity extends AppCompatActivity {
                 return false;
             }
         });
+        myDialog.getWindow().setLayout(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
     }

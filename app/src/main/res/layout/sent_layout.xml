@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/relativeLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:fadeScrollbars="true"
+    android:isScrollContainer="true">
 
     <TextView
         android:id="@+id/chatContent"
@@ -15,12 +17,14 @@
         android:background="@drawable/sent_box"
         android:elevation="3dp"
         android:fontFamily="sans-serif"
+        android:maxWidth="270dp"
         android:padding="15dp"
         android:textColor="#ffffff"
         android:textSize="18sp"
+        app:layout_constrainedHeight="false"
         app:layout_constraintStart_toEndOf="@+id/circleImageView"
         app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="PrivateResource" />
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleImageView"
