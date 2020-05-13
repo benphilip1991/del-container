@@ -1,17 +1,12 @@
 package com.del.delcontainer.managers;
 
 
-import android.app.Activity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.ui.dialogs.RunningAppsDialogFragment;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
@@ -20,7 +15,6 @@ import com.del.delcontainer.utils.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * DEL application manager responsible for app fragments
