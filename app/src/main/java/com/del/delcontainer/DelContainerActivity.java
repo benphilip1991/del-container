@@ -1,20 +1,30 @@
 package com.del.delcontainer;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
+import com.del.delcontainer.ui.chatbot.ChatAdapter;
+import com.del.delcontainer.ui.chatbot.ChatType;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -32,7 +42,10 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +54,11 @@ import static com.del.delcontainer.R.id.nav_host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "DelContainerActivity";
+    Dialog myDialog;
+    EditText inputText;
+    RecyclerView recyclerView;
+    ChatAdapter chatAdapter;
+    List<ChatType> chatTypeList;
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
@@ -53,6 +71,7 @@ public class DelContainerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        myDialog = new Dialog(this);
 
         registerBroadcastReceiver();
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
@@ -76,7 +95,7 @@ public class DelContainerActivity extends AppCompatActivity {
         }
 
         // Experimental for now
-        initChatbot();
+        //initChatbot();
         verifyAndGetPermissions();
         initServices();
         scheduleProviderJobs();
@@ -150,13 +169,53 @@ public class DelContainerActivity extends AppCompatActivity {
      * Initialize chat button and add event listener
      * TODO: move to conversation manager and handle everything from there
      */
-    protected void initChatbot() {
+    public void initChatbot(View v) {
+
+        myDialog.setContentView(R.layout.popup);
 
         chatButton = findViewById(R.id.chatButton);
-        chatButton.setOnClickListener((v) -> {
-            Toast.makeText(getApplicationContext(), "Launching chatbot",
-                    Toast.LENGTH_SHORT).show();
+        inputText = myDialog.findViewById(R.id.inputText);
+        recyclerView = myDialog.findViewById(R.id.chat);
+        chatTypeList = new ArrayList<>();
+        chatAdapter = new ChatAdapter(chatTypeList, this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
+        recyclerView.setAdapter(chatAdapter);
+
+        inputText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus)
+                    inputText.setHint("");
+                else
+                    inputText.setHint("Ask Something");
+            }
         });
+
+        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                if (i == EditorInfo.IME_ACTION_SEND) {
+                    ChatType responseMessage = new ChatType(inputText.getText().toString(), true);
+                    chatTypeList.add(responseMessage);
+                    ChatType responseMessage2 = new ChatType(inputText.getText().toString(), false);
+                    chatTypeList.add(responseMessage2);
+                    inputText.setText("");
+                    chatAdapter.notifyDataSetChanged();
+                    if (!isLastVisible())
+                        recyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                }
+                return false;
+            }
+        });
+        myDialog.getWindow().setLayout(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
+        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        myDialog.show();
+    }
+
+    boolean isLastVisible() {
+        LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
+        int pos = layoutManager.findLastCompletelyVisibleItemPosition();
+        int numItems = recyclerView.getAdapter().getItemCount();
+        return (pos >= numItems);
     }
 
     /**
