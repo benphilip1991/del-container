@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -39,16 +40,25 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.del.delcontainer.R.id.nav_host_fragment;
 
@@ -59,6 +69,11 @@ public class DelContainerActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ChatAdapter chatAdapter;
     List<ChatType> chatTypeList;
+    String userMsgString;
+    private static int TIME_OUT = 3000;
+    private Handler mHandler = new Handler();
+
+    private WebSocketClient mWebSocketClient;
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
@@ -181,6 +196,8 @@ public class DelContainerActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(chatAdapter);
 
+        connectWebSocket();
+
         inputText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
             public void onFocusChange(View v, boolean hasFocus) {
                 if (hasFocus)
@@ -190,22 +207,6 @@ public class DelContainerActivity extends AppCompatActivity {
             }
         });
 
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEND) {
-                    ChatType responseMessage = new ChatType(inputText.getText().toString(), true);
-                    chatTypeList.add(responseMessage);
-                    ChatType responseMessage2 = new ChatType(inputText.getText().toString(), false);
-                    chatTypeList.add(responseMessage2);
-                    inputText.setText("");
-                    chatAdapter.notifyDataSetChanged();
-                    if (!isLastVisible())
-                        recyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
-                }
-                return false;
-            }
-        });
         myDialog.getWindow().setLayout(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
         myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         myDialog.show();
@@ -216,6 +217,140 @@ public class DelContainerActivity extends AppCompatActivity {
         int pos = layoutManager.findLastCompletelyVisibleItemPosition();
         int numItems = recyclerView.getAdapter().getItemCount();
         return (pos >= numItems);
+    }
+
+    private void connectWebSocket() {
+        URI uri;
+        try {
+            uri = new URI("ws://192.168.1.174:3050");
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        mWebSocketClient = new WebSocketClient(uri) {
+            @Override
+            public void onOpen(ServerHandshake serverHandshake) {
+                Log.i("Websocket", "Opened");
+                final String uniqueID = UUID.randomUUID().toString();
+                final JSONObject messagePayload = new JSONObject();
+
+                try {
+                    messagePayload.put("type", "hello");
+                    messagePayload.put("User", uniqueID);
+                    messagePayload.put("text", "Hi from android application");
+                    messagePayload.put("channel", "socket");
+                    messagePayload.put("user_profile", null);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                mWebSocketClient.send(messagePayload.toString());
+
+                inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                    @Override
+                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                        if (i == EditorInfo.IME_ACTION_SEND) {
+                            ChatType responseMessage = new ChatType(inputText.getText().toString(), true);
+                            chatTypeList.add(responseMessage);
+                            userMsgString = String.valueOf(responseMessage.getText());
+
+                                try {
+                                    messagePayload.put("type", "message_received");
+                                    messagePayload.put("User", uniqueID);
+                                    messagePayload.put("text", userMsgString);
+                                    messagePayload.put("channel", "socket");
+                                    messagePayload.put("user_profile", null);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                                mWebSocketClient.send(messagePayload.toString());
+                            }
+
+                            String bot_response = messagePayload.toString();
+
+                            try {
+                                JSONObject secondObject = new JSONObject(bot_response);
+                                bot_response= secondObject.getString("text");
+
+                                mWebSocketClient.onMessage(bot_response);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        return false;
+                    }
+                });
+            }
+
+            @Override
+            public void onMessage(final String s) {
+
+                final String message = s;
+                String compare = "Steps_Count"; // make it a list
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        try {
+                            JSONObject myObject = new JSONObject(message);
+                            String response_string = myObject.getString("text");
+                            Log.d("MyResponseHERE",myObject.toString());
+
+                            if(response_string.equalsIgnoreCase(compare)) {
+
+                                ChatType responseMessage2 = new ChatType(
+                                        "Opening Steps Application...", false);
+                                chatTypeList.add(responseMessage2);
+                                inputText.setText("");
+                                chatAdapter.notifyDataSetChanged();
+                                if (!isLastVisible())
+                                    recyclerView.smoothScrollToPosition(
+                                            chatAdapter.getItemCount() - 1);
+
+                                mHandler.postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        // call function to open application
+                                        DelAppManager delAppManager = DelAppManager.getInstance();
+                                        delAppManager.launchApp(
+                                                "5ec5d31a927f91182d8d8f95","Steps");
+                                        myDialog.dismiss();
+                                    }
+                                }, TIME_OUT);
+                            }
+                            else {
+                                ChatType responseMessage2 = new ChatType(response_string, false);
+                                chatTypeList.add(responseMessage2);
+                                inputText.setText("");
+                                chatAdapter.notifyDataSetChanged();
+                                if (!isLastVisible())
+                                    recyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onClose(int i, String s, boolean b) {
+                Log.i("Websocket", "Closed " + s);
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.i("Websocket", "Error " + e.getMessage());
+            }
+        };
+        mWebSocketClient.connect();
+    }
+
+    public void sendMessage(View view) {
+
     }
 
     /**
