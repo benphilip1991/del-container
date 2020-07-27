@@ -173,6 +173,9 @@ public class DelContainerActivity extends AppCompatActivity {
      * Initialize container services
      */
     private void initServices() {
+
+        DelAppManager.getInstance().setFragmentManager(this.getSupportFragmentManager());
+
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
 
@@ -186,7 +189,7 @@ public class DelContainerActivity extends AppCompatActivity {
      */
     public void initChatbot(View v) {
 
-        myDialog.setContentView(R.layout.popup);
+        myDialog.setContentView(R.layout.chat_popup);
 
         chatButton = findViewById(R.id.chatButton);
         inputText = myDialog.findViewById(R.id.inputText);
@@ -222,7 +225,7 @@ public class DelContainerActivity extends AppCompatActivity {
     private void connectWebSocket() {
         URI uri;
         try {
-            uri = new URI("ws://192.168.1.174:3050");
+            uri = new URI("ws://" + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -287,7 +290,7 @@ public class DelContainerActivity extends AppCompatActivity {
             public void onMessage(final String s) {
 
                 final String message = s;
-                String compare = "Steps_Count"; // make it a list
+                String compare = "Step_Count"; // make it a list
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -315,7 +318,7 @@ public class DelContainerActivity extends AppCompatActivity {
                                         // call function to open application
                                         DelAppManager delAppManager = DelAppManager.getInstance();
                                         delAppManager.launchApp(
-                                                "5ec5d31a927f91182d8d8f95","Steps");
+                                                "5e4b6504946be87d90049f39","Steps");
                                         myDialog.dismiss();
                                     }
                                 }, TIME_OUT);
@@ -347,10 +350,6 @@ public class DelContainerActivity extends AppCompatActivity {
             }
         };
         mWebSocketClient.connect();
-    }
-
-    public void sendMessage(View view) {
-
     }
 
     /**

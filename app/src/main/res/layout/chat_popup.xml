@@ -32,7 +32,7 @@
         android:layout_marginBottom="8dp"
         android:background="@drawable/msg_box"
         android:fontFamily="sans-serif"
-        android:hint="Ask Something"
+        android:hint="Ask something"
         android:imeActionId="4"
         android:imeOptions="actionSend"
         android:inputType="text"

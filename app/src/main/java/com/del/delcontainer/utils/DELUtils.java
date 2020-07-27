@@ -350,7 +350,6 @@ public class DELUtils {
         return locationObject.toString();
     }
 
-    // TODO: If there are more than one apps requesting the location, this fails
     @JavascriptInterface
     public void stopLocationUpdates() {
         Log.d(TAG, "stopLocationUpdates: Terminating location updates");

@@ -39,7 +39,7 @@ public class DelAppContainerFragment extends Fragment {
     public DelAppContainerFragment(String appId, String appName) {
         this.appId = appId;
         this.appName = appName;
-        webViewClient = new DelAppWebViewClient(); // unique for every new sub-app
+        webViewClient = new DelAppWebViewClient(this); // unique for every new sub-app
     }
 
     /**
