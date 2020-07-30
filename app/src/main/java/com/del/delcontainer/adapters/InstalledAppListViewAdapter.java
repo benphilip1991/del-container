@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
@@ -79,6 +80,8 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
         ImageView appImage;
         TextView appLabel;
+        CardView itemCard;
+
         AppClickListener appClickListener;
 
         public ViewHolder(View itemView, AppClickListener appClickListener) {
@@ -86,10 +89,11 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
             appImage = itemView.findViewById(R.id.appImage);
             appLabel = itemView.findViewById(R.id.appLabel);
+            itemCard = itemView.findViewById(R.id.installedapp_carditem);
             this.appClickListener = appClickListener;
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener((view) -> {
+            itemCard.setOnClickListener(this);
+            itemCard.setOnLongClickListener((view) -> {
                 appLongClickListener.onAppLongClick(getAdapterPosition(), view);
                 return true; // the long press was consumed
             });
