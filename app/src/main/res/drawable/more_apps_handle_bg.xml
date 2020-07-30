@@ -3,22 +3,13 @@
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid
-                android:color="#4e4e4e55"/>
-            <corners
-                android:radius="30dp" />
-            <padding
-                android:bottom="1dp" />
-        </shape>
-    </item>
-    <item>
-        <shape xmlns:android="http://schemas.android.com/apk/res/android">
-            <solid
                 android:color="#F3F2F3"/>
             <corners
-                android:radius="30dp" />
+                android:topLeftRadius="30dp"
+                android:topRightRadius="30dp"/>
             <padding
                 android:left="10dp"
-                android:top="10dp"
+                android:top="0dp"
                 android:right="10dp"
                 android:bottom="10dp" />
         </shape>

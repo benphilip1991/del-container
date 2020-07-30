@@ -1,61 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.motion.widget.MotionLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f2f2f2"
-    android:paddingTop="5dp">
+    android:background="@drawable/services_background"
+    android:paddingTop="5dp"
+    app:layoutDescription="@xml/fragment_services_scene">
 
-    <RelativeLayout
-        android:id="@+id/services_container"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/services_header_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.1" />
+
+    <LinearLayout
+        android:id="@+id/services_header_layout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="56dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="@id/services_header_guideline"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/headerProfileImage"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/profile" />
+
+        <TextView
+            android:id="@+id/headerProfileText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="8dp"
+            android:text="Hello User!"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/installed_services_container"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
+        android:background="@drawable/dialog_bg"
+        android:padding="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/services_header_guideline"
+        app:layout_constraintBottom_toTopOf="@id/installed_app_threshold_guideline">
 
         <TextView
             android:id="@+id/labelInstalledService"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:layout_marginLeft="5dp"
             android:text="@string/installed_services"
             android:textColor="#000"
             android:textSize="20dp"
-            app:layout_constraintTop_toTopOf="parent"/>
+            app:layout_constraintTop_toTopOf="@id/installed_services_container" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/installedAppListView"
             android:layout_width="match_parent"
-            android:layout_height="210dp"
-            android:layout_below="@+id/labelInstalledService"
+            android:layout_height="0dp"
             android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/labelInstalledService" />
+            app:layout_constraintStart_toStartOf="@id/installed_services_container"
+            app:layout_constraintEnd_toEndOf="@id/installed_services_container"
+            app:layout_constraintTop_toBottomOf="@+id/labelInstalledService"
+            app:layout_constraintBottom_toBottomOf="@id/installed_services_container"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:id="@+id/available_services_handle"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/more_apps_handle_bg"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+        <ImageView
+            android:id="@+id/available_services_handle_arrow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_arrow_drop_up_24"
+            android:layout_centerHorizontal="true"/>
 
         <TextView
             android:id="@+id/labelMoreServices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/installedAppListView"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="15dp"
+            android:layout_below="@id/available_services_handle_arrow"
             android:text="@string/more_services"
             android:textColor="#000"
             android:textSize="20dp"
-            app:layout_constraintTop_toBottomOf="@+id/installedAppListView" />
+            android:layout_centerHorizontal="true"
+            android:gravity="center_horizontal"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/availableAppsListViewLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/available_services_handle"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/availableAppListView"
             android:layout_width="match_parent"
-            android:layout_height="229dp"
-            android:layout_below="@+id/labelMoreServices"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingRight="5dp"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="15dp"
-            android:layout_marginBottom="1dp"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/labelMoreServices" />
-
-
+            android:background="#F3F2F3"
+            android:orientation="vertical" />
     </RelativeLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/installed_app_threshold_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.70" />
+
+
+</androidx.constraintlayout.motion.widget.MotionLayout>

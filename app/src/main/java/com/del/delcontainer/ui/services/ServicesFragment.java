@@ -6,12 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -37,7 +41,6 @@ public class ServicesFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: Service Fragment created");
         servicesViewModel = ViewModelProviders.of(this).get(ServicesViewModel.class);
-
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
 
@@ -45,6 +48,17 @@ public class ServicesFragment extends Fragment {
     }
 
     private void setupServices(View view) {
+
+        final TextView userName = view.findViewById(R.id.headerProfileText);
+        getFirstName();
+
+        // Attach observer to the viewmodel for username
+        servicesViewModel.getFirstName().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                userName.setText(s);
+            }
+        });
 
         getAppsList();
         initRecyclerView(view);
@@ -99,8 +113,8 @@ public class ServicesFragment extends Fragment {
                             }
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
-                recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.VERTICAL, false));
+                recyclerViewAvailableApps.setLayoutManager(new GridLayoutManager(getContext(), 1,
+                        GridLayoutManager.VERTICAL, false));
             }
         });
 
@@ -168,9 +182,15 @@ public class ServicesFragment extends Fragment {
                         });
 
                 recyclerView.setAdapter(installedAppListViewAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.HORIZONTAL, false));
+                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2,
+                        GridLayoutManager.HORIZONTAL, false));
             }
         });
+    }
+    /**
+     * Calls the del-api service to get the first name linked to the current user
+     */
+    private void getFirstName(){
+        servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
     }
 }
