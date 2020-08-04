@@ -3,66 +3,71 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <ConstraintSet android:id="@+id/start">
-        <Constraint android:id="@id/available_services_handle"
+        <Constraint
+            android:id="@id/available_services_handle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/more_apps_handle_bg"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-        <Constraint android:id="@id/installed_services_container"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+        <Constraint
+            android:id="@id/installed_services_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/dialog_bg"
             android:padding="10dp"
+            app:layout_constraintBottom_toTopOf="@id/installed_app_threshold_guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/services_header_guideline"
-            app:layout_constraintBottom_toTopOf="@id/installed_app_threshold_guideline" />
+            app:layout_constraintTop_toBottomOf="@id/services_header_guideline" />
     </ConstraintSet>
 
     <ConstraintSet android:id="@+id/end">
-        <Constraint android:id="@id/available_services_handle"
+        <Constraint
+            android:id="@id/available_services_handle"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:background="@drawable/more_apps_handle_bg"
-            app:layout_constraintTop_toBottomOf="@id/services_header_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-        <Constraint android:id="@id/installed_services_container"
+            app:layout_constraintTop_toBottomOf="@id/services_header_guideline" />
+        <Constraint
+            android:id="@id/installed_services_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:background="@drawable/dialog_bg"
             android:padding="10dp"
+            app:layout_constraintBottom_toBottomOf="@id/services_header_guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/services_header_guideline"
-            app:layout_constraintBottom_toBottomOf="@id/services_header_guideline"/>
+            app:layout_constraintTop_toBottomOf="@id/services_header_guideline" />
     </ConstraintSet>
 
     <Transition
-    app:constraintSetEnd="@+id/end"
-    app:constraintSetStart="@id/start"
-    app:duration="500">
-    <OnSwipe app:dragDirection="dragUp"
-        app:touchAnchorId="@id/available_services_handle"
-        app:touchAnchorSide="bottom"
-        app:touchRegionId="@id/available_services_handle"
-        app:maxVelocity="8"
-        app:maxAcceleration="4"/>
-    <KeyFrameSet>
-        <KeyAttribute
-            app:framePosition="0"
-            app:motionTarget="@id/installed_services_container"
-            android:alpha="1.0"/>
-        <KeyAttribute
-            app:framePosition="100"
-            app:motionTarget="@id/installed_services_container"
-            android:alpha="0.0"/>
-    </KeyFrameSet>
-</Transition>
+        app:constraintSetEnd="@+id/end"
+        app:constraintSetStart="@id/start"
+        app:duration="500">
+        <OnSwipe
+            app:dragDirection="dragUp"
+            app:maxAcceleration="4"
+            app:maxVelocity="8"
+            app:touchAnchorId="@id/available_services_handle"
+            app:touchAnchorSide="bottom"
+            app:touchRegionId="@id/available_services_handle" />
+        <KeyFrameSet>
+            <KeyAttribute
+                android:alpha="1.0"
+                app:framePosition="0"
+                app:motionTarget="@id/installed_services_container" />
+            <KeyAttribute
+                android:alpha="0.0"
+                app:framePosition="100"
+                app:motionTarget="@id/installed_services_container" />
+        </KeyFrameSet>
+    </Transition>
 </MotionScene>
