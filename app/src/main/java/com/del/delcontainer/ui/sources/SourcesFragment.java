@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -191,6 +192,8 @@ public class SourcesFragment extends Fragment
             Toast.makeText(getContext(), "Disconnecting from "
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
+        // FIX: Adapter updates recycler view before BLEDataManagerService connection/disconnection
+        adapter.notifyDataSetChanged();
 
         Intent deviceSelectedIntent = new Intent();
         deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
