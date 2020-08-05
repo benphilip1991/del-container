@@ -29,13 +29,13 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:id="@+id/headerProfileImage"
+            android:id="@+id/header_profile_image"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:src="@drawable/profile" />
 
         <TextView
-            android:id="@+id/headerProfileText"
+            android:id="@+id/header_profile_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -59,7 +59,7 @@
         app:layout_constraintBottom_toTopOf="@id/installed_app_threshold_guideline">
 
         <TextView
-            android:id="@+id/labelInstalledService"
+            android:id="@+id/installed_service_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
@@ -73,13 +73,13 @@
             tools:layout_editor_absoluteX="10dp" />
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/installedAppListView"
+            android:id="@+id/installed_app_list_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="15dp"
             app:layout_constraintStart_toStartOf="@id/installed_services_container"
             app:layout_constraintEnd_toEndOf="@id/installed_services_container"
-            app:layout_constraintTop_toBottomOf="@+id/labelInstalledService"
+            app:layout_constraintTop_toBottomOf="@+id/installed_service_label"
             app:layout_constraintBottom_toBottomOf="@id/installed_services_container"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -100,7 +100,7 @@
             android:layout_centerHorizontal="true"/>
 
         <TextView
-            android:id="@+id/labelMoreServices"
+            android:id="@+id/label_more_services"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/available_services_handle_arrow"
@@ -113,14 +113,14 @@
             android:textStyle="bold" />
     </RelativeLayout>
     <RelativeLayout
-        android:id="@+id/availableAppsListViewLayout"
+        android:id="@+id/available_apps_list_view_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/available_services_handle"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/availableAppListView"
+            android:id="@+id/available_app_list_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:paddingLeft="5dp"

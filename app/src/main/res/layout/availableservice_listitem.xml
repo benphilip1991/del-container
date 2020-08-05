@@ -20,7 +20,7 @@
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/availableAppImage"
+                android:id="@+id/available_app_image"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
                 android:layout_margin="10dp"
@@ -29,7 +29,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/availableAppLabel"
+                android:id="@+id/available_app_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -40,11 +40,11 @@
                 android:gravity="center"
                 android:text="App Name"
                 android:textColor="#000"
-                app:layout_constraintStart_toEndOf="@id/availableAppImage"
+                app:layout_constraintStart_toEndOf="@id/available_app_image"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/availableAppDescription"
+                android:id="@+id/available_app_description"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
@@ -55,11 +55,11 @@
                 android:gravity="top"
                 android:text="App description here"
                 android:textColor="#777"
-                app:layout_constraintStart_toEndOf="@id/availableAppImage"
-                app:layout_constraintTop_toBottomOf="@+id/availableAppLabel" />
+                app:layout_constraintStart_toEndOf="@id/available_app_image"
+                app:layout_constraintTop_toBottomOf="@+id/available_app_label" />
 
             <Button
-                android:id="@+id/getAvailableAppButton"
+                android:id="@+id/get_available_app_button"
                 android:minHeight="30dp"
                 android:minWidth="60dp"
                 android:layout_width="wrap_content"
@@ -74,7 +74,7 @@
                 android:textSize="13sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/availableAppDescription"
+                app:layout_constraintTop_toBottomOf="@id/available_app_description"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>

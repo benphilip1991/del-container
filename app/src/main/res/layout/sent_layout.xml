@@ -9,7 +9,7 @@
     android:isScrollContainer="true">
 
     <TextView
-        android:id="@+id/chatContent"
+        android:id="@+id/chat_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
@@ -22,12 +22,12 @@
         android:textColor="#ffffff"
         android:textSize="18sp"
         app:layout_constrainedHeight="false"
-        app:layout_constraintEnd_toStartOf="@+id/circleImageView"
+        app:layout_constraintEnd_toStartOf="@+id/circle_image_view"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="PrivateResource" />
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleImageView"
+        android:id="@+id/circle_image_view"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="16dp"

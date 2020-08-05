@@ -1,6 +1,5 @@
 package com.del.delcontainer.ui.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,8 +22,6 @@ import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 import com.del.delcontainer.utils.DelAppWebViewClient;
-
-import java.util.UUID;
 
 public class DelAppContainerFragment extends Fragment {
 
@@ -113,7 +110,7 @@ public class DelAppContainerFragment extends Fragment {
         DELUtils delUtils = DELUtils.getInstance();
         delUtils.setContext(getContext());
 
-        appView = view.findViewById(R.id.delAppContainerView);
+        appView = view.findViewById(R.id.del_app_container_view);
         appView.getSettings().setJavaScriptEnabled(true);
         appView.getSettings().setDatabaseEnabled(true);
         appView.getSettings().setDomStorageEnabled(true);

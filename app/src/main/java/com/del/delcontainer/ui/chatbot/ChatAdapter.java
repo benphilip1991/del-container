@@ -20,7 +20,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
         TextView textView;
         public CustomViewHolder(View itemView) {
             super(itemView);
-            textView = itemView.findViewById(R.id.chatContent);
+            textView = itemView.findViewById(R.id.chat_content);
         }
     }
 

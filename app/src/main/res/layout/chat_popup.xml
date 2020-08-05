@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/relativeLayout3"
+    android:id="@+id/chat_view_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginTop="40dp"
@@ -15,15 +15,15 @@
     android:background="@drawable/dialog_bg">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat"
+        android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/inputText"
+        android:layout_above="@+id/chat_input_text"
         android:textSize="14sp"
         />
 
     <EditText
-        android:id="@+id/inputText"
+        android:id="@+id/chat_input_text"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

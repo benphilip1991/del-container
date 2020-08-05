@@ -42,7 +42,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        emailId = findViewById(R.id.emailId);
+        emailId = findViewById(R.id.email_id);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         progressBar = findViewById(R.id.login_progress);
