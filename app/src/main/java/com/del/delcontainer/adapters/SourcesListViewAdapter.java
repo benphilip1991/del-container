@@ -97,7 +97,7 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
 
             deviceName = itemView.findViewById(R.id.device_name);
             deviceAddress = itemView.findViewById(R.id.device_address);
-            bleLayout = itemView.findViewById(R.id.BLE_layout);
+            bleLayout = itemView.findViewById(R.id.ble_layout);
             connectButton = itemView.findViewById(R.id.connect_button);
             this.deviceClickListener = deviceClickListener;
 

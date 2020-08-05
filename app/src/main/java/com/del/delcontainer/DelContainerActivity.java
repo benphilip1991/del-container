@@ -40,7 +40,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.navigation.fragment.NavHostFragment;
@@ -191,9 +190,9 @@ public class DelContainerActivity extends AppCompatActivity {
 
         myDialog.setContentView(R.layout.chat_popup);
 
-        chatButton = findViewById(R.id.chatButton);
-        inputText = myDialog.findViewById(R.id.inputText);
-        recyclerView = myDialog.findViewById(R.id.chat);
+        chatButton = findViewById(R.id.chat_button);
+        inputText = myDialog.findViewById(R.id.chat_input_text);
+        recyclerView = myDialog.findViewById(R.id.chat_recycler_view);
         chatTypeList = new ArrayList<>();
         chatAdapter = new ChatAdapter(chatTypeList, this);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));

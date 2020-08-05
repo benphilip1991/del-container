@@ -8,7 +8,7 @@
 
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/installedapp_carditem"
+        android:id="@+id/installed_app_card_view"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         app:cardCornerRadius="5dp"
@@ -28,7 +28,7 @@
                 app:layout_constraintGuide_percent="0.75"/>
 
             <ImageView
-                android:id="@+id/appImage"
+                android:id="@+id/app_image"
                 android:layout_width="match_parent"
                 android:layout_height="88dp"
                 android:maxHeight="88dp"
@@ -37,7 +37,7 @@
                 app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/appLabel"
+                android:id="@+id/app_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="13sp"

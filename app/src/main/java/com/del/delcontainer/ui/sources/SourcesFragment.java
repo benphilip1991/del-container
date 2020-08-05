@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,7 +48,7 @@ public class SourcesFragment extends Fragment
         /**
          * Setup an onClick listener for the sources fragment
          */
-        TextView rescan = rootView.findViewById(R.id.rescanDevice);
+        TextView rescan = rootView.findViewById(R.id.rescan_devices_button);
         rescan.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -81,7 +80,7 @@ public class SourcesFragment extends Fragment
     // Set up recycler view
     private void initRecyclerView(View view) {
 
-        RecyclerView recyclerView = view.findViewById(R.id.bleRecyclerView);
+        RecyclerView recyclerView = view.findViewById(R.id.ble_recycler_view);
         adapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

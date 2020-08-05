@@ -16,13 +16,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
-import com.del.delcontainer.adapters.RunningAppsListViewAdapter;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
@@ -49,7 +47,7 @@ public class ServicesFragment extends Fragment {
 
     private void setupServices(View view) {
 
-        final TextView userName = view.findViewById(R.id.headerProfileText);
+        final TextView userName = view.findViewById(R.id.header_profile_text);
         getFirstName();
 
         // Attach observer to the viewmodel for username
@@ -87,7 +85,7 @@ public class ServicesFragment extends Fragment {
             if (null != servicesList) {
 
                 RecyclerView recyclerViewAvailableApps = view.
-                        findViewById(R.id.availableAppListView);
+                        findViewById(R.id.available_app_list_view);
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
                         servicesList,
                         (position) -> {
@@ -123,7 +121,7 @@ public class ServicesFragment extends Fragment {
             if (null != userServicesList) {
 
                 RecyclerView recyclerView = view.
-                        findViewById(R.id.installedAppListView);
+                        findViewById(R.id.installed_app_list_view);
                 installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
                         userServicesList,
                         (position) -> {

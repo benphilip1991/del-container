@@ -87,9 +87,9 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
         public ViewHolder(View itemView, AppClickListener appClickListener) {
             super(itemView);
 
-            appImage = itemView.findViewById(R.id.appImage);
-            appLabel = itemView.findViewById(R.id.appLabel);
-            itemCard = itemView.findViewById(R.id.installedapp_carditem);
+            appImage = itemView.findViewById(R.id.app_image);
+            appLabel = itemView.findViewById(R.id.app_label);
+            itemCard = itemView.findViewById(R.id.installed_app_card_view);
             this.appClickListener = appClickListener;
 
             itemCard.setOnClickListener(this);
