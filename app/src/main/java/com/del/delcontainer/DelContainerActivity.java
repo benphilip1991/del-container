@@ -42,7 +42,6 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -59,7 +58,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import static com.del.delcontainer.R.id.nav_host_fragment;
+import static com.del.delcontainer.R.id.host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "DelContainerActivity";
@@ -96,17 +95,7 @@ public class DelContainerActivity extends AppCompatActivity {
          * This ensures the containerViewMap tracks the first view as well.
          * Issue - launches two fragment instances
          */
-        if (null == savedInstanceState) {
-            navView.setSelectedItemId(R.id.navigation_services); // remove. Need to find a proper fix
-            List<Fragment> fragList = getSupportFragmentManager().getFragments();
-            for(Fragment frag : fragList) {
-
-                if(frag instanceof NavHostFragment) {
-                    Log.d(TAG, "[FRAG_ID] onCreate: Instance of NavHostFragment" );
-                }
-                Log.d(TAG, "[FRAG_ID] onCreate: Fragment ID : " + frag);
-            }
-        }
+        navView.setSelectedItemId(R.id.navigation_services);
 
         // Experimental for now
         //initChatbot();
@@ -405,7 +394,7 @@ public class DelContainerActivity extends AppCompatActivity {
                 }
 
                 if (!selectedFragment.isAdded()) {
-                    transaction.add(nav_host_fragment, selectedFragment, Constants.HOST_VIEW);
+                    transaction.add(host_fragment, selectedFragment, Constants.HOST_VIEW);
                 }
 
                 // Make view visible
