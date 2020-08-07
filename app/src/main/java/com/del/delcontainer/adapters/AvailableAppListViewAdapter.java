@@ -85,10 +85,10 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.availableAppImage = itemView.findViewById(R.id.availableAppImage);
-            this.availableAppLabel = itemView.findViewById(R.id.availableAppLabel);
-            this.availableAppDescription = itemView.findViewById(R.id.availableAppDescription);
-            this.getAvailableAppButton = itemView.findViewById(R.id.getAvailableAppButton);
+            this.availableAppImage = itemView.findViewById(R.id.available_app_image);
+            this.availableAppLabel = itemView.findViewById(R.id.available_app_label);
+            this.availableAppDescription = itemView.findViewById(R.id.available_app_description);
+            this.getAvailableAppButton = itemView.findViewById(R.id.get_available_app_button);
 
             getAvailableAppButton.setOnClickListener(this);
         }

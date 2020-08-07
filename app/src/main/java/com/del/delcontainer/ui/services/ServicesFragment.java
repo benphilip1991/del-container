@@ -6,19 +6,21 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
-import com.del.delcontainer.adapters.RunningAppsListViewAdapter;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
@@ -37,7 +39,6 @@ public class ServicesFragment extends Fragment {
 
         Log.d(TAG, "onCreateView: Service Fragment created");
         servicesViewModel = ViewModelProviders.of(this).get(ServicesViewModel.class);
-
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
 
@@ -45,6 +46,17 @@ public class ServicesFragment extends Fragment {
     }
 
     private void setupServices(View view) {
+
+        final TextView userName = view.findViewById(R.id.header_profile_text);
+        getFirstName();
+
+        // Attach observer to the viewmodel for username
+        servicesViewModel.getFirstName().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String s) {
+                userName.setText(s);
+            }
+        });
 
         getAppsList();
         initRecyclerView(view);
@@ -73,7 +85,7 @@ public class ServicesFragment extends Fragment {
             if (null != servicesList) {
 
                 RecyclerView recyclerViewAvailableApps = view.
-                        findViewById(R.id.availableAppListView);
+                        findViewById(R.id.available_app_list_view);
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
                         servicesList,
                         (position) -> {
@@ -99,8 +111,8 @@ public class ServicesFragment extends Fragment {
                             }
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
-                recyclerViewAvailableApps.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.VERTICAL, false));
+                recyclerViewAvailableApps.setLayoutManager(new GridLayoutManager(getContext(), 1,
+                        GridLayoutManager.VERTICAL, false));
             }
         });
 
@@ -109,7 +121,7 @@ public class ServicesFragment extends Fragment {
             if (null != userServicesList) {
 
                 RecyclerView recyclerView = view.
-                        findViewById(R.id.installedAppListView);
+                        findViewById(R.id.installed_app_list_view);
                 installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
                         userServicesList,
                         (position) -> {
@@ -137,7 +149,7 @@ public class ServicesFragment extends Fragment {
                         (position, cardView) -> {
                             /**
                              * Listen for long click and provide option to delete app
-                             * This function shows a popup menu with a delete option.
+                             * This function shows a chat_popup menu with a delete option.
                              */
                             PopupMenu deletePopup = new PopupMenu(getContext(), cardView);
                             deletePopup.getMenuInflater().inflate(R.menu.delete_app_menu,
@@ -168,9 +180,15 @@ public class ServicesFragment extends Fragment {
                         });
 
                 recyclerView.setAdapter(installedAppListViewAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                        LinearLayoutManager.HORIZONTAL, false));
+                recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2,
+                        GridLayoutManager.HORIZONTAL, false));
             }
         });
+    }
+    /**
+     * Calls the del-api service to get the first name linked to the current user
+     */
+    private void getFirstName(){
+        servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
     }
 }

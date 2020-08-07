@@ -15,12 +15,18 @@ public class Constants {
     public static final String ISSC_PROVIDER    = "ISSC_PROVIDER";
     public static final String ZEPHYR_HR        = "Zephyr HXM200010503";
 
+    // Scheduled Job constants
+    public static final int JOB_ID              = 12345;
+
     // App specific identifiers
     public static final String APP_IDENT        = "APP_IDENT";
     public static final String APP_DESCRIPTION  = "APP_DESCRIPTION";
     public static final String APP_IMAGE        = "APP_IMAGE";
     public static final String APP_ID           = "appId";
     public static final String APP_NAME         = "appName";
+    public static final String REQUEST          = "request";
+    public static final String CALLBACK         = "callback";
+    public static final String INTERVAL         = "interval";
     public static final String DEL_UTILS        = "DelUtils";
 
     // Data notifications
@@ -60,7 +66,7 @@ public class Constants {
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "192.168.1.9";
+    public static final String DEL_SERVICE_IP       = "192.168.1.7";
     public static final String DEL_SERVICE_PORT     = "3000";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";

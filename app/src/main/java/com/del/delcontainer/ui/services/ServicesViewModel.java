@@ -2,18 +2,21 @@ package com.del.delcontainer.ui.services;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.ApplicationApi;
+import com.del.delcontainer.utils.apiUtils.interfaces.UserApi;
 import com.del.delcontainer.utils.apiUtils.interfaces.UserApplicationsApi;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.Applications;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UpdateUserApplications;
 import com.del.delcontainer.utils.apiUtils.pojo.UserApplicationDetails;
+import com.del.delcontainer.utils.apiUtils.pojo.UserDetails;
 
 import java.util.ArrayList;
 
@@ -29,7 +32,7 @@ public class ServicesViewModel extends ViewModel {
     private MutableLiveData<ArrayList<ApplicationDetails>> servicesList = new MutableLiveData<>();
     private MutableLiveData<ArrayList<LinkedApplicationDetails>> userServicesList =
             new MutableLiveData<>();
-
+    private MutableLiveData<String> firstName = new MutableLiveData<>();
     Retrofit retrofit = APIUtils.getApiClient();
 
     public MutableLiveData<ArrayList<ApplicationDetails>> getServicesList() {
@@ -133,4 +136,35 @@ public class ServicesViewModel extends ViewModel {
             }
         });
     }
+
+    /**
+     * Fetch first name of the user
+     *
+     * @param token
+     * @param userId
+     */
+    public void getUserFirstName(String token, String userId){
+        UserApi userApi = retrofit.create(UserApi.class);
+        Call<UserDetails> call = userApi.getSingleUserDetails(token, userId);
+
+        call.enqueue(new Callback<UserDetails>() {
+            @Override
+            public void onResponse(Call<UserDetails> call, Response<UserDetails> response) {
+                if(response.code() == 200) {
+                    Log.d(TAG, "onResponse: Got first name");
+                    firstName.setValue("Hello "+response.body().getFirstName());
+                }
+                else {
+                    Log.e(TAG, "onResponse: Error getting first name" + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserDetails> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    public LiveData<String> getFirstName() { return firstName; }
 }
