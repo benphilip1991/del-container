@@ -109,7 +109,7 @@ public class DelAppManager {
                     + delAppContainerFragment.getId());
 
             // last parameter is the app tag
-            transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId);
+            transaction.add(R.id.host_fragment, appCache.get(appId), appId);
         }
 
         DelAppContainerFragment app = (DelAppContainerFragment) appCache.get(appId);
@@ -122,7 +122,7 @@ public class DelAppManager {
             app.setAppTitle();
         }
 
-        transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
+        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
         transaction.commit();
     }
 
