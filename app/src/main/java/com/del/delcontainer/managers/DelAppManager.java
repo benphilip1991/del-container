@@ -122,7 +122,7 @@ public class DelAppManager {
             app.setAppTitle();
         }
 
-        transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
+        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
         transaction.commit();
     }
 

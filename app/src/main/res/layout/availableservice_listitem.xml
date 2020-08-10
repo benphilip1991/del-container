@@ -45,16 +45,18 @@
 
             <TextView
                 android:id="@+id/available_app_description"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
+                android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
                 android:autoSizeMaxTextSize="15sp"
                 android:autoSizeMinTextSize="8sp"
                 android:autoSizeTextType="uniform"
                 android:gravity="top"
                 android:text="App description here"
                 android:textColor="#777"
+                app:layout_constraintEnd_toStartOf="@+id/get_available_app_button"
                 app:layout_constraintStart_toEndOf="@id/available_app_image"
                 app:layout_constraintTop_toBottomOf="@+id/available_app_label" />
 
