@@ -24,10 +24,11 @@
     <Button
         android:id="@+id/dismiss_button"
         android:minHeight="30dp"
-        android:minWidth="60dp"
-        android:layout_width="match_parent"
+        android:minWidth="80dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
+        android:layout_gravity="center"
         android:background="@drawable/warning_rounded_button_default"
         android:gravity="center"
         android:text="@string/okay_text"
