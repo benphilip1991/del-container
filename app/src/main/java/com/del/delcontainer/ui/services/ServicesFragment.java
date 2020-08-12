@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DelAppManager;
@@ -55,6 +56,15 @@ public class ServicesFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 userName.setText(s);
+            }
+        });
+
+        servicesViewModel.getStatusObserver().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String type) {
+                //Call dialog
+                MessageDialogFragment infoDialog = new MessageDialogFragment(type, servicesViewModel.getStatusMessage());
+                infoDialog.show(getFragmentManager(), "information");
             }
         });
 
@@ -190,5 +200,11 @@ public class ServicesFragment extends Fragment {
      */
     private void getFirstName(){
         servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
+    }
+    /**
+     * Calls the del-api service to get the status of the view model processing
+     */
+    private void getStatusObserver(){
+        servicesViewModel.getStatusObserver();
     }
 }
