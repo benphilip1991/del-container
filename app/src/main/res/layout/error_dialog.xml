@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background">
+
+    <ImageView
+        android:id="@+id/info_dialog_image"
+        android:layout_width="match_parent"
+        android:layout_height="32dp"
+        android:scaleType="center"
+        android:background="@drawable/error_dialog_top_rounded_bg"
+        android:src="@drawable/ic_baseline_error_24" />
+
+    <TextView
+        android:id="@+id/info_dialog_message"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:gravity="center"
+        android:text="Dialog"
+        android:textSize="15sp"/>
+
+    <Button
+        android:id="@+id/dismiss_button"
+        android:minHeight="30dp"
+        android:minWidth="80dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:layout_gravity="center"
+        android:background="@drawable/warning_rounded_button_default"
+        android:gravity="center"
+        android:text="@string/okay_text"
+        android:textColor="@color/colorWarningDark"
+        android:textSize="13sp" />
+
+</LinearLayout>

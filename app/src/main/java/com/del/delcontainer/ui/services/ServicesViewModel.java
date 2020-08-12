@@ -19,6 +19,7 @@ import com.del.delcontainer.utils.apiUtils.pojo.UserApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UserDetails;
 
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -33,6 +34,8 @@ public class ServicesViewModel extends ViewModel {
     private MutableLiveData<ArrayList<LinkedApplicationDetails>> userServicesList =
             new MutableLiveData<>();
     private MutableLiveData<String> firstName = new MutableLiveData<>();
+    private MutableLiveData<String> status = new MutableLiveData<>();
+    private String statusMessage = "";
     Retrofit retrofit = APIUtils.getApiClient();
 
     public MutableLiveData<ArrayList<ApplicationDetails>> getServicesList() {
@@ -125,6 +128,8 @@ public class ServicesViewModel extends ViewModel {
                     userServicesList.setValue(response.body().getApplications());
                 } else {
                     if(response.code() == 400) {
+                        statusMessage = "Application already installed";
+                        status.setValue(Constants.DIALOG_ERROR);
                         Log.e(TAG, "App already linked");
                     }
                 }
@@ -167,4 +172,6 @@ public class ServicesViewModel extends ViewModel {
     }
 
     public LiveData<String> getFirstName() { return firstName; }
+    public LiveData<String> getStatusObserver(){ return status; }
+    public String getStatusMessage() { return statusMessage; }
 }

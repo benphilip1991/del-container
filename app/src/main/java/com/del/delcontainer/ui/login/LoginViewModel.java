@@ -2,9 +2,11 @@ package com.del.delcontainer.ui.login;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.AuthTokenApi;
 import com.del.delcontainer.utils.apiUtils.pojo.Token;
@@ -24,9 +26,9 @@ import retrofit2.Call;
 public class LoginViewModel extends ViewModel {
 
     private static final String TAG = "LoginViewModel";
-
+    private MutableLiveData<String> status = new MutableLiveData<>();
+    private String statusMessage = "";
     private MutableLiveData<LoginStateRepo> loginStateRepo = new MutableLiveData<>();
-
     public MutableLiveData<LoginStateRepo> getLoginStateRepo() {
         return loginStateRepo;
     }
@@ -48,6 +50,8 @@ public class LoginViewModel extends ViewModel {
                     LoginStateRepo.getInstance().setToken("Bearer " + response.body().getToken());
                     loginStateRepo.setValue(LoginStateRepo.getInstance());
                 } else {
+                    statusMessage = "Invalid credentials, Please try again.";
+                    status.setValue(Constants.DIALOG_ERROR);
                     Log.e(TAG, "onResponse: Error " + response.message());
                 }
             }
@@ -87,4 +91,7 @@ public class LoginViewModel extends ViewModel {
             }
         });
     }
+
+    public LiveData<String> getStatusObserver(){ return status; }
+    public String getStatusMessage() { return statusMessage; }
 }
