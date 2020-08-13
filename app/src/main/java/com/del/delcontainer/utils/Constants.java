@@ -66,11 +66,11 @@ public class Constants {
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "192.168.1.102";
+    public static final String DEL_SERVICE_IP       = "10.24.0.8";
     //public static final String DEL_SERVICE_PORT     = "3000";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
-    public static final String APP_RESOURCE_PATH     = "application/res/";
+    public static final String APP_RESOURCE_PATH     = "application/package/";
     // Dialog information types
     public static final String DIALOG_ERROR         = "error";
     public static final String DIALOG_WARNING       = "warning";
