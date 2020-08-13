@@ -89,7 +89,7 @@ public class DelAppManager {
      * Launch app can be used for bringing running apps to the foreground
      * or launching a new instance of an app.
      */
-    public void launchApp(String appId, String appName) {
+    public void launchApp(String appId, String appName, String packageName) {
 
         Log.d(TAG, "launchApp: Launching : " + appName);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -100,7 +100,7 @@ public class DelAppManager {
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
             DelAppContainerFragment delAppContainerFragment =
-                    new DelAppContainerFragment(appId, appName);
+                    new DelAppContainerFragment(appId, appName, packageName);
             appCache.put(appId, delAppContainerFragment);
             appNameMap.put(appId, appName);
 

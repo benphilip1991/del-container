@@ -62,8 +62,9 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         String imageUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
-                + Constants.DEL_SERVICE_PORT + "/" + availableAppsList.get(position).get_id()
-                + "/icon";
+                + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
+                + availableAppsList.get(position).get_id()
+                + "/" + availableAppsList.get(position).getApplicationUrl() +"/icon";
         Picasso.with(this.context).load(imageUrl).into(holder.availableAppImage);
         holder.availableAppLabel.setText(availableAppsList.get(position).getApplicationName());
         holder.availableAppDescription.setText(
