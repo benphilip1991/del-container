@@ -29,13 +29,15 @@ public class DelAppContainerFragment extends Fragment {
 
     private String appId = null;
     private String appName = null;
+    private String packageName = null; //same as app description URL
     private WebView appView;
     private WebViewClient webViewClient;
     DelContainerActivity activity;
 
-    public DelAppContainerFragment(String appId, String appName) {
+    public DelAppContainerFragment(String appId, String appName, String packageName) {
         this.appId = appId;
         this.appName = appName;
+        this.packageName = packageName;
         webViewClient = new DelAppWebViewClient(this); // unique for every new sub-app
     }
 
@@ -142,7 +144,8 @@ public class DelAppContainerFragment extends Fragment {
         Log.d(TAG, "getAppUrl: Getting application url for " + appName);
 
         String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
-                + Constants.DEL_SERVICE_PORT + "/" + appId;
+                + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
+                + appId + "/" + packageName ;
         return appUrl;
     }
 }

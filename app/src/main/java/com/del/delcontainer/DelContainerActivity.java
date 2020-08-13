@@ -306,7 +306,7 @@ public class DelContainerActivity extends AppCompatActivity {
                                         // call function to open application
                                         DelAppManager delAppManager = DelAppManager.getInstance();
                                         delAppManager.launchApp(
-                                                "5e4b6504946be87d90049f39","Steps");
+                                                "5e4b6504946be87d90049f39","Steps", "steps");
                                         myDialog.dismiss();
                                     }
                                 }, TIME_OUT);

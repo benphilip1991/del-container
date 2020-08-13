@@ -63,7 +63,8 @@ public class ServicesFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String type) {
                 //Call dialog
-                MessageDialogFragment infoDialog = new MessageDialogFragment(type, servicesViewModel.getStatusMessage());
+                MessageDialogFragment infoDialog = new MessageDialogFragment(type,
+                        servicesViewModel.getStatusMessage());
                 infoDialog.show(getFragmentManager(), "information");
             }
         });
@@ -154,7 +155,8 @@ public class ServicesFragment extends Fragment {
                             // Launch app.
                             delAppManager.launchApp(
                                     userServicesList.get(position).getApplicationId(),
-                                    userServicesList.get(position).getApplicationName());
+                                    userServicesList.get(position).getApplicationName(),
+                                    userServicesList.get(position).getApplicationUrl());
                         },
                         (position, cardView) -> {
                             /**
@@ -199,7 +201,8 @@ public class ServicesFragment extends Fragment {
      * Calls the del-api service to get the first name linked to the current user
      */
     private void getFirstName(){
-        servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(), LoginStateRepo.getInstance().getUserId());
+        servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(),
+                LoginStateRepo.getInstance().getUserId());
     }
     /**
      * Calls the del-api service to get the status of the view model processing
