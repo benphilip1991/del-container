@@ -34,6 +34,13 @@ public class Constants {
     public static final String DATA_TYPE        = "DATA_TYPE";
     public static final String DATA_VALUE       = "DATA_VALUE";
 
+    // HTTP ERROR CODES
+    public static final int HTTP_SUCCESS         = 200;
+    public static final int HTTP_BAD_REQUEST     = 400;
+    public static final int HTTP_UNAUTHORIZED    = 401;
+    public static final int HTTP_NOT_FOUND       = 404;
+    public static final int HTTP_CONFLICT        = 409;
+
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
     public static final long SCAN_PERIOD            = 20000; // 20 seconds
@@ -67,7 +74,6 @@ public class Constants {
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
     public static final String DEL_SERVICE_IP       = "10.24.0.8";
-    //public static final String DEL_SERVICE_PORT     = "3000";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
     public static final String APP_RESOURCE_PATH     = "application/package/";

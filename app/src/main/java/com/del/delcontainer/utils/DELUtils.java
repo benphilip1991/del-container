@@ -196,7 +196,7 @@ public class DELUtils {
                 return;
             }
 
-            Log.d(TAG, "setLocationRequest: Setting location request for service");
+            Log.d(TAG, "setLocationRequest: Setting location request for service : " + appId);
             dataManager.getLocationRequests().put(appId, callback);
             dataManager.startLocationProviderTask();
 
@@ -256,7 +256,7 @@ public class DELUtils {
                 return;
             }
 
-            Log.d(TAG, "setPedometerRequest: Setting location request for service");
+            Log.d(TAG, "setPedometerRequest: Setting pedometer request for service : " + appId);
             dataManager.getPedometerRequests().put(appId, callback);
             dataManager.startStepCountProviderTask();
 

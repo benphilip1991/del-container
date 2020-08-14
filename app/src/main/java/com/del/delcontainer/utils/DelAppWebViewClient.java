@@ -14,9 +14,11 @@ public class DelAppWebViewClient extends WebViewClient {
 
     private static final String TAG = "DelAppWebViewClient";
     private static Fragment fragment = null;
+    private static String appId = null;
 
-    public DelAppWebViewClient(Fragment fragment) {
+    public DelAppWebViewClient(Fragment fragment, String appId) {
         this.fragment = fragment;
+        this.appId = appId;
     }
 
     @Override
@@ -24,7 +26,7 @@ public class DelAppWebViewClient extends WebViewClient {
 
         Log.d(TAG, "onPageFinished: Pushing data to app");
         //String methodUrl = "javascript:displayAppMessage('Heart Rate : " + new Random().nextInt(500) + "')";
-        String methodUrl = "javascript:displayAppMessage('Demo App')";
+        String methodUrl = "javascript:setAppId('" + appId + "')";
         view.loadUrl(methodUrl);
     }
 

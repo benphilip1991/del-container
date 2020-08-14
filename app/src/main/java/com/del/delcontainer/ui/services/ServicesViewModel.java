@@ -59,7 +59,7 @@ public class ServicesViewModel extends ViewModel {
         call.enqueue(new Callback<Applications>() {
             @Override
             public void onResponse(Call<Applications> call, Response<Applications> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got applications.");
                     servicesList.setValue(response.body().getApplications());
                 } else {
@@ -90,7 +90,7 @@ public class ServicesViewModel extends ViewModel {
             @Override
             public void onResponse(Call<UserApplicationDetails> call,
                                    Response<UserApplicationDetails> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got linked applications");
                     userServicesList.setValue(response.body().getApplications());
                 } else {
@@ -124,10 +124,10 @@ public class ServicesViewModel extends ViewModel {
         call.enqueue(new Callback<UserApplicationDetails>() {
             @Override
             public void onResponse(Call<UserApplicationDetails> call, Response<UserApplicationDetails> response) {
-                if(response.code() == 200) {
+                if(response.code() == Constants.HTTP_SUCCESS) {
                     userServicesList.setValue(response.body().getApplications());
                 } else {
-                    if(response.code() == 400) {
+                    if(response.code() == Constants.HTTP_BAD_REQUEST) {
                         statusMessage = "Application already installed";
                         status.setValue(Constants.DIALOG_ERROR);
                         Log.e(TAG, "App already linked");
@@ -155,7 +155,7 @@ public class ServicesViewModel extends ViewModel {
         call.enqueue(new Callback<UserDetails>() {
             @Override
             public void onResponse(Call<UserDetails> call, Response<UserDetails> response) {
-                if(response.code() == 200) {
+                if(response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got first name");
                     firstName.setValue("Hello "+response.body().getFirstName());
                 }

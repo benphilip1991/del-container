@@ -45,7 +45,7 @@ public class LoginViewModel extends ViewModel {
         call.enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Token : Bearer " + response.body().getToken());
                     LoginStateRepo.getInstance().setToken("Bearer " + response.body().getToken());
                     loginStateRepo.setValue(LoginStateRepo.getInstance());
@@ -69,7 +69,7 @@ public class LoginViewModel extends ViewModel {
         call.enqueue(new Callback<TokenDetails>() {
             @Override
             public void onResponse(Call<TokenDetails> call, Response<TokenDetails> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got user details");
                     LoginStateRepo.getInstance().setUserId(response.body().getUserId());
                     LoginStateRepo.getInstance().setUserRole(response.body().getUserRole());
