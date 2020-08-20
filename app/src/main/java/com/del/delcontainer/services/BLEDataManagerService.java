@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -39,6 +41,7 @@ public class BLEDataManagerService extends IntentService {
 
         BluetoothDevice device = null;
         gattUtils = new GattUtils(this.getApplicationContext());
+        ResultReceiver receiver = intent.getParcelableExtra(Constants.BLE_STATUS_RECIEVER);
 
         if (null != intent) {
 
@@ -52,6 +55,9 @@ public class BLEDataManagerService extends IntentService {
             // Check if disconnect or connection
             if (intent.getStringExtra(Constants.OPERATION).equals(Constants.DISCONNECT)) {
                 disconnectBLEDevice(device.getAddress());
+                Bundle status = new Bundle();
+                status.putString(Constants.BLE_STATUS, Constants.BLE_STATUS_DISCONNECTED);
+                receiver.send(Constants.BLE_STATUS_CHANGED, status);
 
             } else if (intent.getStringExtra(Constants.OPERATION).equals(Constants.CONNECT)) {
 
@@ -61,6 +67,9 @@ public class BLEDataManagerService extends IntentService {
                         + device.getAddress());
 
                 validateDeviceAndFetchData(device);
+                Bundle status = new Bundle();
+                status.putString(Constants.BLE_STATUS, Constants.BLE_STATUS_CONNECTED);
+                receiver.send(Constants.BLE_STATUS_CHANGED, status);
             }
         }
     }

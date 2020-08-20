@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -192,7 +193,7 @@ public class SourcesFragment extends Fragment
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
         // FIX: Adapter updates recycler view before BLEDataManagerService connection/disconnection
-        adapter.notifyDataSetChanged();
+
 
         Intent deviceSelectedIntent = new Intent();
         deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
@@ -203,7 +204,24 @@ public class SourcesFragment extends Fragment
         Intent intent = new Intent(getContext(), BLEDataManagerService.class);
         intent.putExtra(Constants.BLE_DEVICE, device);
         intent.putExtra(Constants.OPERATION, operation);
-
+        //Receiver to update the source fragment on connection/disconnection event completion
+        intent.putExtra(Constants.BLE_STATUS_RECIEVER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+                if (resultCode == Constants.BLE_STATUS_CHANGED) {
+                    String status = resultData.getString(Constants.BLE_STATUS);
+                    if(status == Constants.BLE_STATUS_CONNECTED){
+                        Toast.makeText(getContext(), "Connected to "
+                                + device.getName(), Toast.LENGTH_SHORT).show();
+                    } else if (status == Constants.BLE_STATUS_DISCONNECTED){
+                        Toast.makeText(getContext(), "Disconnected from "
+                                + device.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                    adapter.notifyDataSetChanged();
+                }
+            }
+        });
         getActivity().startService(intent);
     }
 }
