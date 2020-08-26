@@ -46,6 +46,8 @@ public class ChatBotDialog extends DialogFragment {
     Handler mHandler = new Handler();
 
     public ChatBotDialog() {
+        chatMessageList = new ArrayList<>();
+        chatAdapter = new ChatBotMessageViewAdapter(chatMessageList, getContext());
         conversationManager = conversationManager.getInstance();
     }
 
@@ -74,8 +76,6 @@ public class ChatBotDialog extends DialogFragment {
         /**
          * Configure recycler view adapter for chat bot messages
          */
-        chatMessageList = new ArrayList<>();
-        chatAdapter = new ChatBotMessageViewAdapter(chatMessageList, getContext());
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
                 LinearLayoutManager.VERTICAL,false));
         recyclerView.setAdapter(chatAdapter);
@@ -141,6 +141,7 @@ public class ChatBotDialog extends DialogFragment {
                     String inputTextValue = inputText.getText().toString();
                     conversationManager.sendUserMessage(inputTextValue, Constants.USER_MESSAGE);
                     showMessage(inputTextValue, true);
+                    inputText.setText("");
                 }
                 return false;
             }
@@ -158,6 +159,7 @@ public class ChatBotDialog extends DialogFragment {
             String inputTextValue = inputText.getText().toString();
             conversationManager.sendUserMessage(inputTextValue, Constants.USER_MESSAGE);
             showMessage(inputTextValue, true);
+            inputText.setText("");
             if (v != null) {
                 InputMethodManager imm = (InputMethodManager) getActivity()
                         .getSystemService(Context.INPUT_METHOD_SERVICE);
