@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.chatbot;
+package com.del.delcontainer.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,12 +8,13 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
+import com.del.delcontainer.utils.apiUtils.pojo.ChatMessage;
 
 import java.util.List;
 
-public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHolder> {
-
-    List<ChatType> chatTypes;
+public class ChatBotMessageViewAdapter extends RecyclerView.Adapter<ChatBotMessageViewAdapter.CustomViewHolder> {
+    private static final String TAG = "ChatBotMessageViewAdapter";
+    List<ChatMessage> chatMessages;
     Context context;
 
     class CustomViewHolder extends RecyclerView.ViewHolder{
@@ -24,14 +25,14 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
         }
     }
 
-    public ChatAdapter(List<ChatType> chatTypes, Context context) {
-        this.chatTypes = chatTypes;
+    public ChatBotMessageViewAdapter(List<ChatMessage> chatMessages, Context context) {
+        this.chatMessages = chatMessages;
         this.context = context;
     }
 
     @Override
     public int getItemViewType(int position) {
-        if(chatTypes.get(position).user()){
+        if(chatMessages.get(position).user()){
             return R.layout.sent_layout;
         }
         return R.layout.receive_layout;
@@ -39,7 +40,7 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
 
     @Override
     public int getItemCount() {
-        return  chatTypes.size();
+        return  chatMessages.size();
     }
 
     @Override
@@ -50,6 +51,6 @@ public class ChatAdapter extends RecyclerView.Adapter<ChatAdapter.CustomViewHold
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        holder.textView.setText(chatTypes.get(position).getText());
+        holder.textView.setText(chatMessages.get(position).getText());
     }
 }

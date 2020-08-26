@@ -77,6 +77,13 @@ public class Constants {
     public static final String APP_ADD          = "add";
     public static final String APP_DELETE       = "delete";
 
+    //Chatbot application actions
+    public static final int APP_OPEN         = 1;
+
+    //Chatbot message types
+    public static final String USER_MESSAGE          = "message_received";
+    public static final String INITIAL_MESSAGE       = "hello";
+
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";

@@ -161,7 +161,7 @@ public class ServicesFragment extends Fragment {
                         (position, cardView) -> {
                             /**
                              * Listen for long click and provide option to delete app
-                             * This function shows a chat_popup menu with a delete option.
+                             * This function shows a chat_dialog menu with a delete option.
                              */
                             PopupMenu deletePopup = new PopupMenu(getContext(), cardView);
                             deletePopup.getMenuInflater().inflate(R.menu.delete_app_menu,

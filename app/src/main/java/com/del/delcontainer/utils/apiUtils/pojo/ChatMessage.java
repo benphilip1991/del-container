@@ -1,11 +1,11 @@
-package com.del.delcontainer.ui.chatbot;
+package com.del.delcontainer.utils.apiUtils.pojo;
 
-public class ChatType {
+public class ChatMessage {
 
     String text;
     boolean user;
 
-    public ChatType(String text, boolean user) {
+    public ChatMessage(String text, boolean user) {
         this.text = text;
         this.user = user;
     }
