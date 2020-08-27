@@ -1,4 +1,4 @@
-package com.del.delcontainer.utils.apiUtils.pojo;
+package com.del.delcontainer.utils.chatBotUtils;
 
 public class ChatMessage {
 

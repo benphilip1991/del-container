@@ -8,7 +8,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
-import com.del.delcontainer.utils.apiUtils.pojo.ChatMessage;
+import com.del.delcontainer.utils.chatBotUtils.ChatMessage;
 
 import java.util.List;
 
