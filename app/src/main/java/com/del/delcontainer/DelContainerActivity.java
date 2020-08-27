@@ -1,31 +1,22 @@
 package com.del.delcontainer;
 
 import android.Manifest;
-import android.app.Dialog;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
-import com.del.delcontainer.ui.chatbot.ChatAdapter;
-import com.del.delcontainer.ui.chatbot.ChatType;
+import com.del.delcontainer.ui.chatbot.ChatBotDialog;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -40,56 +31,35 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.handshake.ServerHandshake;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import static com.del.delcontainer.R.id.host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "DelContainerActivity";
-    Dialog myDialog;
-    EditText inputText;
-    RecyclerView recyclerView;
-    ChatAdapter chatAdapter;
-    List<ChatType> chatTypeList;
-    String userMsgString;
-    private static int TIME_OUT = 3000;
-    private Handler mHandler = new Handler();
 
-    private WebSocketClient mWebSocketClient;
+    IntentFilter intentFilter;
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
+    ChatBotDialog chatBotDialogFragment;
 
-    FloatingActionButton chatButton;
-    IntentFilter intentFilter;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        myDialog = new Dialog(this);
 
         registerBroadcastReceiver();
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
-
+        chatBotDialogFragment = ChatBotDialog.newInstance();
         /**
          * Explicitly setting the default view to the services on first run
          * This ensures the containerViewMap tracks the first view as well.
@@ -97,8 +67,15 @@ public class DelContainerActivity extends AppCompatActivity {
          */
         navView.setSelectedItemId(R.id.navigation_services);
 
+        FloatingActionButton chatButton = (FloatingActionButton) findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChatBot();
+            }
+        });
+
         // Experimental for now
-        //initChatbot();
         verifyAndGetPermissions();
         initServices();
         scheduleProviderJobs();
@@ -172,172 +149,11 @@ public class DelContainerActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize chat button and add event listener
-     * TODO: move to conversation manager and handle everything from there
+     * Click handler for the chat bot pop-up button
      */
-    public void initChatbot(View v) {
-
-        myDialog.setContentView(R.layout.chat_popup);
-
-        chatButton = findViewById(R.id.chat_button);
-        inputText = myDialog.findViewById(R.id.chat_input_text);
-        recyclerView = myDialog.findViewById(R.id.chat_recycler_view);
-        chatTypeList = new ArrayList<>();
-        chatAdapter = new ChatAdapter(chatTypeList, this);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
-        recyclerView.setAdapter(chatAdapter);
-
-        connectWebSocket();
-
-        inputText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    inputText.setHint("");
-                else
-                    inputText.setHint("Ask Something");
-            }
-        });
-
-        myDialog.getWindow().setLayout(RecyclerView.LayoutParams.MATCH_PARENT, RecyclerView.LayoutParams.MATCH_PARENT);
-        myDialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        myDialog.show();
-    }
-
-    boolean isLastVisible() {
-        LinearLayoutManager layoutManager = ((LinearLayoutManager) recyclerView.getLayoutManager());
-        int pos = layoutManager.findLastCompletelyVisibleItemPosition();
-        int numItems = recyclerView.getAdapter().getItemCount();
-        return (pos >= numItems);
-    }
-
-    private void connectWebSocket() {
-        URI uri;
-        try {
-            uri = new URI("ws://" + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT);
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        mWebSocketClient = new WebSocketClient(uri) {
-            @Override
-            public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
-                final String uniqueID = UUID.randomUUID().toString();
-                final JSONObject messagePayload = new JSONObject();
-
-                try {
-                    messagePayload.put("type", "hello");
-                    messagePayload.put("User", uniqueID);
-                    messagePayload.put("text", "Hi from android application");
-                    messagePayload.put("channel", "socket");
-                    messagePayload.put("user_profile", null);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                mWebSocketClient.send(messagePayload.toString());
-
-                inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                    @Override
-                    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                        if (i == EditorInfo.IME_ACTION_SEND) {
-                            ChatType responseMessage = new ChatType(inputText.getText().toString(), true);
-                            chatTypeList.add(responseMessage);
-                            userMsgString = String.valueOf(responseMessage.getText());
-
-                                try {
-                                    messagePayload.put("type", "message_received");
-                                    messagePayload.put("User", uniqueID);
-                                    messagePayload.put("text", userMsgString);
-                                    messagePayload.put("channel", "socket");
-                                    messagePayload.put("user_profile", null);
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                                mWebSocketClient.send(messagePayload.toString());
-                            }
-
-                            String bot_response = messagePayload.toString();
-
-                            try {
-                                JSONObject secondObject = new JSONObject(bot_response);
-                                bot_response= secondObject.getString("text");
-
-                                mWebSocketClient.onMessage(bot_response);
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
-                        return false;
-                    }
-                });
-            }
-
-            @Override
-            public void onMessage(final String s) {
-
-                final String message = s;
-                String compare = "Step_Count"; // make it a list
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-
-                        try {
-                            JSONObject myObject = new JSONObject(message);
-                            String response_string = myObject.getString("text");
-                            Log.d("MyResponseHERE",myObject.toString());
-
-                            if(response_string.equalsIgnoreCase(compare)) {
-
-                                ChatType responseMessage2 = new ChatType(
-                                        "Opening Steps Application...", false);
-                                chatTypeList.add(responseMessage2);
-                                inputText.setText("");
-                                chatAdapter.notifyDataSetChanged();
-                                if (!isLastVisible())
-                                    recyclerView.smoothScrollToPosition(
-                                            chatAdapter.getItemCount() - 1);
-
-                                mHandler.postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        // call function to open application
-                                        DelAppManager delAppManager = DelAppManager.getInstance();
-                                        delAppManager.launchApp(
-                                                "5e4b6504946be87d90049f39","Steps", "steps");
-                                        myDialog.dismiss();
-                                    }
-                                }, TIME_OUT);
-                            }
-                            else {
-                                ChatType responseMessage2 = new ChatType(response_string, false);
-                                chatTypeList.add(responseMessage2);
-                                inputText.setText("");
-                                chatAdapter.notifyDataSetChanged();
-                                if (!isLastVisible())
-                                    recyclerView.smoothScrollToPosition(chatAdapter.getItemCount() - 1);
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                });
-            }
-
-            @Override
-            public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
-            }
-
-            @Override
-            public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
-            }
-        };
-        mWebSocketClient.connect();
+    public void showChatBot() {
+        FragmentManager fm = getSupportFragmentManager();
+        chatBotDialogFragment.show(fm, "chatBotDialogFragment");
     }
 
     /**
