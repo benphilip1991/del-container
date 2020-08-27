@@ -68,7 +68,6 @@ public class ConversationManager {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
                 Log.i("Websocket", "Opened");
-                sendUserMessage("Hi from android application", Constants.INITIAL_MESSAGE);
             }
 
             @Override

@@ -49,6 +49,7 @@ public class ChatBotDialog extends DialogFragment {
         chatMessageList = new ArrayList<>();
         chatAdapter = new ChatBotMessageViewAdapter(chatMessageList, getContext());
         conversationManager = conversationManager.getInstance();
+        conversationManager.connectWebSocket();
     }
 
     @Override
@@ -73,6 +74,8 @@ public class ChatBotDialog extends DialogFragment {
         closeButton = (Button) v.findViewById(R.id.close_button);
         recyclerView = v.findViewById(R.id.chat_recycler_view);
 
+        conversationManager.sendUserMessage("Hi from android application", Constants.INITIAL_MESSAGE);
+
         /**
          * Configure recycler view adapter for chat bot messages
          */
@@ -86,8 +89,6 @@ public class ChatBotDialog extends DialogFragment {
         builder.setView(v);
         Dialog dialog = builder.create();
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(android.graphics.Color.TRANSPARENT));
-
-        conversationManager.connectWebSocket();
 
         /**
          * Set the callback function when a response message is received
