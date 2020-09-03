@@ -3,6 +3,8 @@ package com.del.delcontainer.utils.apiUtils.pojo;
 import com.google.gson.annotations.SerializedName;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class ApplicationDetails {
 
@@ -27,6 +29,9 @@ public class ApplicationDetails {
     @SerializedName("dataDescription")
     private DataCollectedList dataDescription;
 
+    @SerializedName("applicationPermissions")
+    private AccessPermissionsList applicationPermissions;
+
 
     private class DataCollectedList {
 
@@ -36,6 +41,14 @@ public class ApplicationDetails {
         public ArrayList<DataCollected> getDataCollected() {
             return dataCollected;
         }
+    }
+
+    private class AccessPermissionsList {
+        @SerializedName("accessPermissions")
+        private List<String> accessPermissions;
+
+        public List<String> getAccessPermissions() { return accessPermissions; }
+
     }
 
     private class DataCollected {
@@ -77,6 +90,10 @@ public class ApplicationDetails {
 
     public DataCollectedList getDataDescription() {
         return dataDescription;
+    }
+
+    public List<String> getApplicationPermissions() {
+        return applicationPermissions.accessPermissions;
     }
 
     public String getApplicationRegistrationDate() {

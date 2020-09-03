@@ -28,6 +28,10 @@
     <string name="web_desktop_extension">Web/Desktop Extension</string>
     <string name="notifications">Notifications</string>
     <string name="emergency_contact">Emergency Contact</string>
+    <string name="permission_banner_text">This application will be able to do the following</string>
+    <string name="permissions_header_text">Application permissions</string>
     <string name="okay_text">OK</string>
+    <string name="install_text">Install</string>
+    <string name="cancel_text">Cancel</string>
     <string name="megan_fox">Megan Fox</string>
 </resources>

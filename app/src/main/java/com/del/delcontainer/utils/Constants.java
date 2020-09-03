@@ -1,5 +1,6 @@
 package com.del.delcontainer.utils;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Constants {
@@ -95,6 +96,21 @@ public class Constants {
     public static final String DIALOG_ERROR         = "error";
     public static final String DIALOG_WARNING       = "warning";
     public static final String DIALOG_INFO          = "information";
+
+    //Application permission resources
+    public static final String PERM_READ_BODY_DESCRIPTION ="read_body_description";
+    public static final String PERM_ACCESS_LOCATION = "access_location";
+    public static final String PERM_ACCESS_PEDOMETER = "access_pedometer";
+    public static final String PERM_ACCESS_HEART_RATE = "access_heart_rate";
+
+    public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
+        {
+            put(PERM_READ_BODY_DESCRIPTION, "Read your height and weight information");
+            put(PERM_ACCESS_LOCATION, "Access your location");
+            put(PERM_ACCESS_PEDOMETER, "Track your physical activity");
+            put(PERM_ACCESS_HEART_RATE, "Access your heart rate");
+        }
+    };
 
 
     /**

@@ -192,9 +192,6 @@ public class SourcesFragment extends Fragment
             Toast.makeText(getContext(), "Disconnecting from "
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
-        // FIX: Adapter updates recycler view before BLEDataManagerService connection/disconnection
-
-
         Intent deviceSelectedIntent = new Intent();
         deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
