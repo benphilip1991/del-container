@@ -115,7 +115,6 @@ public class HeartRateRepository {
             this.heartDao = heartDao;
         }
 
-
         @Override
         protected Void doInBackground(Void... voids) {
             latestHeartData = heartDao.getLatestHeartData();

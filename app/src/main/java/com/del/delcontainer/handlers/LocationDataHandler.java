@@ -10,6 +10,7 @@ import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 
 import org.json.JSONObject;
@@ -92,13 +93,13 @@ public class LocationDataHandler {
     private Runnable locationProviderTask = () -> {
 
         Log.d(TAG, "locationProviderTask : Running location request.");
-        if (0 == DataManager.getInstance().getLocationRequests().size()) {
+        if (0 == DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).size()) {
             // If running, stop location updates
             LocationService.getInstance().stopLocationUpdates();
             stopLocationProviderTask();
         } else {
             for (Map.Entry<String, String> request :
-                    DataManager.getInstance().getLocationRequests().entrySet()) {
+                    DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).entrySet()) {
 
                 // AppId, Callback function name
                 provideLocationData(request.getKey(), request.getValue());
@@ -120,7 +121,7 @@ public class LocationDataHandler {
 
         if (null == targetFrag) {
             // Fragment doesn't exist. Clear location data request for the app.
-            DataManager.getInstance().getLocationRequests().remove(appId);
+            DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).remove(appId);
             return;
         }
 

@@ -26,8 +26,10 @@ public class Constants {
     public static final String APP_ID           = "appId";
     public static final String APP_NAME         = "appName";
     public static final String REQUEST          = "request";
+    public static final String RESOURCE         = "resource";
     public static final String CALLBACK         = "callback";
     public static final String INTERVAL         = "interval";
+    public static final String APP_REQUESTS     = "requests";
     public static final String DEL_UTILS        = "DelUtils";
 
     // Data notifications
@@ -112,6 +114,11 @@ public class Constants {
         }
     };
 
+    //Resource request type
+    public static final String READ_BODY_DESCRIPTION ="read_body_description";
+    public static final String ACCESS_LOCATION = "access_location";
+    public static final String ACCESS_PEDOMETER = "access_pedometer";
+    public static final String ACCESS_HEART_RATE = "access_heart_rate";
 
     /**
      * Hack to get BLE UUIDs from the fixed values

@@ -13,7 +13,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.database.entities.Heart;
 import com.del.delcontainer.managers.DataManager;
-import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.repositories.HeartRateRepository;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
@@ -23,7 +22,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -151,117 +149,22 @@ public class DELUtils {
     }
 
     @JavascriptInterface
-    public void setContainerRequest(String appDetails) {
+    public void setContainerRequest(String requestDefinition) {
 
         Log.d(TAG, "setContainerRequest: setting container request");
-        String appId = null;
-
+        DataManager dataManager = DataManager.getInstance();
         try {
-            JSONObject reqObject = new JSONObject(appDetails);
-            appId = reqObject.getString(Constants.APP_ID);
+            JSONObject reqObject = new JSONObject(requestDefinition);
+            String appId = reqObject.getString(Constants.APP_ID);
+            JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
 
-            // Register request in data manager
-            DataManager dataManager = DataManager.getInstance();
-            ArrayList<JSONObject> requests = dataManager.getDataRequestMap().get(appId);
+            ArrayList<JSONObject> requestList = new ArrayList();
+            for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
 
-            if(null == requests) {
-                requests = new ArrayList<>();
-            }
+            dataManager.setRequests(appId, requestList);
 
-            requests.add(reqObject);
-            dataManager.getDataRequestMap().put(appId, requests);
         } catch(Exception e) {
             Log.d(TAG, "setContainerRequest : " + e.getMessage());
-        }
-    }
-
-    /**
-     * Set location request for the app. Location details are pushed to
-     * the requesting app periodically when the data is available.
-     * @param appData
-     */
-    @JavascriptInterface
-    public void setLocationRequest(String appData) {
-        String appId = null;
-        String callback = null;
-        DataManager dataManager = DataManager.getInstance();
-
-        try {
-            JSONObject request = new JSONObject(appData);
-            appId = request.getString(Constants.APP_ID);
-            callback = request.getString(Constants.CALLBACK);
-
-            if(null == appId || null == callback) {
-                Log.d(TAG, "setLocationRequest: Invalid request");
-                return;
-            }
-
-            Log.d(TAG, "setLocationRequest: Setting location request for service : " + appId);
-            dataManager.getLocationRequests().put(appId, callback);
-            dataManager.startLocationProviderTask();
-
-        } catch(Exception e) {
-            Log.e(TAG, "setLocationRequest: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Set heart rate request for the app. HR details are pushed to
-     * the requesting app periodically when the data is available.
-     * @param appData
-     */
-    @JavascriptInterface
-    public void setHeartRateRequest(String appData) {
-        String appId = null;
-        String callback = null;
-        DataManager dataManager = DataManager.getInstance();
-
-        try {
-            JSONObject request = new JSONObject(appData);
-            appId = request.getString(Constants.APP_ID);
-            callback = request.getString(Constants.CALLBACK);
-
-            if(null == appId || null == callback) {
-                Log.d(TAG, "setHeartRateRequest: Invalid request");
-                return;
-            }
-
-            Log.d(TAG, "setHeartRateRequest: Setting location request for service");
-            dataManager.getHeartRateRequests().put(appId, callback);
-
-        } catch(Exception e) {
-            Log.e(TAG, "setHeartRateRequest: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Set step count request for the app. Details are pushed to
-     * the requesting app periodically when the data is available.
-     * @param appData
-     */
-    @JavascriptInterface
-    public void setPedometerRequest(String appData) {
-
-        String appId = null;
-        String callback = null;
-        DataManager dataManager = DataManager.getInstance();
-
-        try {
-            JSONObject request = new JSONObject(appData);
-            appId = request.getString(Constants.APP_ID);
-            callback = request.getString(Constants.CALLBACK);
-
-            if(null == appId || null == callback) {
-                Log.d(TAG, "setPedometerRequest: Invalid request");
-                return;
-            }
-
-            Log.d(TAG, "setPedometerRequest: Setting pedometer request for service : " + appId);
-            dataManager.getPedometerRequests().put(appId, callback);
-            dataManager.startStepCountProviderTask();
-
-        } catch(Exception e) {
-            Log.e(TAG, "setPedometerRequest: " + e.getMessage());
         }
     }
 

@@ -9,6 +9,7 @@ import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.services.SensorsService;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 
 import java.util.HashMap;
@@ -74,11 +75,11 @@ public class PedometerDataHandler {
     private Runnable stepCountProviderTask = () -> {
 
         Log.d(TAG, "stepCountProviderTask: Running step count request.");
-        if (0 == DataManager.getInstance().getPedometerRequests().size()) {
+        if (0 == DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).size()) {
             stopStepDataProviderTask();
         } else {
             for (Map.Entry<String, String> request :
-                    DataManager.getInstance().getPedometerRequests().entrySet()) {
+                    DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).entrySet()) {
 
                 provideStepData(request.getKey(), request.getValue());
             }
@@ -99,7 +100,7 @@ public class PedometerDataHandler {
 
         if(null == targetFrag) {
             // App doesn't exist - remove step count data request for app.
-            DataManager.getInstance().getPedometerRequests().remove(appId);
+            DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).remove(appId);
             return;
         }
 

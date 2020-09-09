@@ -6,24 +6,23 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.del.delcontainer.repositories.UserServicesRepository;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.CustomMutableLiveData;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.ApplicationApi;
 import com.del.delcontainer.utils.apiUtils.interfaces.UserApi;
 import com.del.delcontainer.utils.apiUtils.interfaces.UserApplicationsApi;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.Applications;
-import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UpdateUserApplications;
 import com.del.delcontainer.utils.apiUtils.pojo.UserApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UserDetails;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -31,8 +30,8 @@ public class ServicesViewModel extends ViewModel {
 
     private static final String TAG = "ServicesViewModel";
     private MutableLiveData<ArrayList<ApplicationDetails>> servicesList = new MutableLiveData<>();
-    private MutableLiveData<ArrayList<LinkedApplicationDetails>> userServicesList =
-            new MutableLiveData<>();
+    private CustomMutableLiveData<UserServicesRepository> userServicesList =
+            new CustomMutableLiveData<>();
     private MutableLiveData<String> firstName = new MutableLiveData<>();
     private MutableLiveData<String> status = new MutableLiveData<>();
     private String statusMessage = "";
@@ -42,7 +41,7 @@ public class ServicesViewModel extends ViewModel {
         return servicesList;
     }
 
-    public MutableLiveData<ArrayList<LinkedApplicationDetails>> getUserServicesList() {
+    public MutableLiveData<UserServicesRepository> getUserServicesList() {
         return userServicesList;
     }
 
@@ -92,7 +91,10 @@ public class ServicesViewModel extends ViewModel {
                                    Response<UserApplicationDetails> response) {
                 if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got linked applications");
-                    userServicesList.setValue(response.body().getApplications());
+                    if(null == userServicesList.getValue()) {
+                        userServicesList.setValue(UserServicesRepository.getInstance());
+                    }
+                    userServicesList.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     Log.e(TAG, "onResponse: Error linked applications " + response.message());
                 }
@@ -123,9 +125,11 @@ public class ServicesViewModel extends ViewModel {
 
         call.enqueue(new Callback<UserApplicationDetails>() {
             @Override
-            public void onResponse(Call<UserApplicationDetails> call, Response<UserApplicationDetails> response) {
+            public void onResponse(Call<UserApplicationDetails> call,
+                                   Response<UserApplicationDetails> response) {
                 if(response.code() == Constants.HTTP_SUCCESS) {
-                    userServicesList.setValue(response.body().getApplications());
+                    //MyNewType.getInstance().setData = response.body().fetApplications()
+                    userServicesList.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     if(response.code() == Constants.HTTP_BAD_REQUEST) {
                         statusMessage = "Application already installed";

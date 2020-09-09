@@ -140,23 +140,24 @@ public class ServicesFragment extends Fragment {
         });
 
         // Set linked services fetched from del-api
-        servicesViewModel.getUserServicesList().observe(this, (userServicesList) -> {
-            if (null != userServicesList) {
+        servicesViewModel.getUserServicesList().observe(this, (userServicesRepository) -> {
+            if (null != userServicesRepository) {
 
                 RecyclerView recyclerView = view.
                         findViewById(R.id.installed_app_list_view);
                 installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
-                        userServicesList,
+                        userServicesRepository.getUserServicesList(),
                         (position) -> {
                             /**
                              * Handle clicks events on each service card
                              * Check if the service already exists in the fragment stack and bring
                              * it to the foreground. If not, create a new fragment object.
                              */
-                            Log.d(TAG, "onAppClick: launching " + userServicesList
-                                    .get(position).getApplicationName());
-                            Toast.makeText(getContext(), "Launching " + userServicesList
-                                    .get(position).getApplicationName(), Toast.LENGTH_SHORT).show();
+                            Log.d(TAG, "onAppClick: launching " + userServicesRepository
+                                    .getUserServicesList().get(position).getApplicationName());
+                            Toast.makeText(getContext(), "Launching " + userServicesRepository
+                                    .getUserServicesList().get(position).getApplicationName(),
+                                    Toast.LENGTH_SHORT).show();
 
                             // Get fragment manager instance and launch app
                             FragmentManager fragmentManager = getActivity()
@@ -166,9 +167,12 @@ public class ServicesFragment extends Fragment {
 
                             // Launch app.
                             delAppManager.launchApp(
-                                    userServicesList.get(position).getApplicationId(),
-                                    userServicesList.get(position).getApplicationName(),
-                                    userServicesList.get(position).getApplicationUrl());
+                                    userServicesRepository.getUserServicesList()
+                                            .get(position).getApplicationId(),
+                                    userServicesRepository.getUserServicesList()
+                                            .get(position).getApplicationName(),
+                                    userServicesRepository.getUserServicesList()
+                                            .get(position).getApplicationUrl());
                         },
                         (position, cardView) -> {
                             /**
@@ -182,14 +186,15 @@ public class ServicesFragment extends Fragment {
                             deletePopup.setOnMenuItemClickListener((menuItem) -> {
                                 if (menuItem.getItemId() == R.id.delete_app) {
                                     Toast.makeText(getContext(), "Deleting : " +
-                                                    userServicesList.get(position)
-                                                            .getApplicationName(),
+                                                    userServicesRepository.getUserServicesList()
+                                                            .get(position).getApplicationName(),
                                             Toast.LENGTH_SHORT).show();
                                     try {
                                         servicesViewModel.updateUserApplicationsList(
                                                 LoginStateRepo.getInstance().getToken(),
                                                 LoginStateRepo.getInstance().getUserId(),
-                                                userServicesList.get(position).getApplicationId(),
+                                                userServicesRepository.getUserServicesList()
+                                                        .get(position).getApplicationId(),
                                                 Constants.APP_DELETE);
                                         installedAppListViewAdapter.notifyDataSetChanged();
                                     } catch (Exception e) {

@@ -2,6 +2,8 @@ package com.del.delcontainer.utils.apiUtils.pojo;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.List;
+
 public class LinkedApplicationDetails {
 
     @SerializedName("applicationId")
@@ -18,6 +20,17 @@ public class LinkedApplicationDetails {
 
     @SerializedName("applicationUrl")
     private String applicationUrl;
+
+    @SerializedName("applicationPermissions")
+    private AccessPermissionsList applicationPermissions;
+
+    private class AccessPermissionsList {
+        @SerializedName("accessPermissions")
+        private List<String> accessPermissions;
+
+        public List<String> getAccessPermissions() { return accessPermissions; }
+
+    }
 
     public String getApplicationId() {
         return applicationId;
@@ -37,5 +50,9 @@ public class LinkedApplicationDetails {
 
     public String getApplicationUrl() {
         return applicationUrl;
+    }
+
+    public List<String> getApplicationPermissions() {
+        return applicationPermissions.accessPermissions;
     }
 }

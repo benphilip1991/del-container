@@ -1,8 +1,13 @@
 package com.del.delcontainer.managers;
 
+import android.util.Log;
+
 import com.del.delcontainer.handlers.LocationDataHandler;
 import com.del.delcontainer.handlers.PedometerDataHandler;
-import com.del.delcontainer.services.LocationService;
+import com.del.delcontainer.repositories.UserServicesRepository;
+import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.CustomMutableLiveData;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import org.json.JSONObject;
 
@@ -17,74 +22,107 @@ import java.util.HashMap;
  * and allows services to store data in the db.
  */
 public class DataManager {
+    private static final String TAG = "DataManager";
 
     // TODO: Need a scheduler to go through the mapped requests and deliver -> DataProviderService
-    // Map of appId -> List of JSONObjects,
-    private static HashMap<String, ArrayList<JSONObject>> dataRequestMap;
+    // Map of request resource -> dictionary of (appId -> callback),
+    static HashMap<String, HashMap<String, String>> dataRequestMap;
 
-    // Map of appId -> callback name
-    private static HashMap<String, String> locationRequests;
-    private static HashMap<String, String> heartRateRequests;
-    private static HashMap<String, String> pedometerRequests;
+    //Object to store installed apps and permissions
+    private static CustomMutableLiveData<UserServicesRepository> userServicesRepository =
+            new CustomMutableLiveData<>();
 
     private static DataManager dataManager = new DataManager();
 
     private DataManager() {
         dataRequestMap = new HashMap<>();
-        locationRequests = new HashMap<>();
-        heartRateRequests = new HashMap<>();
-        pedometerRequests = new HashMap<>();
-    }
-
-    /**
-     * Method to delete all requests associated to an app
-     *
-     * @param appId
-     */
-    public void removeDataRequests(String appId) {
-        locationRequests.remove(appId);
-        heartRateRequests.remove(appId);
-        pedometerRequests.remove(appId);
+        userServicesRepository.postValue(UserServicesRepository.getInstance());
+        //TODO: Observe and update app list when changes are triggered
     }
 
     public static DataManager getInstance() {
         return dataManager;
     }
 
-    public HashMap<String, ArrayList<JSONObject>> getDataRequestMap() {
-        return dataRequestMap;
-    }
-
-    public HashMap<String, String> getLocationRequests() {
-        return locationRequests;
-    }
-
-    public HashMap<String, String> getHeartRateRequests() {
-        return heartRateRequests;
-    }
-
-    public HashMap<String, String> getPedometerRequests() {
-        return pedometerRequests;
-    }
-
-
-    // Data provider operations
     /**
-     * Start location provider.
+     * Method to delete resource requests associated to an app
+     * @param resource
+     * @param appId
      */
-    public static void startLocationProviderTask() {
+    public void removeResourceRequests(String resource, String appId) {
+        dataRequestMap.get(resource).remove(appId);
+    }
 
-        if (!LocationDataHandler.getInstance().isRunning()) {
-            LocationDataHandler.getInstance().startLocationProviderTask();
+    /**
+     * Method to get all requests for a resource
+     * @param resource
+     */
+    public HashMap<String, String> getRequests(String resource) {
+        return dataRequestMap.get(resource);
+    }
+
+    /**
+     * Method to set application requests for a resource
+     * @param appId
+     * @param requests
+     */
+    public static void setRequests(String appId, ArrayList<JSONObject> requests) {
+        ArrayList<LinkedApplicationDetails> linkedApps = userServicesRepository
+                .getValue().getUserServicesList();
+        try{
+            for (JSONObject request:requests) {
+                String resource = request.getString(Constants.RESOURCE);
+                String callback = request.getString(Constants.CALLBACK);
+                if(validatePermissions(linkedApps, appId, resource)){
+                    if(null == dataRequestMap.get(resource)) {
+                        dataRequestMap.put(resource, new HashMap<String, String>());
+                    }
+                    Log.d(TAG, "addRequest: Setting"
+                            + resource + " request for service : " + appId);
+                    dataRequestMap.get(resource).put(appId, callback);
+                    startProviderTask(resource);
+
+                } else {
+                    Log.d(TAG, "addRequest: No permission to set "
+                            + resource + " request for service : " + appId);
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG,"Error while parsing requests");
         }
     }
 
     /**
-     * Start step data provider
+     * Method to validate application permissions for a resource
+     * @param linkedApps
+     * @param appId
+     * @param resource
      */
-    public static void startStepCountProviderTask() {
-        if(!PedometerDataHandler.getInstance().isRunning()) {
-            PedometerDataHandler.getInstance().startStepDataProviderTask();
+    private static boolean validatePermissions(ArrayList<LinkedApplicationDetails> linkedApps,
+                                               String appId, String resource) {
+        for(LinkedApplicationDetails app : linkedApps) {
+            if (app.getApplicationId().equals(appId) &&
+                    app.getApplicationPermissions().contains(resource))
+                return true;
         }
+        return false;
+    }
+
+    /**
+     * Method to start resource providers
+     * @param resource
+     */
+    public static void startProviderTask(String resource) {
+        switch(resource) {
+            case Constants.ACCESS_LOCATION:
+                if (!LocationDataHandler.getInstance().isRunning())
+                    LocationDataHandler.getInstance().startLocationProviderTask();
+                break;
+            case Constants.ACCESS_PEDOMETER:
+                if(!PedometerDataHandler.getInstance().isRunning())
+                    PedometerDataHandler.getInstance().startStepDataProviderTask();
+            default:
+        }
+
     }
 }
