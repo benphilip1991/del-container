@@ -26,7 +26,7 @@ import com.del.delcontainer.adapters.ChatBotMessageViewAdapter;
 import com.del.delcontainer.managers.ConversationManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.utils.apiUtils.pojo.ChatMessage;
+import com.del.delcontainer.utils.chatBotUtils.ChatMessage;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;

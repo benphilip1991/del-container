@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="32dp"
         android:scaleType="center"
-        android:background="@drawable/info_dialog_top_rounded_bg"
+        android:background="@drawable/dialog_rounded_header"
         android:src="@drawable/ic_baseline_info_24" />
 
     <TextView

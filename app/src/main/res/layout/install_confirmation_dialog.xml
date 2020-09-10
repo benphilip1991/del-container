@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/dialog_background">
+
+    <TextView
+        android:id="@+id/permission_dialog_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:gravity="center"
+        android:text="@string/permissions_header_text"
+        android:textColor="@android:color/black"
+        android:textSize="18sp"
+        android:background="@drawable/dialog_rounded_header"/>
+
+    <TextView
+        android:id="@+id/permission_dialog_message"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:gravity="center"
+        android:text="@string/permission_banner_text"
+        android:textColor="@color/colorPrimaryDark"
+        android:textSize="15sp"
+        android:layout_marginTop="15dp"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/permission_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:padding="5dp"
+        android:scrollbars="vertical"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:gravity="center">
+        <Button
+            android:id="@+id/dismiss_button"
+            android:minHeight="30dp"
+            android:minWidth="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/primary_rounded_button_default"
+            android:gravity="center"
+            android:text="@string/cancel_text"
+            android:textColor="@color/colorSecondaryDark"
+            android:textSize="13sp" />
+        <Button
+            android:id="@+id/ok_button"
+            android:minHeight="30dp"
+            android:minWidth="80dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:background="@drawable/primary_rounded_button_default"
+            android:gravity="center"
+            android:text="@string/install_text"
+            android:textColor="@color/colorSecondaryDark"
+            android:textSize="13sp" />
+    </LinearLayout>
+</LinearLayout>

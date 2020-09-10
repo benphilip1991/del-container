@@ -35,7 +35,7 @@ public class MessageDialogFragment extends DialogFragment {
                 dialogLayoutResource = R.layout.warning_dialog;
                 break;
             default:
-                dialogLayoutResource = R.layout.information_dialog;
+                dialogLayoutResource = R.layout.message_dialog;
                 break;
         }
     }
