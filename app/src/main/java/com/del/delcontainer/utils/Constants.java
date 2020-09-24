@@ -28,6 +28,7 @@ public class Constants {
     public static final String REQUEST          = "request";
     public static final String RESOURCE         = "resource";
     public static final String CALLBACK         = "callback";
+    public static final String TOGGLE           = "toggle";
     public static final String INTERVAL         = "interval";
     public static final String APP_REQUESTS     = "requests";
     public static final String DEL_UTILS        = "DelUtils";

@@ -93,16 +93,31 @@ public class LocationDataHandler {
     private Runnable locationProviderTask = () -> {
 
         Log.d(TAG, "locationProviderTask : Running location request.");
-        if (0 == DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).size()) {
+        if (0 == DataManager.getInstance().getCallBackRequests(Constants.ACCESS_LOCATION).size()) {
             // If running, stop location updates
             LocationService.getInstance().stopLocationUpdates();
             stopLocationProviderTask();
         } else {
+
+            Location location = LocationService.getInstance().getLastLocation();
+            JSONObject data = new JSONObject();
+            try {
+                data.put("latitude", location.getLatitude());
+                data.put("longitude", location.getLongitude());
+                data.put("accuracy", location.getAccuracy());
+            } catch (Exception e) {
+                Log.e(TAG, "provideLocationData: Exception : " + e.getMessage());
+            }
+            //Log data if required
+            if(DataManager.getLoggerRequestFlag(Constants.ACCESS_LOCATION)) {
+                DataManager.LogSensorRecord(Constants.ACCESS_LOCATION, data.toString());
+            }
+
             for (Map.Entry<String, String> request :
-                    DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).entrySet()) {
+                    DataManager.getInstance().getCallBackRequests(Constants.ACCESS_LOCATION).entrySet()) {
 
                 // AppId, Callback function name
-                provideLocationData(request.getKey(), request.getValue());
+                provideLocationData(request.getKey(), request.getValue(), data);
             }
         }
     };
@@ -112,26 +127,16 @@ public class LocationDataHandler {
      * @param appId
      * @param callback
      */
-    private void provideLocationData(String appId, String callback) {
+    private void provideLocationData(String appId, String callback, JSONObject data) {
 
         Log.d(TAG, "provideLocationData: injecting location data to app : " + appId);
         HashMap<String, Fragment> appCache = DelAppManager.getInstance().getAppCache();
-        Location location = LocationService.getInstance().getLastLocation();
         DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache.get(appId);
 
         if (null == targetFrag) {
             // Fragment doesn't exist. Clear location data request for the app.
-            DataManager.getInstance().getRequests(Constants.ACCESS_LOCATION).remove(appId);
+            DataManager.getInstance().getCallBackRequests(Constants.ACCESS_LOCATION).remove(appId);
             return;
-        }
-
-        JSONObject data = new JSONObject();
-        try {
-            data.put("latitude", location.getLatitude());
-            data.put("longitude", location.getLongitude());
-            data.put("accuracy", location.getAccuracy());
-        } catch (Exception e) {
-            Log.e(TAG, "provideLocationData: Exception : " + e.getMessage());
         }
 
         // Create data object and send to registered callback

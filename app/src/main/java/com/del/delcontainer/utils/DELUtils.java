@@ -149,24 +149,69 @@ public class DELUtils {
     }
 
     @JavascriptInterface
-    public void setContainerRequest(String requestDefinition) {
+    public void setCallbackRequest(String requestDefinition) {
 
-        Log.d(TAG, "setContainerRequest: setting container request");
         DataManager dataManager = DataManager.getInstance();
         try {
             JSONObject reqObject = new JSONObject(requestDefinition);
             String appId = reqObject.getString(Constants.APP_ID);
             JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
 
-            ArrayList<JSONObject> requestList = new ArrayList();
+            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
             for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
 
-            dataManager.setRequests(appId, requestList);
+            DataManager.setCallBackRequests(appId, requestList);
 
         } catch(Exception e) {
-            Log.d(TAG, "setContainerRequest : " + e.getMessage());
+            Log.d(TAG, "setCallbackRequest : " + e.getMessage());
         }
     }
+
+    @JavascriptInterface
+    public void setLoggerRequest(String requestDefinition) {
+
+        try {
+            JSONObject reqObject = new JSONObject(requestDefinition);
+            String appId = reqObject.getString(Constants.APP_ID);
+            JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
+
+            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
+            for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
+
+            DataManager.setSensorLoggerRequests(appId, requestList);
+
+        } catch(Exception e) {
+            Log.d(TAG, "setLoggerRequest : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get app-specific data
+     * @return
+     */
+    @JavascriptInterface
+    public String getAppData(String AppId){
+        return DataManager.getAppData(AppId);
+    }
+
+    /**
+     * Set app-specific data
+     * @return
+     */
+    @JavascriptInterface
+    public void setAppData(String AppId, String content){
+        DataManager.setAppData(AppId, content);
+    }
+
+    /**
+     * Set app-specific data
+     * @return
+     */
+    @JavascriptInterface
+    public String getData(String AppId, String sensor){
+        return DataManager.getSensorLogs(AppId, sensor);
+    }
+
 
     /**
      * Fetch latest HR data only once.
