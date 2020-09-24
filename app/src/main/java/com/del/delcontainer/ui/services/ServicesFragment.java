@@ -140,7 +140,7 @@ public class ServicesFragment extends Fragment {
         });
 
         // Set linked services fetched from del-api
-        servicesViewModel.getUserServicesList().observe(this, (userServicesRepository) -> {
+        servicesViewModel.getUserServicesRepo().observe(this, (userServicesRepository) -> {
             if (null != userServicesRepository) {
 
                 RecyclerView recyclerView = view.

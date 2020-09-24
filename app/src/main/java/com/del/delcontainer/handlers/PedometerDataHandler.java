@@ -75,13 +75,16 @@ public class PedometerDataHandler {
     private Runnable stepCountProviderTask = () -> {
 
         Log.d(TAG, "stepCountProviderTask: Running step count request.");
-        if (0 == DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).size()) {
+        if (0 == DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).size()) {
             stopStepDataProviderTask();
         } else {
+            String stepCount = String.valueOf(sensorsService.getStepCount());
+            if(DataManager.getLoggerRequestFlag(Constants.ACCESS_PEDOMETER))
+                DataManager.LogSensorRecord(Constants.ACCESS_PEDOMETER, stepCount);
             for (Map.Entry<String, String> request :
-                    DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).entrySet()) {
+                    DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).entrySet()) {
 
-                provideStepData(request.getKey(), request.getValue());
+                provideStepData(request.getKey(), request.getValue(), stepCount);
             }
         }
     };
@@ -91,16 +94,15 @@ public class PedometerDataHandler {
      * @param appId
      * @param callback
      */
-    private void provideStepData(String appId, String callback) {
+    private void provideStepData(String appId, String callback, String stepCount) {
 
         Log.d(TAG, "provideStepData: injecting step data to app : " + appId);
         HashMap<String, Fragment> appCache = DelAppManager.getInstance().getAppCache();
         DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache.get(appId);
-        String stepCount = String.valueOf(sensorsService.getStepCount());
 
         if(null == targetFrag) {
             // App doesn't exist - remove step count data request for app.
-            DataManager.getInstance().getRequests(Constants.ACCESS_PEDOMETER).remove(appId);
+            DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).remove(appId);
             return;
         }
 

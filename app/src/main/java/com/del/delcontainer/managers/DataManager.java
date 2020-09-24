@@ -1,18 +1,29 @@
 package com.del.delcontainer.managers;
 
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
+import com.del.delcontainer.database.DelDatabase;
+import com.del.delcontainer.database.dao.SensorRecordDao;
+import com.del.delcontainer.database.entities.SensorRecord;
 import com.del.delcontainer.handlers.LocationDataHandler;
 import com.del.delcontainer.handlers.PedometerDataHandler;
 import com.del.delcontainer.repositories.UserServicesRepository;
+import com.del.delcontainer.storage.FileStorage;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.CustomMutableLiveData;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
+import com.google.gson.Gson;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Data handler to manage data storage/retrieval from
@@ -25,23 +36,65 @@ public class DataManager {
     private static final String TAG = "DataManager";
 
     // TODO: Need a scheduler to go through the mapped requests and deliver -> DataProviderService
-    // Map of request resource -> dictionary of (appId -> callback),
+    // Map of callback requests resource -> dictionary of (appId -> callback),
     static HashMap<String, HashMap<String, String>> dataRequestMap;
+
+    // Map of logger requests resource -> number of apps requiring data,
+    static HashMap<String, Integer> sensorLoggerFlags;
 
     //Object to store installed apps and permissions
     private static CustomMutableLiveData<UserServicesRepository> userServicesRepository =
             new CustomMutableLiveData<>();
 
-    private static DataManager dataManager = new DataManager();
+    private static DataManager dataManager;
 
-    private DataManager() {
+    private static FileStorage fileStorage;
+
+    private static SensorRecordDao sensorRecordDao;
+
+    private static ArrayList<LinkedApplicationDetails> linkedApps;
+
+    private DataManager(Context context) {
         dataRequestMap = new HashMap<>();
+        sensorLoggerFlags = new HashMap<>();
         userServicesRepository.postValue(UserServicesRepository.getInstance());
-        //TODO: Observe and update app list when changes are triggered
+        fileStorage = new FileStorage(context);
+        DelDatabase database = DelDatabase.getInstance(context);
+        sensorRecordDao = database.sensorRecordDao();
+
+        //TODO: Observe and update installed app list when changes are triggered
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                userServicesRepository.observeForever((userServicesRepository) -> {
+                    Log.d(TAG, "Observing for changes");
+                    //Run commands that are triggered when application lists changes
+                    linkedApps = userServicesRepository.getUserServicesList();
+                });
+            }
+        });
+    }
+
+    public static void initDataManager(Context context) {
+        if(null == dataManager){
+            dataManager = new DataManager(context);
+        }
     }
 
     public static DataManager getInstance() {
         return dataManager;
+    }
+
+    public static String getAppData(String appId) {
+        return fileStorage.ReadFile(appId);
+    }
+
+    public static void setAppData(String appId, String content) {
+        fileStorage.WriteFile(appId, content);
+    }
+
+    public static boolean getLoggerRequestFlag(String resource) {
+        return sensorLoggerFlags.get(resource) != null && sensorLoggerFlags.get(resource) > 0;
     }
 
     /**
@@ -49,7 +102,7 @@ public class DataManager {
      * @param resource
      * @param appId
      */
-    public void removeResourceRequests(String resource, String appId) {
+    public void removeCallbackRequests(String resource, String appId) {
         dataRequestMap.get(resource).remove(appId);
     }
 
@@ -57,49 +110,100 @@ public class DataManager {
      * Method to get all requests for a resource
      * @param resource
      */
-    public HashMap<String, String> getRequests(String resource) {
+    public HashMap<String, String> getCallBackRequests(String resource) {
         return dataRequestMap.get(resource);
     }
 
     /**
-     * Method to set application requests for a resource
+     * Method to set application callback requests for a resource
      * @param appId
      * @param requests
      */
-    public static void setRequests(String appId, ArrayList<JSONObject> requests) {
-        ArrayList<LinkedApplicationDetails> linkedApps = userServicesRepository
-                .getValue().getUserServicesList();
+    public static void setCallBackRequests(String appId, ArrayList<JSONObject> requests) {
         try{
             for (JSONObject request:requests) {
                 String resource = request.getString(Constants.RESOURCE);
                 String callback = request.getString(Constants.CALLBACK);
-                if(validatePermissions(linkedApps, appId, resource)){
+                if(validatePermissions(appId, resource)){
                     if(null == dataRequestMap.get(resource)) {
                         dataRequestMap.put(resource, new HashMap<String, String>());
                     }
-                    Log.d(TAG, "addRequest: Setting"
-                            + resource + " request for service : " + appId);
+                    Log.d(TAG, "setCallBackRequests: Setting" + resource
+                            + " callback request for service : " + appId);
                     dataRequestMap.get(resource).put(appId, callback);
                     startProviderTask(resource);
 
                 } else {
-                    Log.d(TAG, "addRequest: No permission to set "
-                            + resource + " request for service : " + appId);
+                    Log.d(TAG, "setCallBackRequests: No permission to set " + resource
+                            + "callback request for service : " + appId);
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG,"Error while parsing requests");
+            Log.d(TAG,"setCallBackRequests: Error while parsing callback requests");
+        }
+    }
+
+    /**
+     * Method to set application data logging requests for a resource
+     * @param appId
+     * @param requests
+     */
+    public static void setSensorLoggerRequests(String appId, ArrayList<JSONObject> requests) {
+        try {
+            for (JSONObject request:requests) {
+                String resource = request.getString(Constants.RESOURCE);
+                boolean toggle = request.getBoolean(Constants.TOGGLE);
+                if(validatePermissions(appId, resource)){
+                    Integer curFlag;
+                    if(!sensorLoggerFlags.containsKey(resource))
+                        curFlag = 0;
+                    else
+                        curFlag = sensorLoggerFlags.get(resource);
+
+                    if(!toggle && curFlag>0) {
+                        Log.d(TAG, "setSensorLoggerRequests: Removing " + resource
+                                + " logger request for service : " + appId);
+                        sensorLoggerFlags.put(resource, curFlag-1);
+                    }
+                    else {
+                        Log.d(TAG, "setSensorLoggerRequests: Setting " + resource
+                                + " logger request for service : " + appId);
+                        sensorLoggerFlags.put(resource, curFlag+1);
+                    }
+                } else {
+                    Log.d(TAG, "setSensorLoggerRequests: No permission to set " + resource
+                            + " logger request for service : " + appId);
+                }
+            }
+        } catch (Exception e) {
+            Log.d(TAG,"setSensorLoggerRequests: Error while parsing logger requests");
+        }
+    }
+
+    /**
+     * Method to get application data logs for a resource
+     * @param appId
+     * @param resource
+     */
+    public static String getSensorLogs(String appId, String resource) {
+        if(validatePermissions(appId, resource)) {
+            Gson gson = new Gson();
+            List<SensorRecord> sensorRecords = sensorRecordDao.getAllSensorRecords(resource);
+            Log.d(TAG,"getSensorLogs: Sending " + resource + " logs to app "+appId);
+            return gson.toJson(sensorRecords);
+        } else {
+            Log.d(TAG,"getSensorLogs: No permissions to send " + resource
+                    + " logs to app "+appId);
+            return null;
         }
     }
 
     /**
      * Method to validate application permissions for a resource
-     * @param linkedApps
      * @param appId
      * @param resource
      */
-    private static boolean validatePermissions(ArrayList<LinkedApplicationDetails> linkedApps,
-                                               String appId, String resource) {
+    private static boolean validatePermissions(String appId, String resource) {
         for(LinkedApplicationDetails app : linkedApps) {
             if (app.getApplicationId().equals(appId) &&
                     app.getApplicationPermissions().contains(resource))
@@ -123,6 +227,20 @@ public class DataManager {
                     PedometerDataHandler.getInstance().startStepDataProviderTask();
             default:
         }
+    }
 
+    public static void LogSensorRecord(String sensor, String reading) {
+        Log.d(TAG, "LogSensorRecord: Logged record for sensor:"+sensor);
+        new SensorEventLoggerTask()
+                .execute(new SensorRecord(new Date(), sensor, reading));
+    }
+
+    private static class SensorEventLoggerTask extends AsyncTask<SensorRecord, Void, Void> {
+        @Override
+        protected Void doInBackground(SensorRecord... sensorRecord) {
+            // log the value
+            sensorRecordDao.insert(sensorRecord[0]);
+            return null;
+        }
     }
 }

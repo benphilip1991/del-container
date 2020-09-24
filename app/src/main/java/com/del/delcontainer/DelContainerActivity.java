@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
@@ -76,6 +77,7 @@ public class DelContainerActivity extends AppCompatActivity {
         });
 
         // Experimental for now
+        DataManager.initDataManager(getApplicationContext());
         verifyAndGetPermissions();
         initServices();
         scheduleProviderJobs();

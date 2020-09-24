@@ -30,7 +30,7 @@ public class ServicesViewModel extends ViewModel {
 
     private static final String TAG = "ServicesViewModel";
     private MutableLiveData<ArrayList<ApplicationDetails>> servicesList = new MutableLiveData<>();
-    private CustomMutableLiveData<UserServicesRepository> userServicesList =
+    private CustomMutableLiveData<UserServicesRepository> userServicesRepo =
             new CustomMutableLiveData<>();
     private MutableLiveData<String> firstName = new MutableLiveData<>();
     private MutableLiveData<String> status = new MutableLiveData<>();
@@ -41,8 +41,8 @@ public class ServicesViewModel extends ViewModel {
         return servicesList;
     }
 
-    public MutableLiveData<UserServicesRepository> getUserServicesList() {
-        return userServicesList;
+    public MutableLiveData<UserServicesRepository> getUserServicesRepo() {
+        return userServicesRepo;
     }
 
     /**
@@ -91,10 +91,10 @@ public class ServicesViewModel extends ViewModel {
                                    Response<UserApplicationDetails> response) {
                 if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got linked applications");
-                    if(null == userServicesList.getValue()) {
-                        userServicesList.setValue(UserServicesRepository.getInstance());
+                    if(null == userServicesRepo.getValue()) {
+                        userServicesRepo.setValue(UserServicesRepository.getInstance());
                     }
-                    userServicesList.getValue().setUserServicesList(response.body().getApplications());
+                    userServicesRepo.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     Log.e(TAG, "onResponse: Error linked applications " + response.message());
                 }
@@ -129,7 +129,7 @@ public class ServicesViewModel extends ViewModel {
                                    Response<UserApplicationDetails> response) {
                 if(response.code() == Constants.HTTP_SUCCESS) {
                     //MyNewType.getInstance().setData = response.body().fetApplications()
-                    userServicesList.getValue().setUserServicesList(response.body().getApplications());
+                    userServicesRepo.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     if(response.code() == Constants.HTTP_BAD_REQUEST) {
                         statusMessage = "Application already installed";
