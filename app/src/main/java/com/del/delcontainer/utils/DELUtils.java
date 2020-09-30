@@ -148,6 +148,11 @@ public class DELUtils {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
+    /**
+     * Function to set requests for data callbacks from container
+     *
+     * @param requestDefinition
+     */
     @JavascriptInterface
     public void setCallbackRequest(String requestDefinition) {
 
@@ -167,6 +172,11 @@ public class DELUtils {
         }
     }
 
+    /**
+     * Function to set request to log sensor readings
+     *
+     * @param requestDefinition
+     */
     @JavascriptInterface
     public void setLoggerRequest(String requestDefinition) {
 
@@ -186,7 +196,8 @@ public class DELUtils {
     }
 
     /**
-     * Get app-specific data
+     * Get app-specific storage
+     * @param AppId
      * @return
      */
     @JavascriptInterface
@@ -195,7 +206,9 @@ public class DELUtils {
     }
 
     /**
-     * Set app-specific data
+     * Set app-specific storage
+     * @param AppId
+     * @param content
      * @return
      */
     @JavascriptInterface
@@ -204,7 +217,9 @@ public class DELUtils {
     }
 
     /**
-     * Set app-specific data
+     *Get logged sensor data
+     * @param AppId
+     * @param sensor
      * @return
      */
     @JavascriptInterface
@@ -212,6 +227,18 @@ public class DELUtils {
         return DataManager.getSensorLogs(AppId, sensor);
     }
 
+    /**
+     *Get logged sensor data filtered by date
+     * @param AppId
+     * @param sensor
+     * @param start
+     * @param end
+     * @return
+     */
+    @JavascriptInterface
+    public String getData(String AppId, String sensor, String start, String end){
+        return DataManager.getSensorLogs(AppId, sensor, start, end);
+    }
 
     /**
      * Fetch latest HR data only once.

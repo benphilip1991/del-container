@@ -24,7 +24,7 @@ public interface SensorRecordDao {
     SensorRecord getLatestSensorRecord(String sensor);
 
     @Query("SELECT * FROM sensor_records WHERE sensor= :sensor AND date BETWEEN :from AND :to")
-    List<SensorRecord> findSensorRecordsBetweenDates(String sensor, Date from, Date to);
+    List<SensorRecord> getSensorRecordsBetweenDates(String sensor, Date from, Date to);
 
     @Query("DELETE FROM sensor_records")
     void deleteAllSensorRecords();

@@ -5,8 +5,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/services_background"
-    android:paddingTop="5dp"
     app:layoutDescription="@xml/fragment_services_scene">
 
     <androidx.constraintlayout.widget.Guideline
@@ -15,8 +13,14 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintGuide_percent="0.1" />
+    <RelativeLayout
+        android:id="@+id/backgroud"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_weight="48"
+        android:background="@drawable/services_background" />
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/services_header_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -30,20 +34,25 @@
 
         <ImageView
             android:id="@+id/header_profile_image"
+            android:layout_height="0dp"
             android:layout_width="50dp"
-            android:layout_height="50dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:src="@drawable/profile" />
 
         <TextView
             android:id="@+id/header_profile_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/header_profile_image"
+            app:layout_constraintTop_toTopOf="parent"
             android:gravity="center"
             android:padding="8dp"
             android:text="Hello User!"
             android:textSize="16sp"
             android:textStyle="bold" />
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/installed_services_container"
