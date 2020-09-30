@@ -9,7 +9,7 @@
     <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/installed_app_card_view"
-        android:layout_width="100dp"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:cardCornerRadius="5dp"
         app:cardMaxElevation="3dp"
@@ -30,8 +30,10 @@
             <ImageView
                 android:id="@+id/app_image"
                 android:layout_width="match_parent"
-                android:layout_height="88dp"
-                android:maxHeight="88dp"
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:padding="5dp"
                 app:layout_constraintBottom_toTopOf="@+id/installed_app_card_view_guideline"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />

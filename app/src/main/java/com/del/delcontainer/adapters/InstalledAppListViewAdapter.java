@@ -52,7 +52,7 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.installedservice_listitem, parent, false);
-
+        view.getLayoutParams().width = parent.getMeasuredWidth() / 3;
         ViewHolder viewHolder = new ViewHolder(view, appClickListener);
         return viewHolder;
     }
