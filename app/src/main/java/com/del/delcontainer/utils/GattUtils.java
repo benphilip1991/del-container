@@ -70,11 +70,6 @@ public class GattUtils {
                 Log.d(TAG, "manageDeviceServices: Found ISSC proprietary service");
                 deviceManager.getBluetoothServiceMap()
                         .put(gatt.getDevice().getAddress(), Constants.ISSC_PROVIDER);
-            } else if (service.getUuid().equals(UUID.fromString("38ef3bd5-a6ef-46db-924b-ed5c71b30699"))) {
-
-                Log.d(TAG, "manageDeviceServices: Rezas device");
-                deviceManager.getBluetoothServiceMap()
-                        .put(gatt.getDevice().getAddress(), "SORD");
             } else {
 
                 // [GENERAL]
@@ -162,23 +157,6 @@ public class GattUtils {
         }
     }
 
-    private void manageSordDevice(BluetoothGatt gatt) {
-
-        BluetoothGattCharacteristic characteristic = null;
-
-        Log.d(TAG, "manageSordDevice: Getting sord chars");
-        characteristic = gatt.getService(UUID.fromString("38ef3bd5-a6ef-46db-924b-ed5c71b30699"))
-                .getCharacteristic(UUID.fromString("940778f8-8cff-4cd7-a5dc-e337edd72ec9"));
-
-        if (null != characteristic) {
-
-            Log.d(TAG, "manageHRProvider - Enabling Characteristics " +
-                    "Notifications for: " + characteristic.getUuid());
-            gatt.setCharacteristicNotification(characteristic, true);
-
-        }
-    }
-
     /**
      * Handle general BLE devices
      *
@@ -237,47 +215,6 @@ public class GattUtils {
         byte[] data = characteristic.getValue();
         String hex = bytesToHex(data);
         Log.d(TAG, "fetchUARTData: Converted data : " + hex);
-    }
-
-    /**
-     * Function to read UART received values.
-     *
-     * @param characteristic
-     */
-    private void fetchSordData(BluetoothGattCharacteristic characteristic) {
-
-        Log.d(TAG, "fetchSordData: Read Value     : " + characteristic.getValue());
-        byte[] readChars = characteristic.getValue();
-
-        StringBuilder sb = new StringBuilder();
-        for (byte value : readChars) {
-            sb.append(value + " ");
-        }
-        Log.d(TAG, "fetchSordData: Byte array in string : " + sb.toString());
-
-        byte[] data = characteristic.getValue();
-        String hex = bytesToHex(data);
-        Log.d(TAG, "fetchSordData: Converted data : " + hex);
-
-        // Need to keep converting to float till we get 300 or 993 rounded value
-        float[] values = toFloatArray(readChars);
-        for (float value : values) {
-            Log.d(TAG, "fetchSordData: Float Value : " + value + "    |     Rounded : " + Math.round(value));
-
-            if (300 == Math.round(value) || 993 == Math.round(value)) {
-                Log.d(TAG, "fetchSordData: START_BIT\n\n\n\n");
-            }
-        }
-    }
-
-    public float[] toFloatArray(byte[] byteArray) {
-        int nos = Float.SIZE / Byte.SIZE;
-        float[] values = new float[byteArray.length / nos];
-        for (int i = 0; i < values.length; i++) {
-            values[i] = ByteBuffer.wrap(byteArray, i * nos, nos)
-                    .order(ByteOrder.LITTLE_ENDIAN).getFloat();
-        }
-        return values;
     }
 
     /**
@@ -346,7 +283,8 @@ public class GattUtils {
                 }
             } else {
                 // error
-                gatt.close();
+                Log.d(TAG, "onConnectionStateChange: Connection error");
+                //gatt.close();
             }
         }
 
@@ -379,9 +317,6 @@ public class GattUtils {
                         .equals(Constants.ISSC_PROVIDER)) {
 
                     manageISSCProvider(gatt);
-                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                        .equals("SORD")) {
-                    manageSordDevice(gatt);
                 } else {
 
                     //[GENERAL]
@@ -409,10 +344,6 @@ public class GattUtils {
 
                 fetchHRValues(characteristic);
 
-            } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                    .equals("SORD")) {
-
-                fetchSordData(characteristic);
             } else {
 
                 fetchUARTData(characteristic);

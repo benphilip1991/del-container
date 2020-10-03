@@ -67,15 +67,16 @@ public class Constants {
     public static final UUID ISSC_PROP_AIR_PATCH        = UUID.fromString("49535343-ACA3-481C-91EC-D85E28A60318");
 
     // Broadcast Events
-    public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
-    public static final String EVENT_DEVICE_DATA      = "com.del.delcontainer.events.DEVICE_DATA";
+    public static final String EVENT_APP_REGISTERED     = "com.del.delcontainer.events.APP_REGISTERED";
+    public static final String EVENT_DEVICE_CONNECTED   = "com.del.delcontainer.events.DEVICE_CONNECTED";
+    public static final String EVENT_DEVICE_DATA        = "com.del.delcontainer.events.DEVICE_DATA";
 
     //BLE status change events
-    public static  final String BLE_STATUS_RECIEVER = "BLE_STATUS_RECIEVER";
-    public static  final int BLE_STATUS_CHANGED = 1;
-    public static  final String BLE_STATUS = "BLE_STATUS";
-    public static  final String BLE_STATUS_CONNECTED = "BLE_STATUS_CONNECTED";
+    public static  final String BLE_STATUS_RECIEVER     = "BLE_STATUS_RECIEVER";
+    public static  final String BLE_STATUS              = "BLE_STATUS";
+    public static  final String BLE_STATUS_CONNECTED    = "BLE_STATUS_CONNECTED";
     public static  final String BLE_STATUS_DISCONNECTED = "BLE_STATUS_DISCONNECTED";
+    public static  final int BLE_STATUS_CHANGED         = 1;
 
     // User application operations
     public static final String APP_ADD          = "add";
@@ -94,17 +95,17 @@ public class Constants {
     public static final String DEL_SERVICE_IP       = "10.24.0.8";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
-    public static final String APP_RESOURCE_PATH     = "application/package/";
+    public static final String APP_RESOURCE_PATH    = "application/package/";
     // Dialog information types
     public static final String DIALOG_ERROR         = "error";
     public static final String DIALOG_WARNING       = "warning";
     public static final String DIALOG_INFO          = "information";
 
     //Application permission resources
-    public static final String PERM_READ_BODY_DESCRIPTION ="read_body_description";
-    public static final String PERM_ACCESS_LOCATION = "access_location";
-    public static final String PERM_ACCESS_PEDOMETER = "access_pedometer";
-    public static final String PERM_ACCESS_HEART_RATE = "access_heart_rate";
+    public static final String PERM_READ_BODY_DESCRIPTION  = "read_body_description";
+    public static final String PERM_ACCESS_LOCATION        = "access_location";
+    public static final String PERM_ACCESS_PEDOMETER       = "access_pedometer";
+    public static final String PERM_ACCESS_HEART_RATE      = "access_heart_rate";
 
     public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
         {

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.del.delcontainer.database.entities.Heart;
+import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.repositories.HeartRateRepository;
 import com.del.delcontainer.utils.Constants;
 
@@ -16,6 +17,7 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
 
     private static final String TAG = "DelBroadcastReceiver";
     HeartRateRepository hrRepository;
+    DataManager dataManager = DataManager.getInstance();
 
     public DelBroadcastReceiver() {
         super();
@@ -33,6 +35,11 @@ public class DelBroadcastReceiver extends BroadcastReceiver {
             Log.d(TAG, "onReceive: App registration event received : " + action);
 
             // Can do something here
+
+        } else if(action.equals(Constants.EVENT_DEVICE_CONNECTED)) {
+            Log.d(TAG, "onReceive: Sensor device connected : " + action);
+
+            // Do something here?
 
         } else if(action.equals(Constants.EVENT_DEVICE_DATA)) {
 

@@ -35,10 +35,9 @@ public class SourcesFragment extends Fragment
 
     private static final String TAG = "SourcesFragment";
 
-    // BLE Constraints
     private BluetoothAdapter bluetoothAdapter;
 
-    SourcesListViewAdapter adapter;
+    SourcesListViewAdapter sourcesListViewAdapter;
     private ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -82,8 +81,8 @@ public class SourcesFragment extends Fragment
     private void initRecyclerView(View view) {
 
         RecyclerView recyclerView = view.findViewById(R.id.ble_recycler_view);
-        adapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
-        recyclerView.setAdapter(adapter);
+        sourcesListViewAdapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
+        recyclerView.setAdapter(sourcesListViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
@@ -151,7 +150,7 @@ public class SourcesFragment extends Fragment
                         bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
 
                         // Notifications should be enabled if more devices are added
-                        adapter.notifyDataSetChanged();
+                        sourcesListViewAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -193,7 +192,7 @@ public class SourcesFragment extends Fragment
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
         Intent deviceSelectedIntent = new Intent();
-        deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
+        deviceSelectedIntent.setAction(Constants.EVENT_DEVICE_CONNECTED);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
                 .sendBroadcast(deviceSelectedIntent);
 
@@ -201,6 +200,7 @@ public class SourcesFragment extends Fragment
         Intent intent = new Intent(getContext(), BLEDataManagerService.class);
         intent.putExtra(Constants.BLE_DEVICE, device);
         intent.putExtra(Constants.OPERATION, operation);
+
         //Receiver to update the source fragment on connection/disconnection event completion
         intent.putExtra(Constants.BLE_STATUS_RECIEVER, new ResultReceiver(new Handler()) {
             @Override
@@ -215,7 +215,7 @@ public class SourcesFragment extends Fragment
                         Toast.makeText(getContext(), "Disconnected from "
                                 + device.getName(), Toast.LENGTH_SHORT).show();
                     }
-                    adapter.notifyDataSetChanged();
+                    sourcesListViewAdapter.notifyDataSetChanged();
                 }
             }
         });
