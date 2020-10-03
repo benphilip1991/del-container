@@ -1,22 +1,32 @@
 package com.del.delcontainer.utils;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import androidx.fragment.app.Fragment;
 
 public class DelAppWebViewClient extends WebViewClient {
 
     private static final String TAG = "DelAppWebViewClient";
+    private static Fragment fragment = null;
+    private static String appId = null;
+
+    public DelAppWebViewClient(Fragment fragment, String appId) {
+        this.fragment = fragment;
+        this.appId = appId;
+    }
 
     @Override
     public void onPageFinished(WebView view, String url) {
 
         Log.d(TAG, "onPageFinished: Pushing data to app");
         //String methodUrl = "javascript:displayAppMessage('Heart Rate : " + new Random().nextInt(500) + "')";
-        String methodUrl = "javascript:displayAppMessage('Demo App')";
+        String methodUrl = "javascript:setAppId('" + appId + "')";
         view.loadUrl(methodUrl);
     }
 
@@ -33,6 +43,25 @@ public class DelAppWebViewClient extends WebViewClient {
         super.onReceivedError(view, request, error);
         view.loadUrl("about:blank");
         view.loadUrl("file:///android_asset/webview_error.html");
+    }
+
+    /**
+     * Override to only launch zoom meetings on zoom app
+     * @param webView
+     * @param url
+     * @return
+     */
+    @Override
+    public boolean shouldOverrideUrlLoading(final WebView webView, final String url) {
+        if(url.contains("zoom.us")) {
+            // launch zoom and return true
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            if(intent.resolveActivity(fragment.getActivity().getPackageManager()) != null) {
+                fragment.getActivity().startActivity(intent);
+            }
+            return true;
+        }
+        return false;
     }
 
     public void pushDataToApp(WebView view, String data) {

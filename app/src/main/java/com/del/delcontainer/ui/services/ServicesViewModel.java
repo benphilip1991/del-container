@@ -2,24 +2,27 @@ package com.del.delcontainer.ui.services;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.del.delcontainer.repositories.UserServicesRepository;
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.CustomMutableLiveData;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.ApplicationApi;
+import com.del.delcontainer.utils.apiUtils.interfaces.UserApi;
 import com.del.delcontainer.utils.apiUtils.interfaces.UserApplicationsApi;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.Applications;
-import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 import com.del.delcontainer.utils.apiUtils.pojo.UpdateUserApplications;
 import com.del.delcontainer.utils.apiUtils.pojo.UserApplicationDetails;
+import com.del.delcontainer.utils.apiUtils.pojo.UserDetails;
 
 import java.util.ArrayList;
 
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.HttpException;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
@@ -27,17 +30,19 @@ public class ServicesViewModel extends ViewModel {
 
     private static final String TAG = "ServicesViewModel";
     private MutableLiveData<ArrayList<ApplicationDetails>> servicesList = new MutableLiveData<>();
-    private MutableLiveData<ArrayList<LinkedApplicationDetails>> userServicesList =
-            new MutableLiveData<>();
-
+    private CustomMutableLiveData<UserServicesRepository> userServicesRepo =
+            new CustomMutableLiveData<>();
+    private MutableLiveData<String> firstName = new MutableLiveData<>();
+    private MutableLiveData<String> status = new MutableLiveData<>();
+    private String statusMessage = "";
     Retrofit retrofit = APIUtils.getApiClient();
 
     public MutableLiveData<ArrayList<ApplicationDetails>> getServicesList() {
         return servicesList;
     }
 
-    public MutableLiveData<ArrayList<LinkedApplicationDetails>> getUserServicesList() {
-        return userServicesList;
+    public MutableLiveData<UserServicesRepository> getUserServicesRepo() {
+        return userServicesRepo;
     }
 
     /**
@@ -53,7 +58,7 @@ public class ServicesViewModel extends ViewModel {
         call.enqueue(new Callback<Applications>() {
             @Override
             public void onResponse(Call<Applications> call, Response<Applications> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got applications.");
                     servicesList.setValue(response.body().getApplications());
                 } else {
@@ -84,9 +89,12 @@ public class ServicesViewModel extends ViewModel {
             @Override
             public void onResponse(Call<UserApplicationDetails> call,
                                    Response<UserApplicationDetails> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got linked applications");
-                    userServicesList.setValue(response.body().getApplications());
+                    if(null == userServicesRepo.getValue()) {
+                        userServicesRepo.setValue(UserServicesRepository.getInstance());
+                    }
+                    userServicesRepo.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     Log.e(TAG, "onResponse: Error linked applications " + response.message());
                 }
@@ -117,11 +125,15 @@ public class ServicesViewModel extends ViewModel {
 
         call.enqueue(new Callback<UserApplicationDetails>() {
             @Override
-            public void onResponse(Call<UserApplicationDetails> call, Response<UserApplicationDetails> response) {
-                if(response.code() == 200) {
-                    userServicesList.setValue(response.body().getApplications());
+            public void onResponse(Call<UserApplicationDetails> call,
+                                   Response<UserApplicationDetails> response) {
+                if(response.code() == Constants.HTTP_SUCCESS) {
+                    //MyNewType.getInstance().setData = response.body().fetApplications()
+                    userServicesRepo.getValue().setUserServicesList(response.body().getApplications());
                 } else {
-                    if(response.code() == 400) {
+                    if(response.code() == Constants.HTTP_BAD_REQUEST) {
+                        statusMessage = "Application already installed";
+                        status.setValue(Constants.DIALOG_ERROR);
                         Log.e(TAG, "App already linked");
                     }
                 }
@@ -133,4 +145,37 @@ public class ServicesViewModel extends ViewModel {
             }
         });
     }
+
+    /**
+     * Fetch first name of the user
+     *
+     * @param token
+     * @param userId
+     */
+    public void getUserFirstName(String token, String userId){
+        UserApi userApi = retrofit.create(UserApi.class);
+        Call<UserDetails> call = userApi.getSingleUserDetails(token, userId);
+
+        call.enqueue(new Callback<UserDetails>() {
+            @Override
+            public void onResponse(Call<UserDetails> call, Response<UserDetails> response) {
+                if(response.code() == Constants.HTTP_SUCCESS) {
+                    Log.d(TAG, "onResponse: Got first name");
+                    firstName.setValue("Hello "+response.body().getFirstName());
+                }
+                else {
+                    Log.e(TAG, "onResponse: Error getting first name" + response.message());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserDetails> call, Throwable t) {
+                Log.e(TAG, "onFailure: " + t.getMessage());
+            }
+        });
+    }
+
+    public LiveData<String> getFirstName() { return firstName; }
+    public LiveData<String> getStatusObserver(){ return status; }
+    public String getStatusMessage() { return statusMessage; }
 }

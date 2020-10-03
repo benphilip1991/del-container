@@ -2,9 +2,11 @@ package com.del.delcontainer.ui.login;
 
 import android.util.Log;
 
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
 import com.del.delcontainer.utils.apiUtils.interfaces.AuthTokenApi;
 import com.del.delcontainer.utils.apiUtils.pojo.Token;
@@ -24,16 +26,26 @@ import retrofit2.Call;
 public class LoginViewModel extends ViewModel {
 
     private static final String TAG = "LoginViewModel";
-
+    private MutableLiveData<String> status = new MutableLiveData<>();
+    private String statusMessage = "";
     private MutableLiveData<LoginStateRepo> loginStateRepo = new MutableLiveData<>();
-
     public MutableLiveData<LoginStateRepo> getLoginStateRepo() {
         return loginStateRepo;
+    }
+
+    private LoginFormView loginFormView;
+    public void setLoginFormView(LoginFormView loginFormView) {
+        this.loginFormView = loginFormView;
     }
 
     Retrofit retrofit = APIUtils.getApiClient();
     AuthTokenApi authTokenApi = retrofit.create(AuthTokenApi.class);
 
+    /**
+     * Login
+     * @param emailId
+     * @param password
+     */
     public void login(String emailId, String password) {
 
         UserCredentials userCredentials = new UserCredentials(emailId, password);
@@ -43,11 +55,13 @@ public class LoginViewModel extends ViewModel {
         call.enqueue(new Callback<Token>() {
             @Override
             public void onResponse(Call<Token> call, Response<Token> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Token : Bearer " + response.body().getToken());
                     LoginStateRepo.getInstance().setToken("Bearer " + response.body().getToken());
                     loginStateRepo.setValue(LoginStateRepo.getInstance());
                 } else {
+                    statusMessage = "Invalid credentials, Please try again.";
+                    status.setValue(Constants.DIALOG_ERROR);
                     Log.e(TAG, "onResponse: Error " + response.message());
                 }
             }
@@ -55,17 +69,22 @@ public class LoginViewModel extends ViewModel {
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
                 Log.e(TAG, "onResponse: Error " + t.getMessage());
+                loginFormView.displayErrorToast("Login attempt failed");
             }
         });
     }
 
+    /**
+     * Verify token and get user details.
+     * @param token
+     */
     public void getUserTokenDetails(String token) {
 
         Call<TokenDetails> call = authTokenApi.getTokenDetails(token);
         call.enqueue(new Callback<TokenDetails>() {
             @Override
             public void onResponse(Call<TokenDetails> call, Response<TokenDetails> response) {
-                if (response.code() == 200) {
+                if (response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got user details");
                     LoginStateRepo.getInstance().setUserId(response.body().getUserId());
                     LoginStateRepo.getInstance().setUserRole(response.body().getUserRole());
@@ -81,10 +100,28 @@ public class LoginViewModel extends ViewModel {
                 loginStateRepo.setValue(LoginStateRepo.getInstance());
             }
 
+            /**
+             * Connection errors; timeouts
+             * @param call
+             * @param t
+             */
             @Override
             public void onFailure(Call<TokenDetails> call, Throwable t) {
                 Log.e(TAG, "onResponse: Error " + t.getMessage());
+                loginFormView.resetLoginForm();
+                loginFormView.displayErrorToast("Token validation failed");
             }
         });
+    }
+
+    public LiveData<String> getStatusObserver(){ return status; }
+    public String getStatusMessage() { return statusMessage; }
+
+    /**
+     * For resetting login form when connection to server fails (timeouts)
+     */
+    public interface LoginFormView {
+        void resetLoginForm();
+        void displayErrorToast(String errorMessage);
     }
 }

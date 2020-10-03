@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,10 +35,9 @@ public class SourcesFragment extends Fragment
 
     private static final String TAG = "SourcesFragment";
 
-    // BLE Constraints
     private BluetoothAdapter bluetoothAdapter;
 
-    SourcesListViewAdapter adapter;
+    SourcesListViewAdapter sourcesListViewAdapter;
     private ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -48,7 +48,7 @@ public class SourcesFragment extends Fragment
         /**
          * Setup an onClick listener for the sources fragment
          */
-        TextView rescan = rootView.findViewById(R.id.rescanDevice);
+        TextView rescan = rootView.findViewById(R.id.rescan_devices_button);
         rescan.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -80,9 +80,9 @@ public class SourcesFragment extends Fragment
     // Set up recycler view
     private void initRecyclerView(View view) {
 
-        RecyclerView recyclerView = view.findViewById(R.id.bleRecyclerView);
-        adapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
-        recyclerView.setAdapter(adapter);
+        RecyclerView recyclerView = view.findViewById(R.id.ble_recycler_view);
+        sourcesListViewAdapter = new SourcesListViewAdapter(getContext(), bluetoothDeviceList, this);
+        recyclerView.setAdapter(sourcesListViewAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
     }
 
@@ -150,7 +150,7 @@ public class SourcesFragment extends Fragment
                         bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
 
                         // Notifications should be enabled if more devices are added
-                        adapter.notifyDataSetChanged();
+                        sourcesListViewAdapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -191,9 +191,8 @@ public class SourcesFragment extends Fragment
             Toast.makeText(getContext(), "Disconnecting from "
                     + device.getName(), Toast.LENGTH_SHORT).show();
         }
-
         Intent deviceSelectedIntent = new Intent();
-        deviceSelectedIntent.setAction(Constants.EVENT_APP_REGISTERED);
+        deviceSelectedIntent.setAction(Constants.EVENT_DEVICE_CONNECTED);
         LocalBroadcastManager.getInstance(getActivity().getApplicationContext())
                 .sendBroadcast(deviceSelectedIntent);
 
@@ -202,6 +201,24 @@ public class SourcesFragment extends Fragment
         intent.putExtra(Constants.BLE_DEVICE, device);
         intent.putExtra(Constants.OPERATION, operation);
 
+        //Receiver to update the source fragment on connection/disconnection event completion
+        intent.putExtra(Constants.BLE_STATUS_RECIEVER, new ResultReceiver(new Handler()) {
+            @Override
+            protected void onReceiveResult(int resultCode, Bundle resultData) {
+                super.onReceiveResult(resultCode, resultData);
+                if (resultCode == Constants.BLE_STATUS_CHANGED) {
+                    String status = resultData.getString(Constants.BLE_STATUS);
+                    if(status == Constants.BLE_STATUS_CONNECTED){
+                        Toast.makeText(getContext(), "Connected to "
+                                + device.getName(), Toast.LENGTH_SHORT).show();
+                    } else if (status == Constants.BLE_STATUS_DISCONNECTED){
+                        Toast.makeText(getContext(), "Disconnected from "
+                                + device.getName(), Toast.LENGTH_SHORT).show();
+                    }
+                    sourcesListViewAdapter.notifyDataSetChanged();
+                }
+            }
+        });
         getActivity().startService(intent);
     }
 }

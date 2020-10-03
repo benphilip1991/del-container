@@ -1,5 +1,6 @@
 package com.del.delcontainer.utils;
 
+import java.util.HashMap;
 import java.util.UUID;
 
 public class Constants {
@@ -15,18 +16,34 @@ public class Constants {
     public static final String ISSC_PROVIDER    = "ISSC_PROVIDER";
     public static final String ZEPHYR_HR        = "Zephyr HXM200010503";
 
+    // Scheduled Job constants
+    public static final int JOB_ID              = 12345;
+
     // App specific identifiers
     public static final String APP_IDENT        = "APP_IDENT";
     public static final String APP_DESCRIPTION  = "APP_DESCRIPTION";
     public static final String APP_IMAGE        = "APP_IMAGE";
     public static final String APP_ID           = "appId";
     public static final String APP_NAME         = "appName";
+    public static final String REQUEST          = "request";
+    public static final String RESOURCE         = "resource";
+    public static final String CALLBACK         = "callback";
+    public static final String TOGGLE           = "toggle";
+    public static final String INTERVAL         = "interval";
+    public static final String APP_REQUESTS     = "requests";
     public static final String DEL_UTILS        = "DelUtils";
 
     // Data notifications
     public static final String HR_DATA          = "HR_DATA";
     public static final String DATA_TYPE        = "DATA_TYPE";
     public static final String DATA_VALUE       = "DATA_VALUE";
+
+    // HTTP ERROR CODES
+    public static final int HTTP_SUCCESS         = 200;
+    public static final int HTTP_BAD_REQUEST     = 400;
+    public static final int HTTP_UNAUTHORIZED    = 401;
+    public static final int HTTP_NOT_FOUND       = 404;
+    public static final int HTTP_CONFLICT        = 409;
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
@@ -50,21 +67,60 @@ public class Constants {
     public static final UUID ISSC_PROP_AIR_PATCH        = UUID.fromString("49535343-ACA3-481C-91EC-D85E28A60318");
 
     // Broadcast Events
-    public static final String EVENT_APP_REGISTERED   = "com.del.delcontainer.events.APP_REGISTERED";
-    public static final String EVENT_DEVICE_DATA      = "com.del.delcontainer.events.DEVICE_DATA";
+    public static final String EVENT_APP_REGISTERED     = "com.del.delcontainer.events.APP_REGISTERED";
+    public static final String EVENT_DEVICE_CONNECTED   = "com.del.delcontainer.events.DEVICE_CONNECTED";
+    public static final String EVENT_DEVICE_DATA        = "com.del.delcontainer.events.DEVICE_DATA";
+
+    //BLE status change events
+    public static  final String BLE_STATUS_RECIEVER     = "BLE_STATUS_RECIEVER";
+    public static  final String BLE_STATUS              = "BLE_STATUS";
+    public static  final String BLE_STATUS_CONNECTED    = "BLE_STATUS_CONNECTED";
+    public static  final String BLE_STATUS_DISCONNECTED = "BLE_STATUS_DISCONNECTED";
+    public static  final int BLE_STATUS_CHANGED         = 1;
 
     // User application operations
     public static final String APP_ADD          = "add";
     public static final String APP_DELETE       = "delete";
 
+    //Chatbot application actions
+    public static final int APP_OPEN         = 1;
+
+    //Chatbot message types
+    public static final String USER_MESSAGE          = "message_received";
+    public static final String INITIAL_MESSAGE       = "hello";
+
     // IP addresses and hostnames
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "192.168.1.9";
-    public static final String DEL_SERVICE_PORT     = "3000";
+    public static final String DEL_SERVICE_IP       = "10.24.0.8";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
+    public static final String APP_RESOURCE_PATH    = "application/package/";
+    // Dialog information types
+    public static final String DIALOG_ERROR         = "error";
+    public static final String DIALOG_WARNING       = "warning";
+    public static final String DIALOG_INFO          = "information";
 
+    //Application permission resources
+    public static final String PERM_READ_BODY_DESCRIPTION  = "read_body_description";
+    public static final String PERM_ACCESS_LOCATION        = "access_location";
+    public static final String PERM_ACCESS_PEDOMETER       = "access_pedometer";
+    public static final String PERM_ACCESS_HEART_RATE      = "access_heart_rate";
+
+    public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
+        {
+            put(PERM_READ_BODY_DESCRIPTION, "Read your height and weight information");
+            put(PERM_ACCESS_LOCATION, "Access your location");
+            put(PERM_ACCESS_PEDOMETER, "Track your physical activity");
+            put(PERM_ACCESS_HEART_RATE, "Access your heart rate");
+        }
+    };
+
+    //Resource request type
+    public static final String READ_BODY_DESCRIPTION ="read_body_description";
+    public static final String ACCESS_LOCATION = "access_location";
+    public static final String ACCESS_PEDOMETER = "access_pedometer";
+    public static final String ACCESS_HEART_RATE = "access_heart_rate";
 
     /**
      * Hack to get BLE UUIDs from the fixed values

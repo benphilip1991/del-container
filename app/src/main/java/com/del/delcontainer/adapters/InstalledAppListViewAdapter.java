@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
@@ -51,7 +52,7 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.installedservice_listitem, parent, false);
-
+        view.getLayoutParams().width = parent.getMeasuredWidth() / 3;
         ViewHolder viewHolder = new ViewHolder(view, appClickListener);
         return viewHolder;
     }
@@ -60,8 +61,9 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         String imageUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
-                + Constants.DEL_SERVICE_PORT + "/" + linkedAppDetails.get(position)
-                .getApplicationId() + "/icon";
+                + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
+                + linkedAppDetails.get(position).getApplicationId()
+                + "/" + linkedAppDetails.get(position).getApplicationUrl() +"/icon";
         Picasso.with(this.context).load(imageUrl).into(holder.appImage);
         holder.appLabel.setText(linkedAppDetails.get(position).getApplicationName());
     }
@@ -79,17 +81,20 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
         ImageView appImage;
         TextView appLabel;
+        CardView itemCard;
+
         AppClickListener appClickListener;
 
         public ViewHolder(View itemView, AppClickListener appClickListener) {
             super(itemView);
 
-            appImage = itemView.findViewById(R.id.appImage);
-            appLabel = itemView.findViewById(R.id.appLabel);
+            appImage = itemView.findViewById(R.id.app_image);
+            appLabel = itemView.findViewById(R.id.app_label);
+            itemCard = itemView.findViewById(R.id.installed_app_card_view);
             this.appClickListener = appClickListener;
 
-            itemView.setOnClickListener(this);
-            itemView.setOnLongClickListener((view) -> {
+            itemCard.setOnClickListener(this);
+            itemCard.setOnLongClickListener((view) -> {
                 appLongClickListener.onAppLongClick(getAdapterPosition(), view);
                 return true; // the long press was consumed
             });

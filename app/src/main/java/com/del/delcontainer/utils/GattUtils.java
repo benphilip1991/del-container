@@ -14,6 +14,12 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.managers.DeviceManager;
 
+import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
+import java.util.UUID;
+
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 
 /**
@@ -26,9 +32,11 @@ public class GattUtils {
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
     private static Context context;
 
+    // Buffer for storing BLE data
+    byte[] dataBuffer = new byte[4096];
+
     public GattUtils(Context context) {
         this.context = context;
-        Log.d(TAG, "GattUtils: CONTEXT " + context.toString());
     }
 
     /**
@@ -42,7 +50,6 @@ public class GattUtils {
         Log.d(TAG, "manageDeviceServices: Managing services");
         for (BluetoothGattService service : gatt.getServices()) {
             Log.d(TAG, "manageDeviceServices: Available Service : " + service.getUuid().toString());
-
 
             // Devices may have more than one service. Need to manage them while making sure
             // it doesn't break the following services
@@ -59,7 +66,7 @@ public class GattUtils {
                 deviceManager.getBluetoothServiceMap()
                         .put(gatt.getDevice().getAddress(), Constants.UART_PROVIDER);
 
-            } else if(service.getUuid().equals(Constants.ISSC_PROP_SERVICE)) {
+            } else if (service.getUuid().equals(Constants.ISSC_PROP_SERVICE)) {
                 Log.d(TAG, "manageDeviceServices: Found ISSC proprietary service");
                 deviceManager.getBluetoothServiceMap()
                         .put(gatt.getDevice().getAddress(), Constants.ISSC_PROVIDER);
@@ -114,7 +121,7 @@ public class GattUtils {
         Log.d(TAG, "manageUARTProvider: Got UART device : " + gatt.getDevice().getName());
         rCharacteristic = gatt.getService(Constants.UART_SERVICE).getCharacteristic(Constants.UART_RX);
 
-        if(null != rCharacteristic) {
+        if (null != rCharacteristic) {
 
             Log.d(TAG, "manageUARTProvider: Got UART Characteristics");
             gatt.setCharacteristicNotification(rCharacteristic, true);
@@ -130,16 +137,17 @@ public class GattUtils {
     /**
      * Handle ISSC proprietary devices. In this instance, MySignals
      * sensors including their smart scale
+     *
      * @param gatt
      */
     private void manageISSCProvider(BluetoothGatt gatt) {
 
         Log.d(TAG, "manageISSCProvider: Connecting to ISSC provider : " + gatt.getDevice().getName());
 
-        for(BluetoothGattCharacteristic chars : gatt.getService(Constants.ISSC_PROP_SERVICE).getCharacteristics()) {
+        for (BluetoothGattCharacteristic chars : gatt.getService(Constants.ISSC_PROP_SERVICE).getCharacteristics()) {
             Log.d(TAG, "manageISSCProvider: Characteristics -> " + chars.getUuid());
 
-            if(null != chars.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG)) {
+            if (null != chars.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG)) {
                 Log.d(TAG, "manageISSCProvider: Enabling notifications");
                 gatt.setCharacteristicNotification(chars, true);
                 BluetoothGattDescriptor descriptor = chars.getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG);
@@ -151,16 +159,17 @@ public class GattUtils {
 
     /**
      * Handle general BLE devices
+     *
      * @param gatt
      */
     private void manageGeneralDevice(BluetoothGatt gatt) {
         Log.d(TAG, "manageGeneralDevice: Connecting to general BLE device : " + gatt.getDevice().getName());
-        
-        for(BluetoothGattService service : gatt.getServices()) {
+
+        for (BluetoothGattService service : gatt.getServices()) {
 
             Log.d(TAG, "manageGeneralDevice: Service ----> " + service.getUuid());
             // Each service may have more than one characteristic
-            for(BluetoothGattCharacteristic chars : service.getCharacteristics()) {
+            for (BluetoothGattCharacteristic chars : service.getCharacteristics()) {
 
                 Log.d(TAG, "manageGeneralDevice: \t\tCharacteristics ----> " + chars.getUuid());
             }
@@ -202,21 +211,28 @@ public class GattUtils {
     private void fetchUARTData(BluetoothGattCharacteristic characteristic) {
 
         Log.d(TAG, "fetchUARTData: Read Value     : " + characteristic.getValue());
+
         byte[] data = characteristic.getValue();
         String hex = bytesToHex(data);
         Log.d(TAG, "fetchUARTData: Converted data : " + hex);
     }
 
+    /**
+     * Convert byte values to hexadecimal
+     *
+     * @param bytes
+     * @return
+     */
     public static String bytesToHex(byte[] bytes) {
 
-        char[] hexArray = "0123456789ABCDEF".toCharArray();
-        char[] hexChars = new char[bytes.length * 2];
-        for ( int j = 0; j < bytes.length; j++ ) {
-            int v = bytes[j] & 0xFF;
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            if (sb.length() > 0) {
+                sb.append(':');
+            }
+            sb.append(String.format("%02x", b));
         }
-        return new String(hexChars);
+        return sb.toString();
     }
 
     /**
@@ -254,20 +270,21 @@ public class GattUtils {
         public void onConnectionStateChange(BluetoothGatt gatt, int state, int newState) {
 
             Log.d(TAG, "OnConnectionStateChange : " + newState);
-            if(state == GATT_SUCCESS) {
+            if (state == GATT_SUCCESS) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     //Connected - discover services if there is no bonding issue
 
                     Log.d(TAG, "OnConnectionStateChange - Discovering services");
                     gatt.discoverServices();
 
-                } else if(newState == BluetoothProfile.STATE_DISCONNECTED){
+                } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.d(TAG, "onConnectionStateChange: Closing interface");
                     //gatt.close();
                 }
             } else {
                 // error
-                gatt.close();
+                Log.d(TAG, "onConnectionStateChange: Connection error");
+                //gatt.close();
             }
         }
 
@@ -286,23 +303,25 @@ public class GattUtils {
             // TODO: right now, this is based on an assumption that there's only one device.
             // TODO: the block fails on having multiple entries in the servicemap
             // Is it an HR device?
-            if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                    .equals(Constants.HR_PROVIDER)) {
+            if (null != deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())) {
+                if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+                        .equals(Constants.HR_PROVIDER)) {
 
-                manageHRProvider(gatt);
+                    manageHRProvider(gatt);
 
-            } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                    .equals(Constants.UART_PROVIDER)) {
+                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+                        .equals(Constants.UART_PROVIDER)) {
 
-                manageUARTProvider(gatt);
-            } else if(deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                    .equals(Constants.ISSC_PROVIDER)) {
+                    manageUARTProvider(gatt);
+                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+                        .equals(Constants.ISSC_PROVIDER)) {
 
-                manageISSCProvider(gatt);
-            } else {
+                    manageISSCProvider(gatt);
+                } else {
 
-                //[GENERAL]
-                //manageGeneralDevice(gatt);
+                    //[GENERAL]
+                    //manageGeneralDevice(gatt);
+                }
             }
         }
 

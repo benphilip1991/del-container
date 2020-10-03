@@ -1,6 +1,8 @@
 package com.del.delcontainer.ui.login;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -11,13 +13,16 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.database.entities.Auth;
 import com.del.delcontainer.repositories.AuthRepository;
+import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
 
-public class LoginActivity extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity
+        implements LoginViewModel.LoginFormView {
 
     private static final String TAG = "LoginActivity";
     private LoginViewModel loginViewModel;
@@ -34,6 +39,7 @@ public class LoginActivity extends AppCompatActivity {
 
         authRepository = AuthRepository.getInstance(getApplicationContext());
         loginViewModel = ViewModelProviders.of(this).get(LoginViewModel.class);
+        loginViewModel.setLoginFormView(this);
 
         // Make activity full screen with no action bar
         this.getSupportActionBar().hide();
@@ -42,7 +48,7 @@ public class LoginActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_login);
 
-        emailId = findViewById(R.id.emailId);
+        emailId = findViewById(R.id.email_id);
         password = findViewById(R.id.password);
         loginButton = findViewById(R.id.login_button);
         progressBar = findViewById(R.id.login_progress);
@@ -71,6 +77,15 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: Logging in");
             loginViewModel.login(emailId.getText().toString(),
                     password.getText().toString());
+        });
+
+        loginViewModel.getStatusObserver().observe(this, new Observer<String>() {
+            @Override
+            public void onChanged(@Nullable String type) {
+                //Call dialog
+                MessageDialogFragment infoDialog = new MessageDialogFragment(type, loginViewModel.getStatusMessage());
+                infoDialog.show(getSupportFragmentManager(), "login");
+            }
         });
     }
 
@@ -108,5 +123,17 @@ public class LoginActivity extends AppCompatActivity {
     private void loginApp() {
         Intent intent = new Intent(this.getApplicationContext(), DelContainerActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    public void resetLoginForm() {
+        Log.d(TAG, "resetLoginForm: Resetting login form due to token verification failure");
+        authRepository.clearAuthInfo();
+        setFormVisible();
+    }
+
+    @Override
+    public void displayErrorToast(String error) {
+        Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
     }
 }

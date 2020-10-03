@@ -62,8 +62,9 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         String imageUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
-                + Constants.DEL_SERVICE_PORT + "/" + availableAppsList.get(position).get_id()
-                + "/icon";
+                + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
+                + availableAppsList.get(position).get_id()
+                + "/" + availableAppsList.get(position).getApplicationUrl() +"/icon";
         Picasso.with(this.context).load(imageUrl).into(holder.availableAppImage);
         holder.availableAppLabel.setText(availableAppsList.get(position).getApplicationName());
         holder.availableAppDescription.setText(
@@ -85,10 +86,10 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         public ViewHolder(View itemView) {
             super(itemView);
 
-            this.availableAppImage = itemView.findViewById(R.id.availableAppImage);
-            this.availableAppLabel = itemView.findViewById(R.id.availableAppLabel);
-            this.availableAppDescription = itemView.findViewById(R.id.availableAppDescription);
-            this.getAvailableAppButton = itemView.findViewById(R.id.getAvailableAppButton);
+            this.availableAppImage = itemView.findViewById(R.id.available_app_image);
+            this.availableAppLabel = itemView.findViewById(R.id.available_app_label);
+            this.availableAppDescription = itemView.findViewById(R.id.available_app_description);
+            this.getAvailableAppButton = itemView.findViewById(R.id.get_available_app_button);
 
             getAvailableAppButton.setOnClickListener(this);
         }

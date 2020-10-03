@@ -1,73 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_margin="5dp">
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:layout_width="match_parent"-->
+<!--    android:layout_height="wrap_content"-->
+<!--    android:layout_margin="5dp">-->
 
-    <androidx.cardview.widget.CardView
+    <androidx.cardview.widget.CardView    xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
+        android:layout_height="95dp"
         android:layout_centerInParent="true"
+        android:layout_margin="5dp"
         app:cardCornerRadius="5dp"
-        app:cardMaxElevation="3dp">
+        app:cardElevation="3dp"
+        app:cardMaxElevation="5dp">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
             <ImageView
-                android:id="@+id/availableAppImage"
-                android:layout_width="100dp"
-                android:layout_height="match_parent"
-                android:layout_margin="2dp" />
+                android:id="@+id/available_app_image"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_margin="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/availableAppLabel"
+                android:id="@+id/available_app_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@+id/availableAppImage"
-                android:layout_marginTop="5dp"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp"
                 android:autoSizeMaxTextSize="15sp"
                 android:autoSizeMinTextSize="10sp"
                 android:autoSizeTextType="uniform"
+                android:gravity="center"
                 android:text="App Name"
                 android:textColor="#000"
-                app:layout_constraintLeft_toRightOf="@+id/availableAppImage" />
+                app:layout_constraintStart_toEndOf="@id/available_app_image"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/availableAppDescription"
-                android:layout_width="wrap_content"
+                android:id="@+id/available_app_description"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/availableAppLabel"
-                android:layout_toEndOf="@+id/availableAppImage"
+                android:layout_marginStart="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="5dp"
                 android:autoSizeMaxTextSize="15sp"
                 android:autoSizeMinTextSize="8sp"
                 android:autoSizeTextType="uniform"
+                android:gravity="top"
                 android:text="App description here"
                 android:textColor="#777"
-                android:layout_marginTop="12dp"
-                android:layout_marginLeft="10dp"
-                app:layout_constraintLeft_toRightOf="@+id/availableAppImage"
-                app:layout_constraintTop_toBottomOf="@+id/availableAppLabel" />
+                app:layout_constraintEnd_toStartOf="@+id/get_available_app_button"
+                app:layout_constraintStart_toEndOf="@id/available_app_image"
+                app:layout_constraintTop_toBottomOf="@+id/available_app_label" />
 
             <Button
-                android:id="@+id/getAvailableAppButton"
-                android:layout_width="60dp"
-                android:layout_height="30dp"
+                android:id="@+id/get_available_app_button"
+                android:minHeight="30dp"
+                android:minWidth="60dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="150dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="5dp"
-                android:background="@android:color/transparent"
+                android:layout_margin="10dp"
+                android:background="@drawable/custom_primary_rounded_button"
+                android:gravity="center"
                 android:text="Get"
-                android:textSize="13sp" />
+                android:textColor="@color/colorSecondaryDark"
+                android:textSize="13sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/available_app_description"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
 
-</RelativeLayout>
+<!--</RelativeLayout>-->

@@ -10,11 +10,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
+import com.del.delcontainer.ui.chatbot.ChatBotDialog;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -29,24 +32,24 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
-import androidx.navigation.fragment.NavHostFragment;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import static com.del.delcontainer.R.id.nav_host_fragment;
+import static com.del.delcontainer.R.id.host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
-    private static final String TAG = "MainActivity";
+    private static final String TAG = "DelContainerActivity";
+
+    IntentFilter intentFilter;
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
+    ChatBotDialog chatBotDialogFragment;
 
-    FloatingActionButton chatButton;
-    IntentFilter intentFilter;
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -57,28 +60,27 @@ public class DelContainerActivity extends AppCompatActivity {
         registerBroadcastReceiver();
         BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
         navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
-
+        chatBotDialogFragment = ChatBotDialog.newInstance();
         /**
          * Explicitly setting the default view to the services on first run
          * This ensures the containerViewMap tracks the first view as well.
          * Issue - launches two fragment instances
          */
-        if (null == savedInstanceState) {
-            navView.setSelectedItemId(R.id.navigation_services); // remove. Need to find a proper fix
-            List<Fragment> fragList = getSupportFragmentManager().getFragments();
-            for(Fragment frag : fragList) {
+        navView.setSelectedItemId(R.id.navigation_services);
 
-                if(frag instanceof NavHostFragment) {
-                    Log.d(TAG, "[FRAG_ID] onCreate: Instance of NavHostFragment" );
-                }
-                Log.d(TAG, "[FRAG_ID] onCreate: Fragment ID : " + frag);
+        FloatingActionButton chatButton = (FloatingActionButton) findViewById(R.id.chat_button);
+        chatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showChatBot();
             }
-        }
+        });
 
         // Experimental for now
-        initChatbot();
+        DataManager.initDataManager(getApplicationContext());
         verifyAndGetPermissions();
         initServices();
+        scheduleProviderJobs();
     }
 
     @Override
@@ -138,6 +140,9 @@ public class DelContainerActivity extends AppCompatActivity {
      * Initialize container services
      */
     private void initServices() {
+
+        DelAppManager.getInstance().setFragmentManager(this.getSupportFragmentManager());
+
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
 
@@ -146,16 +151,18 @@ public class DelContainerActivity extends AppCompatActivity {
     }
 
     /**
-     * Initialize chat button and add event listener
-     * TODO: move to conversation manager and handle everything from there
+     * Click handler for the chat bot pop-up button
      */
-    protected void initChatbot() {
+    public void showChatBot() {
+        FragmentManager fm = getSupportFragmentManager();
+        chatBotDialogFragment.show(fm, "chatBotDialogFragment");
+    }
 
-        chatButton = findViewById(R.id.chatButton);
-        chatButton.setOnClickListener((v) -> {
-            Toast.makeText(getApplicationContext(), "Launching chatbot",
-                    Toast.LENGTH_SHORT).show();
-        });
+    /**
+     * Initialize data provider jobs
+     */
+    protected void scheduleProviderJobs() {
+        ;
     }
 
     /**
@@ -205,7 +212,7 @@ public class DelContainerActivity extends AppCompatActivity {
                 }
 
                 if (!selectedFragment.isAdded()) {
-                    transaction.add(nav_host_fragment, selectedFragment, Constants.HOST_VIEW);
+                    transaction.add(host_fragment, selectedFragment, Constants.HOST_VIEW);
                 }
 
                 // Make view visible

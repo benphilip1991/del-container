@@ -1,45 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_margin="5dp">
+<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+<!--    xmlns:tools="http://schemas.android.com/tools"-->
+<!--    android:layout_width="100dp"-->
+<!--    android:layout_height="match_parent"-->
+<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+<!--    android:layout_margin="5dp">-->
 
-    <androidx.cardview.widget.CardView
-        android:layout_width="140dp"
-        android:layout_height="200dp"
+    <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/installed_app_card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:cardCornerRadius="5dp"
         app:cardMaxElevation="3dp"
+        android:layout_margin="5dp"
         android:layout_centerInParent="true">
 
         <!-- Contents inside the card - App image and name -->
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
+            <androidx.constraintlayout.widget.Guideline
+                android:id="@+id/installed_app_card_view_guideline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintGuide_percent="0.75"/>
 
             <ImageView
-                android:id="@+id/appImage"
+                android:id="@+id/app_image"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginLeft="2dp"
-                android:layout_marginRight="2dp"
-                />
+                android:layout_height="0dp"
+                android:adjustViewBounds="true"
+                android:scaleType="fitXY"
+                android:padding="5dp"
+                app:layout_constraintBottom_toTopOf="@+id/installed_app_card_view_guideline"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <TextView
-                android:id="@+id/appLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="20dp"
-                android:layout_below="@+id/appImage"
-                android:layout_marginTop="15dp"
-                android:layout_centerHorizontal="true"
-                android:gravity="center"
-                android:textColor="#000"
+                android:id="@+id/app_label"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:gravity="center_horizontal"
                 android:text="App Name"
-                android:autoSizeTextType="uniform"
-                android:autoSizeMinTextSize="7sp"
-                android:autoSizeMaxTextSize="15sp" />
+                android:textColor="#000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/installed_app_card_view_guideline"/>
 
-        </RelativeLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
-</RelativeLayout>
+<!--</RelativeLayout>-->

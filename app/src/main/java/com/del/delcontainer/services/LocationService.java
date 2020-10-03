@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -23,7 +24,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Handle location requests from applications.
@@ -117,61 +117,7 @@ public class LocationService {
                         + " | Longitude : " + lastLocation.getLongitude()
                         + " | Accuracy : " + lastLocation.getAccuracy());
 
-                // TODO: test to check data push to app from container
-                sendDataUpdate(locationResult);
             }
         }
     };
-
-    private void sendDataUpdate(LocationResult locationResult) {
-
-        Log.d(TAG, "sendDataUpdate: Sending data update");
-
-        // Get container details and request details with appId
-        HashMap<String, ArrayList<String>> requestMap = DataManager.getInstance()
-                .getDataRequestMap();
-
-        // Get each UUID and value from
-        for (Map.Entry<String, ArrayList<String>> entry : requestMap.entrySet()) {
-            String appId = entry.getKey();
-            ArrayList<String> requests = entry.getValue();
-
-            Log.d(TAG, "sendDataUpdate: Got app details");
-            performRequest(appId, requests, locationResult);
-        }
-    }
-
-    /**
-     * Performing test call to app inside container
-     *
-     * @param appId
-     * @param requests
-     */
-    private void performRequest(String appId, ArrayList<String> requests,
-                                LocationResult locationResult) {
-
-        // App fragments
-        HashMap<String, Fragment> appCache = DelAppManager.getInstance().getAppCache();
-        DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache
-                .get(appId.toString());
-
-        JSONObject data = new JSONObject();
-        try {
-            data.put("lat", locationResult.getLastLocation().getLatitude());
-            data.put("long", locationResult.getLastLocation().getLongitude());
-        } catch (Exception e) {
-            ;
-        }
-
-        String[] params = new String[]{"location", data.toString()};
-
-        Log.d(TAG, "performRequest: Performing request");
-        if (null != targetFrag) {
-            WebView appView = targetFrag.getAppView();
-
-            String functionCall = DELUtils.getInstance()
-                    .getTargetFunctionString("testContainerDataPush", params);
-            DELUtils.getInstance().callDelAppFunction(appView, functionCall);
-        }
-    }
 }

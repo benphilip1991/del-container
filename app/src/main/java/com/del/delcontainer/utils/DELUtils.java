@@ -13,7 +13,6 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.database.entities.Heart;
 import com.del.delcontainer.managers.DataManager;
-import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.repositories.HeartRateRepository;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
@@ -149,35 +148,102 @@ public class DELUtils {
         LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
     }
 
+    /**
+     * Function to set requests for data callbacks from container
+     *
+     * @param requestDefinition
+     */
     @JavascriptInterface
-    public void setContainerRequest(String appDetails) {
+    public void setCallbackRequest(String requestDefinition) {
 
-        Log.d(TAG, "setContainerRequest: setting container request");
-        String appId = null;
-        String request = null;
-
+        DataManager dataManager = DataManager.getInstance();
         try {
-            JSONObject reqObject = new JSONObject(appDetails);
-            appId = reqObject.getString(Constants.APP_ID);
-            request = reqObject.getString("request");
+            JSONObject reqObject = new JSONObject(requestDefinition);
+            String appId = reqObject.getString(Constants.APP_ID);
+            JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
 
-            // Register request in data manager
-            DataManager dataManager = DataManager.getInstance();
-            ArrayList<String> requests = dataManager.getDataRequestMap().get(appId);
+            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
+            for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
 
-            if(null == requests) {
-                requests = new ArrayList<>();
-                requests.add(request);
-            } else {
-                requests.add(request);
-            }
-            dataManager.getDataRequestMap().put(appId, requests);
+            DataManager.setCallBackRequests(appId, requestList);
 
         } catch(Exception e) {
-            Log.d(TAG, "setContainerRequest : " + e.getMessage());
+            Log.d(TAG, "setCallbackRequest : " + e.getMessage());
         }
     }
 
+    /**
+     * Function to set request to log sensor readings
+     *
+     * @param requestDefinition
+     */
+    @JavascriptInterface
+    public void setLoggerRequest(String requestDefinition) {
+
+        try {
+            JSONObject reqObject = new JSONObject(requestDefinition);
+            String appId = reqObject.getString(Constants.APP_ID);
+            JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
+
+            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
+            for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
+
+            DataManager.setSensorLoggerRequests(appId, requestList);
+
+        } catch(Exception e) {
+            Log.d(TAG, "setLoggerRequest : " + e.getMessage());
+        }
+    }
+
+    /**
+     * Get app-specific storage
+     * @param AppId
+     * @return
+     */
+    @JavascriptInterface
+    public String getAppData(String AppId){
+        return DataManager.getAppData(AppId);
+    }
+
+    /**
+     * Set app-specific storage
+     * @param AppId
+     * @param content
+     * @return
+     */
+    @JavascriptInterface
+    public void setAppData(String AppId, String content){
+        DataManager.setAppData(AppId, content);
+    }
+
+    /**
+     *Get logged sensor data
+     * @param AppId
+     * @param sensor
+     * @return
+     */
+    @JavascriptInterface
+    public String getData(String AppId, String sensor){
+        return DataManager.getSensorLogs(AppId, sensor);
+    }
+
+    /**
+     *Get logged sensor data filtered by date
+     * @param AppId
+     * @param sensor
+     * @param start
+     * @param end
+     * @return
+     */
+    @JavascriptInterface
+    public String getData(String AppId, String sensor, String start, String end){
+        return DataManager.getSensorLogs(AppId, sensor, start, end);
+    }
+
+    /**
+     * Fetch latest HR data only once.
+     * @return
+     */
     @JavascriptInterface
     public String getLatestHeartData() {
 
@@ -259,7 +325,6 @@ public class DELUtils {
         return locationObject.toString();
     }
 
-    // TODO: If there are more than one apps requesting the location, this fails
     @JavascriptInterface
     public void stopLocationUpdates() {
         Log.d(TAG, "stopLocationUpdates: Terminating location updates");

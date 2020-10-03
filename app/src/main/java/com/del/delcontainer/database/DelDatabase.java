@@ -7,16 +7,21 @@ import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.del.delcontainer.database.dao.AuthDao;
 import com.del.delcontainer.database.dao.HeartDao;
+import com.del.delcontainer.database.dao.SensorRecordDao;
 import com.del.delcontainer.database.dao.UserProfileDao;
 import com.del.delcontainer.database.entities.Auth;
 import com.del.delcontainer.database.entities.Heart;
+import com.del.delcontainer.database.entities.SensorRecord;
 import com.del.delcontainer.database.entities.UserProfile;
+import com.del.delcontainer.utils.Converters;
 
-@Database(entities = {UserProfile.class, Heart.class, Auth.class}, version = 1)
+@Database(entities = {UserProfile.class, Heart.class, Auth.class, SensorRecord.class}, version = 1)
+@TypeConverters({Converters.class})
 public abstract class DelDatabase extends RoomDatabase {
 
     private static DelDatabase instance;
@@ -24,6 +29,7 @@ public abstract class DelDatabase extends RoomDatabase {
     public abstract UserProfileDao userProfileDao();
     public abstract HeartDao heartDao();
     public abstract AuthDao authDao();
+    public abstract SensorRecordDao sensorRecordDao();
 
     public static synchronized DelDatabase getInstance(Context context) {
         if(null == instance) {

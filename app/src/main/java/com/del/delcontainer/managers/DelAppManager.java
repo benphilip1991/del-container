@@ -1,17 +1,12 @@
 package com.del.delcontainer.managers;
 
 
-import android.app.Activity;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.ui.dialogs.RunningAppsDialogFragment;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
@@ -20,7 +15,6 @@ import com.del.delcontainer.utils.Constants;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * DEL application manager responsible for app fragments
@@ -95,7 +89,7 @@ public class DelAppManager {
      * Launch app can be used for bringing running apps to the foreground
      * or launching a new instance of an app.
      */
-    public void launchApp(String appId, String appName) {
+    public void launchApp(String appId, String appName, String packageName) {
 
         Log.d(TAG, "launchApp: Launching : " + appName);
         FragmentTransaction transaction = fragmentManager.beginTransaction();
@@ -106,7 +100,7 @@ public class DelAppManager {
 
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
             DelAppContainerFragment delAppContainerFragment =
-                    new DelAppContainerFragment(appId, appName);
+                    new DelAppContainerFragment(appId, appName, packageName);
             appCache.put(appId, delAppContainerFragment);
             appNameMap.put(appId, appName);
 
@@ -115,7 +109,7 @@ public class DelAppManager {
                     + delAppContainerFragment.getId());
 
             // last parameter is the app tag
-            transaction.add(R.id.nav_host_fragment, appCache.get(appId), appId);
+            transaction.add(R.id.host_fragment, appCache.get(appId), appId);
         }
 
         DelAppContainerFragment app = (DelAppContainerFragment) appCache.get(appId);
@@ -128,7 +122,7 @@ public class DelAppManager {
             app.setAppTitle();
         }
 
-        transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
+        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
         transaction.commit();
     }
 

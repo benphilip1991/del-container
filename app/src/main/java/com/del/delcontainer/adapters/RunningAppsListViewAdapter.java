@@ -4,7 +4,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -69,7 +69,7 @@ public class RunningAppsListViewAdapter extends RecyclerView.Adapter<RunningApps
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView runningAppName;
-        Button closeApp;
+        ImageButton closeApp;
 
         public ViewHolder(View itemView) {
             super(itemView);
