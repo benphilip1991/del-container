@@ -10,8 +10,8 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DeviceManager;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.GattUtils;
 
 
@@ -40,8 +40,9 @@ public class BLEDataManagerService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         BluetoothDevice device = null;
-        gattUtils = new GattUtils(this.getApplicationContext());
-        ResultReceiver receiver = intent.getParcelableExtra(Constants.BLE_STATUS_RECIEVER);
+        gattUtils = new GattUtils(this.getApplicationContext()); // Mix-up happens here in the gattUtils
+
+        ResultReceiver receiver = intent.getParcelableExtra(Constants.BLE_STATUS_RECEIVER);
 
         if (null != intent) {
 

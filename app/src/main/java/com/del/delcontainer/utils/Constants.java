@@ -72,7 +72,7 @@ public class Constants {
     public static final String EVENT_DEVICE_DATA        = "com.del.delcontainer.events.DEVICE_DATA";
 
     //BLE status change events
-    public static  final String BLE_STATUS_RECIEVER     = "BLE_STATUS_RECIEVER";
+    public static  final String BLE_STATUS_RECEIVER     = "BLE_STATUS_RECEIVER";
     public static  final String BLE_STATUS              = "BLE_STATUS";
     public static  final String BLE_STATUS_CONNECTED    = "BLE_STATUS_CONNECTED";
     public static  final String BLE_STATUS_DISCONNECTED = "BLE_STATUS_DISCONNECTED";

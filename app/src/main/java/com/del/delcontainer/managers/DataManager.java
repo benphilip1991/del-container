@@ -9,6 +9,7 @@ import android.util.Log;
 import com.del.delcontainer.database.DelDatabase;
 import com.del.delcontainer.database.dao.SensorRecordDao;
 import com.del.delcontainer.database.entities.SensorRecord;
+import com.del.delcontainer.handlers.HeartRateDataHandler;
 import com.del.delcontainer.handlers.LocationDataHandler;
 import com.del.delcontainer.handlers.PedometerDataHandler;
 import com.del.delcontainer.repositories.UserServicesRepository;
@@ -260,18 +261,19 @@ public class DataManager {
      * @param reading
      */
     public static void LogSensorRecord(String sensor, String reading) {
-        Log.d(TAG, "LogSensorRecord: Logged record for sensor:"+sensor);
+        Log.d(TAG, "LogSensorRecord: Logged record for sensor:" + sensor);
         new SensorEventLoggerTask()
                 .execute(new SensorRecord(new Date(), sensor, reading));
     }
 
     /**
      * Method to validate application permissions for a resource
+     *
      * @param appId
      * @param resource
      */
     private static boolean validatePermissions(String appId, String resource) {
-        for(LinkedApplicationDetails app : linkedApps) {
+        for (LinkedApplicationDetails app : linkedApps) {
             if (app.getApplicationId().equals(appId) &&
                     app.getApplicationPermissions().contains(resource))
                 return true;
@@ -281,17 +283,21 @@ public class DataManager {
 
     /**
      * Method to start resource providers
+     *
      * @param resource
      */
     public static void startProviderTask(String resource) {
-        switch(resource) {
+        switch (resource) {
             case Constants.ACCESS_LOCATION:
                 if (!LocationDataHandler.getInstance().isRunning())
                     LocationDataHandler.getInstance().startLocationProviderTask();
                 break;
             case Constants.ACCESS_PEDOMETER:
-                if(!PedometerDataHandler.getInstance().isRunning())
+                if (!PedometerDataHandler.getInstance().isRunning())
                     PedometerDataHandler.getInstance().startStepDataProviderTask();
+            case Constants.ACCESS_HEART_RATE:
+                if (!HeartRateDataHandler.getInstance().isRunning())
+                    HeartRateDataHandler.getInstance().startHRProviderTask();
             default:
         }
     }
