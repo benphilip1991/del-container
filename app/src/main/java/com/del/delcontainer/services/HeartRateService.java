@@ -5,6 +5,8 @@ import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothGattDescriptor;
 import android.util.Log;
 
+import com.del.delcontainer.managers.DeviceManager;
+import com.del.delcontainer.services.interfaces.PeripheralDataServiceIntf;
 import com.del.delcontainer.utils.Constants;
 
 import java.util.Vector;
@@ -17,66 +19,90 @@ public class HeartRateService implements PeripheralDataServiceIntf {
 
     private static final String TAG = "HeartRateService";
     private static HeartRateService instance = null;
-    private BluetoothGatt gatt = null;
+    private String deviceAddress = null;
+    private DeviceManager deviceManager = DeviceManager.getDeviceManager();
 
     // Buffer for storing HR values data
     Vector<Integer> dataBuffer = new Vector<>();
 
     // Needs to be singleton as the same instance will be used in
     // both HeartRateDataHandler and GattUtils
-    private HeartRateService() { ; }
+    private HeartRateService() {
+        ;
+    }
 
     public static synchronized HeartRateService getInstance() {
-        if(null == instance) {
+        if (null == instance) {
             instance = new HeartRateService();
         }
         return instance;
     }
 
     /**
-     * Set the BluetoothGatt object to be used in the service
-     * @param gatt
-     */
-    public void setGatt(BluetoothGatt gatt) {
-        this.gatt = gatt;
-    }
-
-    /**
      * Get latest HR average value.
+     *
      * @return
      */
     public int getLatestHRAverage() {
         int avg = 0;
-        for(Integer val : dataBuffer) {
+        for (Integer val : dataBuffer) {
             avg += val;
         }
-        avg /= dataBuffer.size();
-        dataBuffer.clear();
+        if(dataBuffer.size() > 0) {
+            avg /= dataBuffer.size();
+            dataBuffer.clear();
+        }
 
         return avg;
     }
 
-
     /**
      * Start HR update - returns true if a device is connected and if
      * updates can proceed. Else return false
+     *
      * @return boolean
      */
     public boolean startHRUpdate() {
-        boolean res = false;
-        if(null != gatt) {
+        Log.d(TAG, "startHRUpdate: Starting updates");
+        if (null != deviceManager.getBluetoothGattObjects().get(deviceAddress)) {
             manageDataProvider(true);
-            res = true;
+            return true;
         }
-
-        return res;
+        return false;
     }
 
     /**
      * Stop HR update
      */
     public void stopHRUpdate() {
+        Log.d(TAG, "stopHRUpdate: Stopping updates");
         manageDataProvider(false);
+    }
+
+    /**
+     * Check if the device is active (users may disconnect while data is being transferred)
+     * @return
+     */
+    public boolean isDeviceActive() {
+        if(null != deviceManager.getBluetoothGattObjects().get(deviceAddress)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //---------------------------------------------------------
+    // PeripheralDataServiceIntf implementation
+    //---------------------------------------------------------
+
+    /**
+     * Set the BluetoothGatt object to be used in the service
+     *
+     * @param deviceAddress
+     */
+    @Override
+    public void setDevice(String deviceAddress) {
+        this.deviceAddress = deviceAddress;
     }
 
     /**
@@ -88,9 +114,12 @@ public class HeartRateService implements PeripheralDataServiceIntf {
     @Override
     public void manageDataProvider(boolean enable) {
         BluetoothGattCharacteristic characteristic = null;
+        BluetoothGatt gatt = deviceManager.getBluetoothGattObjects().get(deviceAddress);
 
-        if(null == gatt) {
-            throw new RuntimeException(TAG + "manageDataProvider - Invalid Gatt object");
+        if (null == gatt) {
+            //throw new RuntimeException(TAG + "manageDataProvider - Invalid Gatt object");
+            Log.d(TAG, "manageDataProvider: GATT Object : NULL");
+            return;
         }
 
         Log.d(TAG, "manageDataProvider - Getting Characteristics of HR Provider");
@@ -108,8 +137,10 @@ public class HeartRateService implements PeripheralDataServiceIntf {
                     getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG);
 
             if (enable) {
+                Log.d(TAG, "manageDataProvider: Enabling HR sensor notifications");
                 descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             } else {
+                Log.d(TAG, "manageDataProvider: Disabling HR sensor notifications");
                 descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
             }
             gatt.writeDescriptor(descriptor);
@@ -119,6 +150,7 @@ public class HeartRateService implements PeripheralDataServiceIntf {
     /**
      * Fetch data from given characteristic.
      * This method will be called from the Gatt Callback -> onCharacteristicChanged
+     *
      * @param characteristic
      */
     @Override
@@ -131,10 +163,8 @@ public class HeartRateService implements PeripheralDataServiceIntf {
 
         // Get value and push into buffer
         if ((flag & 0x01) != 0) {
-            Log.d(TAG, "onCharacteristicChanged: Heart Rate in UINT16 format");
             format = BluetoothGattCharacteristic.FORMAT_UINT16;
         } else {
-            Log.d(TAG, "onCharacteristicChanged: Heart Rate in UINT8 format");
             format = BluetoothGattCharacteristic.FORMAT_UINT8;
         }
 

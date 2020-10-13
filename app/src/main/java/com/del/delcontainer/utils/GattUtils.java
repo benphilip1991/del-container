@@ -14,13 +14,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.managers.DeviceManager;
 import com.del.delcontainer.services.HeartRateService;
-import com.del.delcontainer.services.PeripheralDataServiceIntf;
-
-import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.UUID;
+import com.del.delcontainer.services.interfaces.PeripheralDataServiceIntf;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 
@@ -35,9 +29,11 @@ public class GattUtils {
     private static Context context;
 
     private PeripheralDataServiceIntf peripheralDataService;
+    private HandleConnectedDevices handleConnectedDevices = null;
 
-    public GattUtils(Context context) {
+    public GattUtils(Context context, HandleConnectedDevices handleConnectedDevices) {
         this.context = context;
+        this.handleConnectedDevices = handleConnectedDevices;
     }
 
     /**
@@ -85,13 +81,14 @@ public class GattUtils {
     /**
      * Setup appropriate service
      * TODO: Instantiate appropriate services depending on device type
-     * @param gatt
+     *
+     * @param deviceAddress
      */
-    private void setupDataService(BluetoothGatt gatt) {
+    private void setupDataService(String deviceAddress) {
 
         // What about other devices?
         peripheralDataService = HeartRateService.getInstance();
-        peripheralDataService.setGatt(gatt);
+        peripheralDataService.setDevice(deviceAddress);
     }
 
     /**
@@ -294,11 +291,15 @@ public class GattUtils {
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.d(TAG, "onConnectionStateChange: Closing interface");
                     gatt.close();
+                    handleConnectedDevices.clearConnectedDevice(gatt.getDevice().getAddress(),
+                            "Connection State Change: closing interface");
                 }
             } else {
                 // error
                 Log.d(TAG, "onConnectionStateChange: Connection error");
                 gatt.close();
+                handleConnectedDevices.clearConnectedDevice(gatt.getDevice().getAddress(),
+                        "Connection State Change: Connection error");
             }
         }
 
@@ -338,23 +339,22 @@ public class GattUtils {
 //                }
 //            }
 //        }
-
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
 
-            for(BluetoothGattService service : gatt.getServices()) {
-                Log.d(TAG, "onServicesDiscovered: Available Service : " + service.getUuid().toString());
+            for (BluetoothGattService service : gatt.getServices()) {
+                Log.d(TAG, "onServicesDiscovered: Available Service : " +
+                        service.getUuid().toString());
             }
 
             // Assumption for now - Only HR device is available. May ask the user to choose type of device later.
             //manageHRProvider(gatt);
 
             // Setup appropriate manager objects
-            setupDataService(gatt);
+            setupDataService(gatt.getDevice().getAddress());
 
-            // Second parameter is set to false to disable data update by default
-            peripheralDataService.manageDataProvider(true);
-
+            // Second parameter - set to false to disable data update by default
+            peripheralDataService.manageDataProvider(false);
         }
 
         /**
@@ -383,4 +383,11 @@ public class GattUtils {
 //            }
         }
     };
+
+    /**
+     * Notify implementing class that a device connection has failed
+     */
+    public interface HandleConnectedDevices {
+        void clearConnectedDevice(String deviceAddress, String message);
+    }
 }

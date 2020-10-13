@@ -38,11 +38,11 @@ public class HeartRateDataHandler {
     // Executors for periodic provider task
     private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> taskHandler = null;
+    private ScheduledFuture<?> checkDeviceTaskHandler = null;
 
     private HeartRateService heartRateService = HeartRateService.getInstance();
 
     private HeartRateDataHandler() {
-
     }
 
     /**
@@ -66,12 +66,15 @@ public class HeartRateDataHandler {
      */
     public void startHRProviderTask() {
         Log.d(TAG, "startHRProviderTask: Starting Heart Rate provider task");
-        isRunning = true;
+
+        // Cancel
+        if(null!= checkDeviceTaskHandler && !checkDeviceTaskHandler.isCancelled()) {
+            checkDeviceTaskHandler.cancel(true);
+        }
 
         // Start Heart Rate Data updates
-        boolean res = heartRateService.startHRUpdate();
-
-        if (res) {
+        if (heartRateService.startHRUpdate()) {
+            isRunning = true;
             taskHandler = scheduler.scheduleWithFixedDelay(
                     hrProviderTask, DELAY, INTERVAL, TimeUnit.SECONDS);
         } else {
@@ -82,15 +85,43 @@ public class HeartRateDataHandler {
     /**
      * Stop providing HR reading updates. Ideally, this method is called
      * when no apps are registered for the updates.
+     *
+     * @param deviceDisconnected
      */
-    public void stopHRProviderTask() {
-        Log.d(TAG, "stopHRProviderTask: No more requests. Stopping updates.");
+    public void stopHRProviderTask(boolean deviceDisconnected) {
+        Log.d(TAG, "stopHRProviderTask: Stopping Heart Rate provider task");
         taskHandler.cancel(true);
         isRunning = false;
 
         // Stop HR update request
         heartRateService.stopHRUpdate();
+
+        // If device disconnected, check for reconnection
+        if(deviceDisconnected) {
+            Log.d(TAG, "stopHRProviderTask: Scheduling reconnect scanner");
+            checkDeviceTaskHandler = scheduler.scheduleWithFixedDelay(
+                    checkDeviceConnectionTask, DELAY, INTERVAL, TimeUnit.SECONDS);
+        }
     }
+
+    /**
+     * Task activated only when peripheral disconnects unexpectedly.
+     * Checks if the device is reconnected
+     */
+    private Runnable checkDeviceConnectionTask = () -> {
+        Log.d(TAG, "checkDeviceConnectionTask: Checking if HR device reconnected.");
+
+        if(heartRateService.isDeviceActive()) {
+            Log.d(TAG, "checkDeviceConnectionTask: HR device connected. Starting provider.");
+            try {
+                // Delay to allow gatt service initialization
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            startHRProviderTask();
+        }
+    };
 
     /**
      * Fetch latest HR value buffer, parse and push to requesting app.
@@ -98,15 +129,22 @@ public class HeartRateDataHandler {
     private Runnable hrProviderTask = () -> {
 
         Log.d(TAG, "hrProviderTask: Running HR provider");
+
+        if(!heartRateService.isDeviceActive()) {
+            Log.d(TAG, "hrProviderTask: HR device no longer active. Stopping service.");
+            stopHRProviderTask(true);
+        }
+
         if (0 == DataManager.getInstance().getCallBackRequests(Constants.ACCESS_HEART_RATE).size()) {
             // If running, stop updates as no requests exist
-            stopHRProviderTask();
+            stopHRProviderTask(false);
         } else {
 
             int hr_avg = HeartRateService.getInstance().getLatestHRAverage();
             JSONObject data = new JSONObject();
             try {
                 data.put("heart_rate", hr_avg);
+                Log.d(TAG, "hrProviderTask Data : " + data.toString());
             } catch (Exception e) {
                 Log.e(TAG, "hrProviderTask : Exception : " + e.getMessage());
             }
@@ -138,7 +176,8 @@ public class HeartRateDataHandler {
         DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache.get(appId);
 
         if (null == targetFrag) {
-            // Fragment doesn't exist. Clear location data request for the app.
+            // Fragment doesn't exist. Clear HR data request for the app.
+            Log.d(TAG, "provideHRData: App not found - clearing app request");
             DataManager.getInstance().getCallBackRequests(Constants.ACCESS_HEART_RATE).remove(appId);
             return;
         }

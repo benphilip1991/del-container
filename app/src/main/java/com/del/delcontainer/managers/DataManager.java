@@ -144,7 +144,7 @@ public class DataManager {
      * @param appId
      * @param requests
      */
-    public static void setCallBackRequests(String appId, ArrayList<JSONObject> requests) {
+    public void setCallBackRequests(String appId, ArrayList<JSONObject> requests) {
         try {
             for (JSONObject request : requests) {
                 String resource = request.getString(Constants.RESOURCE);
@@ -153,7 +153,7 @@ public class DataManager {
                     if (null == dataRequestMap.get(resource)) {
                         dataRequestMap.put(resource, new HashMap<String, String>());
                     }
-                    Log.d(TAG, "setCallBackRequests: Setting" + resource
+                    Log.d(TAG, "setCallBackRequests: Setting " + resource
                             + " callback request for service : " + appId);
                     dataRequestMap.get(resource).put(appId, callback);
                     startProviderTask(resource);
