@@ -162,10 +162,10 @@ public class DELUtils {
             String appId = reqObject.getString(Constants.APP_ID);
             JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
 
-            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
+            ArrayList<JSONObject> requestList = new ArrayList<>();
             for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
 
-            DataManager.setCallBackRequests(appId, requestList);
+            dataManager.setCallBackRequests(appId, requestList);
 
         } catch(Exception e) {
             Log.d(TAG, "setCallbackRequest : " + e.getMessage());
@@ -185,7 +185,7 @@ public class DELUtils {
             String appId = reqObject.getString(Constants.APP_ID);
             JSONArray requests = reqObject.getJSONArray(Constants.APP_REQUESTS);
 
-            ArrayList<JSONObject> requestList = new ArrayList<JSONObject>();
+            ArrayList<JSONObject> requestList = new ArrayList<>();
             for (int i = 0; i < requests.length(); requestList.add(requests.getJSONObject(i++)));
 
             DataManager.setSensorLoggerRequests(appId, requestList);

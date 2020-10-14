@@ -10,16 +10,21 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 
-import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.managers.DeviceManager;
+import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.GattUtils;
 
+import java.util.HashMap;
 
-public class BLEDataManagerService extends IntentService {
+
+public class BLEDataManagerService extends IntentService
+        implements GattUtils.HandleConnectedDevices {
 
     private static final String TAG = "BLEDataManagerService";
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
     private GattUtils gattUtils;
+
+    private HashMap<String, ResultReceiver> deviceStatusResponseMap = new HashMap<>();
 
     public BLEDataManagerService() {
         super("BLEDataManagerService");
@@ -40,8 +45,9 @@ public class BLEDataManagerService extends IntentService {
     protected void onHandleIntent(@Nullable Intent intent) {
 
         BluetoothDevice device = null;
-        gattUtils = new GattUtils(this.getApplicationContext());
-        ResultReceiver receiver = intent.getParcelableExtra(Constants.BLE_STATUS_RECIEVER);
+        gattUtils = new GattUtils(this.getApplicationContext(), this);
+
+        ResultReceiver receiver = intent.getParcelableExtra(Constants.BLE_STATUS_RECEIVER);
 
         if (null != intent) {
 
@@ -52,12 +58,13 @@ public class BLEDataManagerService extends IntentService {
                 Log.e(TAG, "onHandleIntent: Null Pointer Exception" + e.getMessage());
             }
 
+            // Add entry to map -> device to response. Needed because there is only
+            // one instance of this service.
+            deviceStatusResponseMap.put(device.getAddress(), receiver);
+
             // Check if disconnect or connection
             if (intent.getStringExtra(Constants.OPERATION).equals(Constants.DISCONNECT)) {
                 disconnectBLEDevice(device.getAddress());
-                Bundle status = new Bundle();
-                status.putString(Constants.BLE_STATUS, Constants.BLE_STATUS_DISCONNECTED);
-                receiver.send(Constants.BLE_STATUS_CHANGED, status);
 
             } else if (intent.getStringExtra(Constants.OPERATION).equals(Constants.CONNECT)) {
 
@@ -119,5 +126,21 @@ public class BLEDataManagerService extends IntentService {
 
         deviceManager.getBluetoothGattObjects().remove(deviceAddress);
         deviceManager.getBluetoothServiceMap().remove(deviceAddress);
+
+        // Send response
+        ResultReceiver resultReceiver = deviceStatusResponseMap.get(deviceAddress);
+        Bundle status = new Bundle();
+        status.putString(Constants.BLE_STATUS, Constants.BLE_STATUS_DISCONNECTED);
+        resultReceiver.send(Constants.BLE_STATUS_CHANGED, status);
+    }
+
+    /**
+     * Update the device list -
+     */
+    @Override
+    public void clearConnectedDevice(String deviceAddress, String message) {
+        // Need to make sure we call receiver.send with disconnected device here
+        Log.d(TAG, "clearConnectedDevice: " + message);
+        disconnectBLEDevice(deviceAddress);
     }
 }

@@ -13,12 +13,8 @@ import android.util.Log;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.managers.DeviceManager;
-
-import java.io.ByteArrayInputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.UUID;
+import com.del.delcontainer.services.HeartRateService;
+import com.del.delcontainer.services.interfaces.PeripheralDataServiceIntf;
 
 import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 
@@ -32,11 +28,12 @@ public class GattUtils {
     private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
     private static Context context;
 
-    // Buffer for storing BLE data
-    byte[] dataBuffer = new byte[4096];
+    private PeripheralDataServiceIntf peripheralDataService;
+    private HandleConnectedDevices handleConnectedDevices = null;
 
-    public GattUtils(Context context) {
+    public GattUtils(Context context, HandleConnectedDevices handleConnectedDevices) {
         this.context = context;
+        this.handleConnectedDevices = handleConnectedDevices;
     }
 
     /**
@@ -55,10 +52,11 @@ public class GattUtils {
             // it doesn't break the following services
             // Hashmap doesn't support multiple values for the same key.
             // We're in a way overwriting existing values - causing trouble later.
+            // TODO: Maybe get the users to choose type of device instead of overwriting like this?
             if (service.getUuid().equals(Constants.HEART_RATE_SERVICE)) {
 
                 deviceManager.getBluetoothServiceMap()
-                        .put(gatt.getDevice().getAddress(), Constants.HR_PROVIDER);
+                        .put(gatt.getDevice().getAddress(), Constants.HR_PROVIDER); // Maybe get the user to select type of device?
 
             } else if (service.getUuid().equals(Constants.UART_SERVICE)) {
 
@@ -81,7 +79,21 @@ public class GattUtils {
     }
 
     /**
+     * Setup appropriate service
+     * TODO: Instantiate appropriate services depending on device type
+     *
+     * @param deviceAddress
+     */
+    private void setupDataService(String deviceAddress) {
+
+        // What about other devices?
+        peripheralDataService = HeartRateService.getInstance();
+        peripheralDataService.setDevice(deviceAddress);
+    }
+
+    /**
      * Manage heart rate provider
+     * TODO: Call in HeartRateDataHandler and set to True or False for managing HR values
      *
      * @param gatt
      */
@@ -251,7 +263,7 @@ public class GattUtils {
     }
 
     // -------------------------------------------------------------------
-    // Begin gatt callbacks - multiple if necessary
+    // Begin gatt callback
     // -------------------------------------------------------------------
     /**
      * Define a GATT callback for use in gatt connections.
@@ -273,18 +285,21 @@ public class GattUtils {
             if (state == GATT_SUCCESS) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {
                     //Connected - discover services if there is no bonding issue
-
                     Log.d(TAG, "OnConnectionStateChange - Discovering services");
                     gatt.discoverServices();
 
                 } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
                     Log.d(TAG, "onConnectionStateChange: Closing interface");
-                    //gatt.close();
+                    gatt.close();
+                    handleConnectedDevices.clearConnectedDevice(gatt.getDevice().getAddress(),
+                            "Connection State Change: closing interface");
                 }
             } else {
                 // error
                 Log.d(TAG, "onConnectionStateChange: Connection error");
-                //gatt.close();
+                gatt.close();
+                handleConnectedDevices.clearConnectedDevice(gatt.getDevice().getAddress(),
+                        "Connection State Change: Connection error");
             }
         }
 
@@ -295,34 +310,51 @@ public class GattUtils {
          * @param gatt
          * @param status
          */
+//        @Override
+//        public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+//
+//            manageDeviceServices(gatt);
+//
+//            // TODO: right now, this is based on an assumption that there's only one device.
+//            // TODO: the block fails on having multiple entries in the servicemap
+//            // Is it an HR device?
+//            if (null != deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())) {
+//                if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+//                        .equals(Constants.HR_PROVIDER)) {
+//
+//                    manageHRProvider(gatt);
+//
+//                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+//                        .equals(Constants.UART_PROVIDER)) {
+//
+//                    manageUARTProvider(gatt);
+//                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+//                        .equals(Constants.ISSC_PROVIDER)) {
+//
+//                    manageISSCProvider(gatt);
+//                } else {
+//
+//                    //[GENERAL]
+//                    //manageGeneralDevice(gatt);
+//                }
+//            }
+//        }
         @Override
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
 
-            manageDeviceServices(gatt);
-
-            // TODO: right now, this is based on an assumption that there's only one device.
-            // TODO: the block fails on having multiple entries in the servicemap
-            // Is it an HR device?
-            if (null != deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())) {
-                if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                        .equals(Constants.HR_PROVIDER)) {
-
-                    manageHRProvider(gatt);
-
-                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                        .equals(Constants.UART_PROVIDER)) {
-
-                    manageUARTProvider(gatt);
-                } else if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                        .equals(Constants.ISSC_PROVIDER)) {
-
-                    manageISSCProvider(gatt);
-                } else {
-
-                    //[GENERAL]
-                    //manageGeneralDevice(gatt);
-                }
+            for (BluetoothGattService service : gatt.getServices()) {
+                Log.d(TAG, "onServicesDiscovered: Available Service : " +
+                        service.getUuid().toString());
             }
+
+            // Assumption for now - Only HR device is available. May ask the user to choose type of device later.
+            //manageHRProvider(gatt);
+
+            // Setup appropriate manager objects
+            setupDataService(gatt.getDevice().getAddress());
+
+            // Second parameter - set to false to disable data update by default
+            peripheralDataService.manageDataProvider(false);
         }
 
         /**
@@ -337,17 +369,25 @@ public class GattUtils {
                                             BluetoothGattCharacteristic characteristic) {
 
             Log.d(TAG, "OnCharacteristicChanged");
+            peripheralDataService.fetchData(characteristic);
 
-            // If the device is a heart rate provider, fetch the characteristic values
-            if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
-                    .equals(Constants.HR_PROVIDER)) {
-
-                fetchHRValues(characteristic);
-
-            } else {
-
-                fetchUARTData(characteristic);
-            }
+//            // If the device is a heart rate provider, fetch the characteristic values
+//            if (deviceManager.getBluetoothServiceMap().get(gatt.getDevice().getAddress())
+//                    .equals(Constants.HR_PROVIDER)) {
+//
+//                fetchHRValues(characteristic);
+//
+//            } else {
+//
+//                fetchUARTData(characteristic);
+//            }
         }
     };
+
+    /**
+     * Notify implementing class that a device connection has failed
+     */
+    public interface HandleConnectedDevices {
+        void clearConnectedDevice(String deviceAddress, String message);
+    }
 }

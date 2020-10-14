@@ -201,8 +201,8 @@ public class SourcesFragment extends Fragment
         intent.putExtra(Constants.BLE_DEVICE, device);
         intent.putExtra(Constants.OPERATION, operation);
 
-        //Receiver to update the source fragment on connection/disconnection event completion
-        intent.putExtra(Constants.BLE_STATUS_RECIEVER, new ResultReceiver(new Handler()) {
+        // Receiver to update the source fragment on connection/disconnection event completion
+        intent.putExtra(Constants.BLE_STATUS_RECEIVER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
                 super.onReceiveResult(resultCode, resultData);
@@ -219,6 +219,7 @@ public class SourcesFragment extends Fragment
                 }
             }
         });
+        // TODO: Started service must manage its own lifecycle - Need to stop if no more devices Are connected.
         getActivity().startService(intent);
     }
 }
