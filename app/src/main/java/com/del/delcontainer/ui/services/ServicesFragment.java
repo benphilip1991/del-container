@@ -53,21 +53,15 @@ public class ServicesFragment extends Fragment {
         getFirstName();
 
         // Attach observer to the viewmodel for username
-        servicesViewModel.getFirstName().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String s) {
-                userName.setText(s);
-            }
+        servicesViewModel.getFirstName().observe(this, (name) -> {
+            userName.setText(name);
         });
 
-        servicesViewModel.getStatusObserver().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String type) {
-                //Call dialog
-                MessageDialogFragment infoDialog = new MessageDialogFragment(type,
-                        servicesViewModel.getStatusMessage());
-                infoDialog.show(getFragmentManager(), "information");
-            }
+        servicesViewModel.getStatusObserver().observe(this, (type) -> {
+            //Call dialog
+            MessageDialogFragment infoDialog = new MessageDialogFragment(type,
+                    servicesViewModel.getStatusMessage());
+            infoDialog.show(getFragmentManager(), "information");
         });
 
         getAppsList();
@@ -125,13 +119,14 @@ public class ServicesFragment extends Fragment {
                                                             LoginStateRepo.getInstance().getUserId(),
                                                             servicesList.get(position)
                                                                     .get_id(), Constants.APP_ADD);
+
                                                     installedAppListViewAdapter.notifyDataSetChanged();
                                                 } catch (Exception e) {
                                                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                                             .show();
                                                 }
-                                    });
-                            installConfirmationDialog.show(getFragmentManager(),"installConfirmDialog");
+                                            });
+                            installConfirmationDialog.show(getFragmentManager(), "installConfirmDialog");
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
                 recyclerViewAvailableApps.setLayoutManager(new GridLayoutManager(getContext(), 1,
@@ -156,7 +151,7 @@ public class ServicesFragment extends Fragment {
                             Log.d(TAG, "onAppClick: launching " + userServicesRepository
                                     .getUserServicesList().get(position).getApplicationName());
                             Toast.makeText(getContext(), "Launching " + userServicesRepository
-                                    .getUserServicesList().get(position).getApplicationName(),
+                                            .getUserServicesList().get(position).getApplicationName(),
                                     Toast.LENGTH_SHORT).show();
 
                             // Get fragment manager instance and launch app
@@ -214,17 +209,19 @@ public class ServicesFragment extends Fragment {
             }
         });
     }
+
     /**
      * Calls the del-api service to get the first name linked to the current user
      */
-    private void getFirstName(){
+    private void getFirstName() {
         servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(),
                 LoginStateRepo.getInstance().getUserId());
     }
+
     /**
      * Calls the del-api service to get the status of the view model processing
      */
-    private void getStatusObserver(){
+    private void getStatusObserver() {
         servicesViewModel.getStatusObserver();
     }
 }

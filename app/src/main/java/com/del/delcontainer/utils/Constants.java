@@ -71,7 +71,33 @@ public class Constants {
     public static final String EVENT_DEVICE_CONNECTED   = "com.del.delcontainer.events.DEVICE_CONNECTED";
     public static final String EVENT_DEVICE_DATA        = "com.del.delcontainer.events.DEVICE_DATA";
 
-    //BLE status change events
+    // Bot actions
+    public static final String BOT_ACTION_HEALTH        = "com.del.bot.ACTION_HEALTH_METRIC";
+    public static final String BOT_ACTION               = "action";
+
+    // BotKit params
+    public static final String BOTKIT_TEXT          = "text";
+    public static final String BOTKIT_TYPE          = "type";
+    public static final String BOTKIT_VALUES        = "values";
+    public static final String BOTKIT_USER          = "user";
+    public static final String BOTKIT_CHANNEL       = "channel";
+    public static final String BOTKIT_SOCKET        = "socket";
+    public static final String BOTKIT_USER_PROFILE  = "user_profile";
+
+    // Bot entities
+    public static final String BOT_ENTITY               = "entity_health_metric";
+    public static final String BOT_ENTITY_KIND          = "kind";
+    public static final String BOT_ENTITY_PARAMS        = "params";
+
+    public static final String BOT_ENTITY_HEART_RATE    = "heart rate";
+    public static final String BOT_ENTITY_WEIGHT        = "weight";
+    public static final String BOT_ENTITY_STEP_COUNT    = "step count";
+
+    // Bot app error
+    public static final String BOT_ERROR_NO_APP_FOUND   = "This is embarrassing! I could not find a suitable app!";
+    public static final String BOT_LAUNCHING_APP        = "Launching ";
+
+    // BLE status change events
     public static  final String BLE_STATUS_RECEIVER     = "BLE_STATUS_RECEIVER";
     public static  final String BLE_STATUS              = "BLE_STATUS";
     public static  final String BLE_STATUS_CONNECTED    = "BLE_STATUS_CONNECTED";
@@ -82,20 +108,22 @@ public class Constants {
     public static final String APP_ADD          = "add";
     public static final String APP_DELETE       = "delete";
 
-    //Chatbot application actions
+    // Chatbot application actions
     public static final int APP_OPEN         = 1;
 
-    //Chatbot message types
+    // Chatbot message types
     public static final String USER_MESSAGE          = "message_received";
     public static final String INITIAL_MESSAGE       = "hello";
 
     // IP addresses and hostnames
+    public static final String WS_PREFIX            = "ws://";
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
     public static final String DEL_SERVICE_IP       = "10.24.0.8";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
     public static final String APP_RESOURCE_PATH    = "application/package/";
+
     // Dialog information types
     public static final String DIALOG_ERROR         = "error";
     public static final String DIALOG_WARNING       = "warning";

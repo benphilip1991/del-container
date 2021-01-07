@@ -4,6 +4,7 @@ package com.del.delcontainer.managers;
 import android.util.Log;
 
 import com.del.delcontainer.utils.Constants;
+import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -20,20 +21,33 @@ import java.util.UUID;
  * with data and contained apps.
  * Interface for managing user queries and the health domain model
  *
- * TODO: make a fragment with a separate chat view
  */
 public class ConversationManager {
+
+    private static final String TAG = "ConversationManager";
+
     private WebSocketClient mWebSocketClient;
     final String uniqueID = UUID.randomUUID().toString();
     final JSONObject messagePayload = new JSONObject();
     private BotResponseActionListener botResponseActionListener;
     private BotResponseMessageListener botResponseMessageListener;
     private static ConversationManager conversationManager = new ConversationManager();
+
+    private boolean sessionActive = false;
+
     private ConversationManager() {
     }
 
     public static ConversationManager getInstance() {
         return conversationManager;
+    }
+
+    public boolean isConversationSessionActive() {
+        return sessionActive;
+    }
+
+    public void setConversationSessionStatus(boolean isActive) {
+        sessionActive = isActive;
     }
 
     public void setBotResponseListener(BotResponseMessageListener botResponseMessageListener,
@@ -42,13 +56,13 @@ public class ConversationManager {
         this.botResponseActionListener = botResponseActionListener;
     }
 
-    public void sendUserMessage(String userMsgString, String type){
+    public void sendUserMessage(String userMsgString, String type) {
         try {
-            messagePayload.put("type", type);
-            messagePayload.put("User", uniqueID);
-            messagePayload.put("text", userMsgString);
-            messagePayload.put("channel", "socket");
-            messagePayload.put("user_profile", null);
+            messagePayload.put(Constants.BOTKIT_TYPE, type);
+            messagePayload.put(Constants.BOTKIT_USER, uniqueID);
+            messagePayload.put(Constants.BOTKIT_TEXT, userMsgString);
+            messagePayload.put(Constants.BOTKIT_CHANNEL, Constants.BOTKIT_SOCKET);
+            messagePayload.put(Constants.BOTKIT_USER_PROFILE, null);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -58,7 +72,7 @@ public class ConversationManager {
     public void connectWebSocket() {
         URI uri;
         try {
-            uri = new URI("ws://" + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT);
+            uri = new URI(Constants.WS_PREFIX + Constants.DEL_SERVICE_IP + ":" + Constants.DEL_PORT);
         } catch (URISyntaxException e) {
             e.printStackTrace();
             return;
@@ -67,7 +81,7 @@ public class ConversationManager {
         mWebSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                Log.i("Websocket", "Opened");
+                Log.i(TAG, "Opened");
             }
 
             @Override
@@ -76,19 +90,36 @@ public class ConversationManager {
                 final String message = s;
                 try {
                     JSONObject response = new JSONObject(message);
-                    String response_text = response.getString("text");
-                    Log.d("Obtained response", response.toString());
-                    //TODO: fix hardcoded appIds and actions with the chatbot
-                    if(response_text.equalsIgnoreCase("You asked for steps count")) {
-                        botResponseMessageListener.onBotResponseMessage("Opening Steps Application");
-                        botResponseActionListener.onBotResponseAction(
-                                "5f34de427352790e809ca870",
-                                "Steps",
-                                "steps",
-                                Constants.APP_OPEN);
-                    }
-                    else {
-                        botResponseMessageListener.onBotResponseMessage(response_text);
+                    Log.d(TAG, response.toString());
+                    String botResponseText = response.getString(Constants.BOTKIT_TEXT);
+
+                    // botResponse is a JSON object with fields - text, action and params.
+                    // Display text to the user and use params if action is present
+                    botResponseMessageListener.onBotResponseMessage(botResponseText);
+
+                    if (response.has(Constants.BOT_ACTION) &&
+                            response.getString(Constants.BOT_ACTION).equals(Constants.BOT_ACTION_HEALTH)) {
+                        JSONObject botParams = (JSONObject) response.get(Constants.BOT_ENTITY_PARAMS);
+
+                        // Params will have an entity_health_metric like the below sample - use it to get the metric type
+                        // "entity_health_metric" : {"stringValue":"weight","kind":"stringValue"}
+                        JSONObject botParamsEntity = (JSONObject) botParams.get(Constants.BOT_ENTITY);
+                        String healthMetricType = botParamsEntity.getString(botParamsEntity.getString(Constants.BOT_ENTITY_KIND));
+
+                        Log.d(TAG, "onMessage: botParamsEntity     : " + botParamsEntity.toString());
+                        Log.d(TAG, "onMessage: botParamsMetricType : " + healthMetricType);
+
+                        // Check and get applications that can handle the healthMetricType - weight, hr etc.
+                        LinkedApplicationDetails app = DelAppManager.getInstance().getQueryResponseApp(healthMetricType);
+                        if (null != app) {
+                            botResponseMessageListener.onBotResponseMessage(Constants.BOT_LAUNCHING_APP + app.getApplicationName());
+                            botResponseActionListener.onBotResponseAction(app.getApplicationId(),
+                                    app.getApplicationName(),
+                                    app.getApplicationUrl(),
+                                    Constants.APP_OPEN);
+                        } else {
+                            botResponseMessageListener.onBotResponseMessage(Constants.BOT_ERROR_NO_APP_FOUND);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -97,12 +128,14 @@ public class ConversationManager {
 
             @Override
             public void onClose(int i, String s, boolean b) {
-                Log.i("Websocket", "Closed " + s);
+
+                Log.i(TAG, "Closed connection. " + s);
+                sessionActive = false;
             }
 
             @Override
             public void onError(Exception e) {
-                Log.i("Websocket", "Error " + e.getMessage());
+                Log.i(TAG, "Error " + e.getMessage());
             }
         };
         mWebSocketClient.connect();
@@ -114,6 +147,7 @@ public class ConversationManager {
     public interface BotResponseMessageListener {
         void onBotResponseMessage(String message);
     }
+
     /**
      * Interface for passing application control functions
      */

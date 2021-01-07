@@ -21,6 +21,9 @@ public class LinkedApplicationDetails {
     @SerializedName("applicationUrl")
     private String applicationUrl;
 
+    @SerializedName("dataDescription")
+    private DataCollectedList dataDescription;
+
     @SerializedName("applicationPermissions")
     private AccessPermissionsList applicationPermissions;
 
@@ -30,6 +33,36 @@ public class LinkedApplicationDetails {
 
         public List<String> getAccessPermissions() { return accessPermissions; }
 
+    }
+
+    private class DataCollectedList {
+
+        @SerializedName("dataCollected")
+        private List<DataCollectedDefinitions> dataCollectedDefs;
+
+        public List<DataCollectedDefinitions> getDataCollectedDefs() {
+            return dataCollectedDefs;
+        }
+    }
+
+    /**
+     * Need to make this class public to enable access to data types and permissions
+     */
+    public class DataCollectedDefinitions {
+
+        @SerializedName("dataType")
+        private String dataType;
+
+        @SerializedName("description")
+        private String description;
+
+        public String getDataType() {
+            return dataType;
+        }
+
+        public String getDescription() {
+            return description;
+        }
     }
 
     public String getApplicationId() {
@@ -54,5 +87,9 @@ public class LinkedApplicationDetails {
 
     public List<String> getApplicationPermissions() {
         return applicationPermissions.accessPermissions;
+    }
+
+    public List<DataCollectedDefinitions> getDataDescription() {
+        return dataDescription.getDataCollectedDefs();
     }
 }

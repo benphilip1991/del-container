@@ -70,15 +70,12 @@ public class DataManager {
         DelDatabase database = DelDatabase.getInstance(context);
         sensorRecordDao = database.sensorRecordDao();
 
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                userServicesRepository.observeForever((userServicesRepository) -> {
-                    Log.d(TAG, "Observing for changes");
-                    //Running commands that are triggered when the application list changes
-                    linkedApps = userServicesRepository.getUserServicesList();
-                });
-            }
+        new Handler(Looper.getMainLooper()).post(() -> {
+            userServicesRepository.observeForever((userServicesRepository) -> {
+                Log.d(TAG, "Observing for changes");
+                //Running commands that are triggered when the application list changes
+                linkedApps = userServicesRepository.getUserServicesList();
+            });
         });
     }
 
@@ -90,6 +87,14 @@ public class DataManager {
 
     public static DataManager getInstance() {
         return dataManager;
+    }
+
+    /**
+     * Method to return the linked
+     * @return linkedApps
+     */
+    public static ArrayList<LinkedApplicationDetails> getUserAppsList() {
+        return linkedApps;
     }
 
     /**

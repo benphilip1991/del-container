@@ -74,13 +74,17 @@ public class ChatBotDialog extends DialogFragment {
         closeButton = (Button) v.findViewById(R.id.close_button);
         recyclerView = v.findViewById(R.id.chat_recycler_view);
 
-        conversationManager.sendUserMessage("Hi from android application", Constants.INITIAL_MESSAGE);
+        // Initiate a new chat session only on a new app launch
+        if (!conversationManager.isConversationSessionActive()) {
+            conversationManager.sendUserMessage("", Constants.INITIAL_MESSAGE);
+            conversationManager.setConversationSessionStatus(true);
+        }
 
         /**
          * Configure recycler view adapter for chat bot messages
          */
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext(),
-                LinearLayoutManager.VERTICAL,false));
+                LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(chatAdapter);
 
         /**
@@ -93,31 +97,33 @@ public class ChatBotDialog extends DialogFragment {
         /**
          * Set the callback function when a response message is received
          * from the conversation manager
+         * First function is for the message listener
+         * Second function is the message action listener
          */
         conversationManager.setBotResponseListener((message) -> {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    showMessage(message, false);
-                    inputText.setText("");
-                }
-            });
-        },
-        /**
-         * Set the callback function when a application action is received
-         * from the conversation manager
-         */
-        (appId, appName, packageName, action) -> {
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Open the application
-                    DelAppManager delAppManager = DelAppManager.getInstance();
-                    delAppManager.launchApp(appId, appName, packageName);
-                    dialog.dismiss();
-                }
-            }, TIME_OUT);
-        });
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            showMessage(message, false);
+                            inputText.setText("");
+                        }
+                    });
+                },
+                /**
+                 * Set the callback function when a application action is received
+                 * from the conversation manager
+                 */
+                (appId, appName, packageName, action) -> {
+                    mHandler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            //Open the application
+                            DelAppManager delAppManager = DelAppManager.getInstance();
+                            delAppManager.launchApp(appId, appName, packageName);
+                            dialog.dismiss();
+                        }
+                    }, TIME_OUT);
+                });
 
         /**
          * Set the listener function when focus is taken of the input bar
@@ -150,13 +156,14 @@ public class ChatBotDialog extends DialogFragment {
         /**
          * Set a click listener to close the chat bot dialog
          */
-        closeButton.setOnClickListener((View)-> {
+        closeButton.setOnClickListener((View) -> {
+            // Might need to close connection to del-api
             dialog.dismiss();
         });
         /**
          * Set a click listener to send the message type in the input
          */
-        sendButton.setOnClickListener((View)-> {
+        sendButton.setOnClickListener((View) -> {
             String inputTextValue = inputText.getText().toString();
             conversationManager.sendUserMessage(inputTextValue, Constants.USER_MESSAGE);
             showMessage(inputTextValue, true);

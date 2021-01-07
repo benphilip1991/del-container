@@ -128,7 +128,6 @@ public class ServicesViewModel extends ViewModel {
             public void onResponse(Call<UserApplicationDetails> call,
                                    Response<UserApplicationDetails> response) {
                 if(response.code() == Constants.HTTP_SUCCESS) {
-                    //MyNewType.getInstance().setData = response.body().fetApplications()
                     userServicesRepo.getValue().setUserServicesList(response.body().getApplications());
                 } else {
                     if(response.code() == Constants.HTTP_BAD_REQUEST) {
