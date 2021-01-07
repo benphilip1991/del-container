@@ -6,14 +6,12 @@ import android.content.Context;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +38,6 @@ public class ChatBotDialog extends DialogFragment {
     RecyclerView recyclerView;
     ChatBotMessageViewAdapter chatAdapter;
     List<ChatMessage> chatMessageList;
-    String userMsgString;
     ConversationManager conversationManager;
     static int TIME_OUT = 3000;
     Handler mHandler = new Handler();
@@ -48,7 +45,7 @@ public class ChatBotDialog extends DialogFragment {
     public ChatBotDialog() {
         chatMessageList = new ArrayList<>();
         chatAdapter = new ChatBotMessageViewAdapter(chatMessageList, getContext());
-        conversationManager = conversationManager.getInstance();
+        conversationManager = ConversationManager.getInstance();
         conversationManager.connectWebSocket();
     }
 
@@ -58,8 +55,7 @@ public class ChatBotDialog extends DialogFragment {
     }
 
     public static ChatBotDialog newInstance() {
-        ChatBotDialog frag = new ChatBotDialog();
-        return frag;
+        return new ChatBotDialog();
     }
 
     @NonNull
@@ -100,58 +96,43 @@ public class ChatBotDialog extends DialogFragment {
          * First function is for the message listener
          * Second function is the message action listener
          */
-        conversationManager.setBotResponseListener((message) -> {
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            showMessage(message, false);
-                            inputText.setText("");
-                        }
-                    });
-                },
+        conversationManager.setBotResponseListener((message) -> getActivity().runOnUiThread(() -> {
+                    showMessage(message, false);
+                    inputText.setText("");
+                }),
                 /**
                  * Set the callback function when a application action is received
                  * from the conversation manager
                  */
-                (appId, appName, packageName, action) -> {
-                    mHandler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            //Open the application
-                            DelAppManager delAppManager = DelAppManager.getInstance();
-                            delAppManager.launchApp(appId, appName, packageName);
-                            dialog.dismiss();
-                        }
-                    }, TIME_OUT);
-                });
+                (appId, appName, packageName, action) -> mHandler.postDelayed(() -> {
+                    //Open the application
+                    DelAppManager delAppManager = DelAppManager.getInstance();
+                    delAppManager.launchApp(appId, appName, packageName);
+                    dialog.dismiss();
+                }, TIME_OUT));
 
         /**
          * Set the listener function when focus is taken of the input bar
          */
-        inputText.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus)
-                    inputText.setHint("");
-                else
-                    inputText.setHint("Ask Something");
-            }
+        inputText.setOnFocusChangeListener((v1, hasFocus) -> {
+            if (hasFocus)
+                inputText.setHint("");
+            else
+                inputText.setHint("Ask Something");
         });
 
         /**
          * Set a listener function to send messages to the conversation manager
          * when the action button is clicked in the editor
          */
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-                if (i == EditorInfo.IME_ACTION_SEND) {
-                    String inputTextValue = inputText.getText().toString();
-                    conversationManager.sendUserMessage(inputTextValue, Constants.USER_MESSAGE);
-                    showMessage(inputTextValue, true);
-                    inputText.setText("");
-                }
-                return false;
+        inputText.setOnEditorActionListener((textView, i, keyEvent) -> {
+            if (i == EditorInfo.IME_ACTION_SEND) {
+                String inputTextValue = inputText.getText().toString();
+                conversationManager.sendUserMessage(inputTextValue, Constants.USER_MESSAGE);
+                showMessage(inputTextValue, true);
+                inputText.setText("");
             }
+            return false;
         });
         /**
          * Set a click listener to close the chat bot dialog
