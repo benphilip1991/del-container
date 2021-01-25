@@ -83,7 +83,7 @@ _More details to come soon!_
 
 ## Currently Available Data
 
-The project is currently a research prototype and offers limited functionality for testing and usability evaluations. More features would be added as the platform is developed further. Currently, the container provides access to the following types of data - 
+The project is currently a research prototype and offers limited functionality for testing and usability evaluations. More features would be added as the platform is developed further. Currently, the container provides access to the following data - 
 
 |Data Type           | Resource Key     |
 |--------------------|------------------|
