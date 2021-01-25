@@ -22,7 +22,7 @@ As of now, the container exposes one interface for registering application detai
 
 ```
 // Sample - setAppId accepts the id injected by the container 
-// and then uses it later
+// which is then used later
 function setAppId(appId) {
     this.appId = appId;
     initApp();
