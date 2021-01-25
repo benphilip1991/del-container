@@ -82,13 +82,12 @@ _More details to come soon!_
 
 
 ## Currently Available Data
-
 The project is currently a research prototype and offers limited functionality for testing and usability evaluations. More features would be added as the platform is developed further. Currently, the container provides access to the following data - 
 
 |Data Type           | Resource Key     |
 |--------------------|------------------|
 | Location           | `access_location` |
-| Step Count         | `access_pedometer` | 
+| Step Count         | `access_pedometer` |  
 | Heart Rate         | `access_heart_rate` |
 
 _Please note that platform only supports a Zephyr HXM heart rate monitor. More devices will be added shortly_  
