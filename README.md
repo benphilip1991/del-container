@@ -78,6 +78,37 @@ function processLocation(dataType, location) {
     }
 }
 ```  
+
+Data private to a mini app can be stored through the container using the setAppData function which accepts the application id and a JSON string. The following example shows how 
+```
+function storeWorkoutData() {
+    let appData = {
+        // Application specific data stored in a separate file
+    };
+
+    DelUtils.setAppData(appId, appData);
+}
+```
+
+Fetching stored data also follows a similar approach through the overloaded getData functions - 
+|Function     | Description     |
+|-------------|-----------------|
+| getData(appId, type)   | Get app-specific data stored previously   |
+| getData(appId, type, start-date, end-date)   | Get app-specific data stored previously filtered by date   |
+
+The following example shows the use of the function to fetch stored location details -   
+```
+function getWorkoutData() {
+    var appData = DelUtils.getData(appId,
+    "access_location",
+    startTime,
+    endTime);
+
+    // use appData as required
+}
+```
+
+
 _More details to come soon!_  
 
 
