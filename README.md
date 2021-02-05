@@ -17,6 +17,13 @@ _Please note that the repositories may be private at the moment and will be made
 The container is based on the following architecture -  
 <p align="center"><img src="./assets/del-container-arch.png" width="80%" height="80%"></p>
 
+The figure shows four main components - the Application Manager, Data Manager, Conversation Manager and the Device Manager. These components are respoonsible for managing active mini-apps, handling the conversations with the bot, managing connected devices and user data.
+Health data can be fetched from several sources including manual entry, from connected devices and even from other services. These can be divided into personal and environmental factors and are highlighted in the following figure -  
+
+<p align="center"><img src="./assets/datapoints.png" width="80%" height="80%"></p>
+
+_Please note that the current prototype implementation does not support all these metrics. They will be added as the container is developed further._
+
 ## Container APIs
 As of now, the container exposes one interface for registering application details, data requests and callbacks. All mini applications must contain the function **setAppId** that accepts a string ID passed by the container when the mini app is launched. This ID must then be used for registering requests or calling any other functions offered by the container.
 
