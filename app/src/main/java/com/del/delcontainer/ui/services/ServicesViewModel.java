@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.del.delcontainer.repositories.UserServicesRepository;
+import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.CustomMutableLiveData;
 import com.del.delcontainer.utils.apiUtils.APIUtils;
@@ -161,6 +162,7 @@ public class ServicesViewModel extends ViewModel {
                 if(response.code() == Constants.HTTP_SUCCESS) {
                     Log.d(TAG, "onResponse: Got first name");
                     firstName.setValue("Hello "+response.body().getFirstName());
+                    LoginStateRepo.getInstance().setFirstName(response.body().getFirstName());
                 }
                 else {
                     Log.e(TAG, "onResponse: Error getting first name" + response.message());
