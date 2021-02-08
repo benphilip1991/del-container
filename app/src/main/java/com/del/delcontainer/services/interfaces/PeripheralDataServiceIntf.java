@@ -1,6 +1,5 @@
 package com.del.delcontainer.services.interfaces;
 
-import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCharacteristic;
 
 /**

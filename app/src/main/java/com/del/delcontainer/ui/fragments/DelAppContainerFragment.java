@@ -145,7 +145,7 @@ public class DelAppContainerFragment extends Fragment {
 
         String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
                 + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
-                + appId + "/" + packageName ;
+                + appId + "/" + packageName + ".html";
         return appUrl;
     }
 }

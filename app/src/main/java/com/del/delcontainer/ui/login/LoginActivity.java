@@ -79,13 +79,10 @@ public class LoginActivity extends AppCompatActivity
                     password.getText().toString());
         });
 
-        loginViewModel.getStatusObserver().observe(this, new Observer<String>() {
-            @Override
-            public void onChanged(@Nullable String type) {
-                //Call dialog
-                MessageDialogFragment infoDialog = new MessageDialogFragment(type, loginViewModel.getStatusMessage());
-                infoDialog.show(getSupportFragmentManager(), "login");
-            }
+        loginViewModel.getStatusObserver().observe(this, (type) -> {
+            //Call dialog
+            MessageDialogFragment infoDialog = new MessageDialogFragment(type, loginViewModel.getStatusMessage());
+            infoDialog.show(getSupportFragmentManager(), "login");
         });
     }
 
