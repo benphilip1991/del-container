@@ -51,6 +51,10 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
 
+    // Nordic BLE library
+    implementation 'no.nordicsemi.android:ble:2.2.4'
+    implementation 'no.nordicsemi.android:ble-common:2.2.4'
+
     // Dagger DI library
     implementation 'com.google.dagger:dagger:2.26'
     annotationProcessor 'com.google.dagger:dagger-compiler:2.26'
