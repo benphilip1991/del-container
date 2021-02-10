@@ -130,3 +130,13 @@ The project is currently a research prototype and offers limited functionality f
 
 _Please note that platform only supports a Zephyr HXM heart rate monitor. More devices will be added shortly_  
 _More details to come soon!_  
+
+
+## Examples
+The following gifs show a sample mini-health-app on the container.  
+
+Installation
+<p style="align:left"><img src="./assets/install.gif" width="20%" height="20%"></p>  
+  
+Running  
+<p style="align:right"><img src="./assets/run.gif" width="20%" height="20%"></p>
