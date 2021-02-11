@@ -11,8 +11,9 @@ Additions may break existing functionality. Please refer to the development bran
 5. [Examples](#examples)
 
 ## About
-The Digital Enhanced Living (DEL) container (del-container) is the container application and one of the user modules for the DEL platform which handles micro health services. The service manages several micro applications and allows a user to use several health services from one single app. The container exposes several APIs that can be used to develop services for the container. Other services contributing to the platform include [__del-auth__](https://github.com/benphilip1991/del-auth), [__del-web__](https://github.com/benphilip1991/del-web) and [__del-api__](https://github.com/benphilip1991/del-api). More details can be found on their respective pages.  
-_Please note that the repositories may be private at the moment and will be made public as they are developed._
+The Digital Enhanced Living (DEL) container (del-container) is the container application and one of the user modules for the DEL platform which handles micro health services. The service manages several micro applications and allows a user to use several health services from one single app. The container exposes several APIs that can be used to develop mini health applications for the container. Other services contributing to the platform include [__del-auth__](https://github.com/benphilip1991/del-auth), [__del-web__](https://github.com/benphilip1991/del-web) and [__del-api__](https://github.com/benphilip1991/del-api). Once developed, registration of apps is much like other commercial app stores - mini health applications for the platform can be registered with the del-api service which then becomes available to users on the platform. More details can be found on the service page.  
+_Please note that the repositories may be private at the moment and will be made public as they are developed._  
+_The [__del-api__](https://github.com/benphilip1991/del-api) service is required for the app to function. Once launched, the appropriate IP address/hostname and port have to be configured in the constants class (com.del.delcontainer.utils.Constants) in the container._  
 
 ## Architecture
 The container is based on the following architecture -  
