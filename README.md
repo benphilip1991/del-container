@@ -24,6 +24,10 @@ Health data can be fetched from several sources including manual entry, from con
 
 <p align="center"><img src="./assets/datapoints.png" width="80%" height="80%"></p>
 
+The following sequence diagram outlines a high level control and data flow within the container -  
+
+<p align="center"><img src="./assets/mini-app-data-flow.png" width="80%" height="80%"></p>
+
 _Please note that the current prototype implementation does not support all these metrics. They will be added as the container is developed further._
 
 ## Container APIs
