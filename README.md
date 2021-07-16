@@ -121,6 +121,19 @@ function getWorkoutData() {
 }
 ```
 
+Similarly, a mini app can also push a notification to the user through the `createNotification` function - 
+|Function          | Description      |
+|------------------|------------------|
+|createNotification(appId, notificationMessage)     | Push a notification through the container   |
+
+The following example shows the use of the notification function - 
+```
+function pushAppNotification() {
+    // App logic
+    let notificationMessage = "Some notification...";
+    DelUtils.createNotification(this.appId, notificationMessage);
+}
+```
 
 _More details to come soon!_  
 
