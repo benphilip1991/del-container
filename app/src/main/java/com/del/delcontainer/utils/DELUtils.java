@@ -7,6 +7,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import com.del.delcontainer.managers.DataManager;
+import com.del.delcontainer.managers.DelNotificationManager;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 
 import org.json.JSONArray;
@@ -181,15 +182,26 @@ public class DELUtils {
     /**
      * Get logged sensor data filtered by date
      *
-     * @param AppId
+     * @param appId
      * @param sensor
      * @param start
      * @param end
      * @return
      */
     @JavascriptInterface
-    public String getData(String AppId, String sensor, String start, String end) {
-        return DataManager.getSensorLogs(AppId, sensor, start, end);
+    public String getData(String appId, String sensor, String start, String end) {
+        return DataManager.getSensorLogs(appId, sensor, start, end);
+    }
+
+    /**
+     * Create single app notification
+     *
+     * @param appId
+     * @param notificationMessage
+     */
+    @JavascriptInterface
+    public void createNotification(String appId, String notificationMessage) {
+        DelNotificationManager.getInstance().createAppNotification(appId, notificationMessage);
     }
 
     @JavascriptInterface

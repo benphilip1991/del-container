@@ -34,6 +34,8 @@ public class DelAppContainerFragment extends Fragment {
     private WebViewClient webViewClient;
     DelContainerActivity activity;
 
+    public DelAppContainerFragment() { ; }
+
     public DelAppContainerFragment(String appId, String appName, String packageName) {
         this.appId = appId;
         this.appName = appName;

@@ -34,4 +34,6 @@
     <string name="install_text">Install</string>
     <string name="cancel_text">Cancel</string>
     <string name="megan_fox">Megan Fox</string>
+    <string name="notification_channel_name">DEL Container</string>
+    <string name="notification_channel_description">DEL Container Notification Channel</string>
 </resources>
