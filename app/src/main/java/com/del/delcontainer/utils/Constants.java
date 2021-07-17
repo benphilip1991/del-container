@@ -32,6 +32,7 @@ public class Constants {
     public static final String INTERVAL         = "interval";
     public static final String APP_REQUESTS     = "requests";
     public static final String DEL_UTILS        = "DelUtils";
+    public static final String INTENT_APP_ID    = "INTENT_APP_ID";
 
     // Data notifications
     public static final String HR_DATA          = "HR_DATA";
@@ -73,6 +74,7 @@ public class Constants {
 
     // Bot actions
     public static final String BOT_ACTION_HEALTH        = "com.del.bot.ACTION_HEALTH_METRIC";
+    public static final String BOT_ACTION_USERNAME      = "com.del.bot.ACTION_USER_NAME";
     public static final String BOT_ACTION               = "action";
 
     // BotKit params
@@ -119,7 +121,8 @@ public class Constants {
     public static final String WS_PREFIX            = "ws://";
     public static final String HTTP_PREFIX          = "http://";
     public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "10.24.0.8";
+    public static final String DEL_SERVICE_IP       = "10.24.0.3";
+    //public static final String DEL_SERVICE_IP       = "10.140.48.161";
     public static final String DEL_PORT             = "3050";
     public static final String API_BASE_PATH        = "/api/v1/";
     public static final String APP_RESOURCE_PATH    = "application/package/";
@@ -134,6 +137,7 @@ public class Constants {
     public static final String PERM_ACCESS_LOCATION        = "access_location";
     public static final String PERM_ACCESS_PEDOMETER       = "access_pedometer";
     public static final String PERM_ACCESS_HEART_RATE      = "access_heart_rate";
+    public static final String PERM_ACCESS_CAMERA          = "access_camera";
 
     public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
         {
@@ -141,6 +145,7 @@ public class Constants {
             put(PERM_ACCESS_LOCATION, "Access your location");
             put(PERM_ACCESS_PEDOMETER, "Track your physical activity");
             put(PERM_ACCESS_HEART_RATE, "Access your heart rate");
+            put(PERM_ACCESS_CAMERA, "Access your camera");
         }
     };
 

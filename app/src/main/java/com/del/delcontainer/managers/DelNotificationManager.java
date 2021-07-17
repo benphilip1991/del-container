@@ -11,8 +11,9 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
+import com.del.delcontainer.ui.login.LoginActivity;
+import com.del.delcontainer.utils.Constants;
 
 /**
  * Notification Manager - handles app notifications requested by
@@ -83,20 +84,24 @@ public class DelNotificationManager {
     public void createAppNotification(String appId, String notificationMessage) {
 
         String appName = DelAppManager.getInstance().getAppNameMap().get(appId);
-        createNotification(appName, notificationMessage);
+        createNotification(appId, appName, notificationMessage);
     }
 
     /**
      * Get the app launcher intent - make sure we don't overwrite the
      * app back stack.
      *
+     * @param appId Application id
      * @return intent
      */
-    public Intent getLauncherIntent() {
-        final Intent intent = new Intent(applicationContext, DelContainerActivity.class);
+    public Intent getLauncherIntent(String appId) {
+        // LoginActivity -- because that's the first in the stack called by the OS
+        // DO NOT add DelContainerActivity - else the app state will be lost
+        final Intent intent = new Intent(applicationContext, LoginActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.putExtra(Constants.INTENT_APP_ID, appId);
 
         return intent;
     }
@@ -107,12 +112,13 @@ public class DelNotificationManager {
      * @param notificationTitle Notification title
      * @param notificationMessage Notification message
      */
-    public void createNotification(String notificationTitle, String notificationMessage) {
-        PendingIntent pendingIntent = PendingIntent.getActivity(applicationContext, 0, getLauncherIntent(), 0);
+    public void createNotification(String appId, String notificationTitle, String notificationMessage) {
+        PendingIntent pendingIntent = PendingIntent.getActivity(applicationContext, 0,
+                getLauncherIntent(appId), PendingIntent.FLAG_UPDATE_CURRENT);
 
         // TODO: Change notification icon
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
-                .setSmallIcon(R.drawable.default_app_icon)
+                .setSmallIcon(R.drawable.del_image)
                 .setContentTitle(notificationTitle)
                 .setContentText(notificationMessage)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
