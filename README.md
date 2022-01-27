@@ -159,3 +159,7 @@ Installation
   
 Running  
 <p style="align:right"><img src="./assets/run.gif" width="30%" height="30%"></p>
+
+Sample App Demo  
+<video src="https://user-images.githubusercontent.com/33706460/151330252-6893c4c0-802a-44af-91c2-71b09c0741aa.MP4" width="30%" height="30%">
+
