@@ -3,17 +3,17 @@
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid
-                android:color="#4e4e4e55"/>
+                android:color="@color/springBud"/>
             <corners
                 android:radius="30dp" />
             <padding
-                android:bottom="1dp" />
+                android:bottom="1dp"/>
         </shape>
     </item>
     <item>
         <shape xmlns:android="http://schemas.android.com/apk/res/android">
             <solid
-                android:color="#F3F2F3"/>
+                android:color="@color/springBudLight"/>
             <corners
                 android:radius="30dp" />
             <padding

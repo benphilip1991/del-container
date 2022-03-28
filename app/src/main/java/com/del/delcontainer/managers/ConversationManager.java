@@ -94,6 +94,10 @@ public class ConversationManager {
                     Log.d(TAG, response.toString());
                     String botResponseText = response.getString(Constants.BOTKIT_TEXT);
 
+                    // botResponse is a JSON object with fields - text, action and params.
+                    // Display text to the user and use params if action is present
+                    botResponseMessageListener.onBotResponseMessage(botResponseText);
+
                     if (response.has(Constants.BOT_ACTION) &&
                             response.getString(Constants.BOT_ACTION).equals(Constants.BOT_ACTION_HEALTH)) {
                         JSONObject botParams = (JSONObject) response.get(Constants.BOT_ENTITY_PARAMS);
@@ -120,13 +124,7 @@ public class ConversationManager {
                     } else if(response.has(Constants.BOT_ACTION) &&
                             response.getString(Constants.BOT_ACTION).equals(Constants.BOT_ACTION_USERNAME)) {
 
-                        // botResponse is a JSON object with fields - text, action and params.
-                        // Display text to the user and use params if action is present
                         botResponseMessageListener.onBotResponseMessage(botResponseText + ' ' + LoginStateRepo.getInstance().getFirstName());
-                    } else {
-                        // botResponse is a JSON object with fields - text, action and params.
-                        // Display text to the user and use params if action is present
-                        botResponseMessageListener.onBotResponseMessage(botResponseText);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -161,5 +159,4 @@ public class ConversationManager {
     public interface BotResponseActionListener {
         void onBotResponseAction(String appId, String appName, String packageName, int action);
     }
-
 }

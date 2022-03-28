@@ -90,36 +90,7 @@ public class GattUtils {
         peripheralDataService = HeartRateService.getInstance();
         peripheralDataService.setDevice(deviceAddress);
     }
-
-    /**
-     * Manage heart rate provider
-     * TODO: Call in HeartRateDataHandler and set to True or False for managing HR values
-     *
-     * @param gatt
-     */
-    private void manageHRProvider(BluetoothGatt gatt) {
-
-        BluetoothGattCharacteristic characteristic = null;
-
-        Log.d(TAG, "manageHRProvider - Getting Characteristics of HR Provider");
-        characteristic = gatt.getService(Constants.HEART_RATE_SERVICE)
-                .getCharacteristic(Constants.HEART_RATE_MEASUREMENT_CHAR);
-
-        if (null != characteristic) {
-
-            Log.d(TAG, "manageHRProvider - Enabling Characteristics " +
-                    "Notifications for: " + characteristic.getUuid());
-            gatt.setCharacteristicNotification(characteristic, true);
-
-
-            // Write descriptor to enable Notifications
-            BluetoothGattDescriptor descriptor = characteristic.
-                    getDescriptor(Constants.CLIENT_CHARACTERISTIC_CONFIG);
-            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
-            gatt.writeDescriptor(descriptor);
-        }
-    }
-
+    
     /**
      * Handle UART communication
      *

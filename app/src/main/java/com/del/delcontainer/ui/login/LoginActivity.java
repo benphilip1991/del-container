@@ -20,6 +20,7 @@ import com.del.delcontainer.R;
 import com.del.delcontainer.database.entities.Auth;
 import com.del.delcontainer.repositories.AuthRepository;
 import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
+import com.del.delcontainer.utils.Constants;
 
 public class LoginActivity extends AppCompatActivity
         implements LoginViewModel.LoginFormView {
@@ -119,6 +120,17 @@ public class LoginActivity extends AppCompatActivity
      */
     private void loginApp() {
         Intent intent = new Intent(this.getApplicationContext(), DelContainerActivity.class);
+
+        Intent notificationIntent = getIntent();
+        if(null != notificationIntent) {
+            String appId = notificationIntent.getStringExtra(Constants.INTENT_APP_ID);
+            Log.d(TAG, "onCreate: Notification App Id : " + appId);
+
+            intent.putExtra(Constants.INTENT_APP_ID, appId);
+        } else {
+            Log.d(TAG, "onCreate: NULL intent");
+        }
+
         startActivity(intent);
     }
 

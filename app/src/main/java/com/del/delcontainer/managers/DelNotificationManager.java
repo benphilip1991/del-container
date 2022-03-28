@@ -98,7 +98,7 @@ public class DelNotificationManager {
         // LoginActivity -- because that's the first in the stack called by the OS
         // DO NOT add DelContainerActivity - else the app state will be lost
         final Intent intent = new Intent(applicationContext, LoginActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         intent.putExtra(Constants.INTENT_APP_ID, appId);
@@ -116,7 +116,6 @@ public class DelNotificationManager {
         PendingIntent pendingIntent = PendingIntent.getActivity(applicationContext, 0,
                 getLauncherIntent(appId), PendingIntent.FLAG_UPDATE_CURRENT);
 
-        // TODO: Change notification icon
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setSmallIcon(R.drawable.del_image)
                 .setContentTitle(notificationTitle)

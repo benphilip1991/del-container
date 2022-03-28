@@ -2,7 +2,9 @@ package com.del.delcontainer.utils;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.net.http.SslError;
 import android.util.Log;
+import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -23,9 +25,7 @@ public class DelAppWebViewClient extends WebViewClient {
 
     @Override
     public void onPageFinished(WebView view, String url) {
-
         Log.d(TAG, "onPageFinished: Pushing data to app");
-        //String methodUrl = "javascript:displayAppMessage('Heart Rate : " + new Random().nextInt(500) + "')";
         String methodUrl = "javascript:setAppId('" + appId + "')";
         view.loadUrl(methodUrl);
     }
@@ -39,7 +39,6 @@ public class DelAppWebViewClient extends WebViewClient {
 
     @Override
     public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
-
         super.onReceivedError(view, request, error);
         view.loadUrl("about:blank");
         view.loadUrl("file:///android_asset/webview_error.html");
@@ -62,6 +61,18 @@ public class DelAppWebViewClient extends WebViewClient {
             return true;
         }
         return false;
+    }
+
+    /**
+     * TODO: Dangerous!!! This block overrides the default certificate validation mechanism
+     * TODO: Not to be used in Prod!
+     * @param view
+     * @param handler
+     * @param error
+     */
+    @Override
+    public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
+        //handler.proceed();
     }
 
     public void pushDataToApp(WebView view, String data) {

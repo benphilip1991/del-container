@@ -1,6 +1,8 @@
 package com.del.delcontainer.ui.fragments;
 
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,11 +11,14 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.PermissionRequest;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.del.delcontainer.DelContainerActivity;
@@ -34,7 +39,9 @@ public class DelAppContainerFragment extends Fragment {
     private WebViewClient webViewClient;
     DelContainerActivity activity;
 
-    public DelAppContainerFragment() { ; }
+    public DelAppContainerFragment() {
+        ;
+    }
 
     public DelAppContainerFragment(String appId, String appName, String packageName) {
         this.appId = appId;
@@ -46,13 +53,14 @@ public class DelAppContainerFragment extends Fragment {
     /**
      * Set the app title to the service name when it attaches to the
      * container activity
+     *
      * @param context
      */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
 
-        if(context instanceof DelContainerActivity) {
+        if (context instanceof DelContainerActivity) {
             activity = (DelContainerActivity) context;
         }
     }
@@ -72,7 +80,7 @@ public class DelAppContainerFragment extends Fragment {
      * Call to set application title on resume
      */
     public void setAppTitle() {
-        if(null != appName) {
+        if (null != appName) {
             activity.setTitle(appName);
         }
     }
@@ -107,10 +115,12 @@ public class DelAppContainerFragment extends Fragment {
 
     /**
      * Set up the webview for running the DEL app
+     *
      * @param view
      */
     private void loadDelApp(View view) {
 
+        Log.d(TAG, "loadDelApp: Launching app in micro app container");
         DELUtils delUtils = DELUtils.getInstance();
         delUtils.setContext(getContext());
 
@@ -119,10 +129,31 @@ public class DelAppContainerFragment extends Fragment {
         appView.getSettings().setDatabaseEnabled(true);
         appView.getSettings().setDomStorageEnabled(true);
         appView.getSettings().setAppCacheEnabled(true);
+        appView.getSettings().setAllowFileAccessFromFileURLs(true);
+        appView.getSettings().setAllowUniversalAccessFromFileURLs(true);
+        appView.getSettings().setSupportZoom(true);
+        appView.getSettings().setBuiltInZoomControls(true);
+        appView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         appView.addJavascriptInterface(delUtils, Constants.DEL_UTILS);
 
-        // Pass messages
         appView.setWebViewClient(webViewClient);
+        appView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                Log.d(TAG, "onPermissionRequest: Fetching webchrome permissions");
+
+                getActivity().runOnUiThread(() -> {
+                    final String[] requestedResources = request.getResources();
+                    for (String permReq : requestedResources) {
+                        if (permReq.equals(PermissionRequest.RESOURCE_VIDEO_CAPTURE)) {
+                            request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+                            break;
+                        }
+                    }
+                });
+            }
+        });
+
         appView.loadUrl(getAppUrl());
     }
 
@@ -148,6 +179,8 @@ public class DelAppContainerFragment extends Fragment {
         String appUrl = Constants.HTTP_PREFIX + Constants.DEL_SERVICE_IP + ":"
                 + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
                 + appId + "/" + packageName + ".html";
+
+        Log.d(TAG, "getAppUrl: App URL : " + appUrl);
         return appUrl;
     }
 }

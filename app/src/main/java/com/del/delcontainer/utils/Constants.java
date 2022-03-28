@@ -119,11 +119,15 @@ public class Constants {
 
     // IP addresses and hostnames
     public static final String WS_PREFIX            = "ws://";
+    //public static final String WSS_PREFIX            = "wss://";
     public static final String HTTP_PREFIX          = "http://";
-    public static final String HTTPS_PREFIX         = "https://";
-    public static final String DEL_SERVICE_IP       = "10.24.0.3";
-    //public static final String DEL_SERVICE_IP       = "10.140.48.161";
+    //public static final String HTTPS_PREFIX         = "https://";
+    //public static final String DEL_SERVICE_IP       = "10.24.0.3";
+    //public static final String DEL_SERVICE_IP       = "dfb8ebe3c19b.ngrok.io";
+    //public static final String DEL_SERVICE_IP       = "192.168.29.200";
+    public static final String DEL_SERVICE_IP       = "10.140.2.124";
     public static final String DEL_PORT             = "3050";
+    //public static final String DEL_PORT             = "";
     public static final String API_BASE_PATH        = "/api/v1/";
     public static final String APP_RESOURCE_PATH    = "application/package/";
 

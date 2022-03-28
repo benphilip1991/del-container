@@ -16,9 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
+import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
 
 public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledAppListViewAdapter.ViewHolder> {
 
@@ -64,7 +67,8 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
                 + Constants.DEL_PORT + Constants.API_BASE_PATH + Constants.APP_RESOURCE_PATH
                 + linkedAppDetails.get(position).getApplicationId()
                 + "/" + linkedAppDetails.get(position).getApplicationUrl() +"/icon";
-        Picasso.with(this.context).load(imageUrl).into(holder.appImage);
+
+        Picasso.get().load(imageUrl).into(holder.appImage);
         holder.appLabel.setText(linkedAppDetails.get(position).getApplicationName());
     }
 

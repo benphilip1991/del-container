@@ -58,31 +58,27 @@ public class DelContainerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        registerBroadcastReceiver();
-        BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
-        navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
-        chatBotDialogFragment = ChatBotDialog.newInstance();
-        /**
-         * Explicitly setting the default view to the services on first run
-         * This ensures the containerViewMap tracks the first view as well.
-         * Issue - launches two fragment instances
-         */
-        navView.setSelectedItemId(R.id.navigation_services);
+        if (null == savedInstanceState) {
+            Log.d(TAG, "onCreate: Activity never existed before");
+            registerBroadcastReceiver();
+            BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
+            navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
+            chatBotDialogFragment = ChatBotDialog.newInstance();
+            /**
+             * Explicitly setting the default view to the services on first run
+             * This ensures the containerViewMap tracks the first view as well.
+             * TODO Issue - launches two fragment instances
+             */
+            navView.setSelectedItemId(R.id.navigation_services);
 
-        FloatingActionButton chatButton = (FloatingActionButton) findViewById(R.id.chat_button);
-        chatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showChatBot();
-            }
-        });
+            FloatingActionButton chatButton = findViewById(R.id.chat_button);
+            chatButton.setOnClickListener(v -> showChatBot());
 
-        // Experimental for now
-        DelNotificationManager.getInstance().initNotificationManager(getApplicationContext());
-        DataManager.initDataManager(getApplicationContext());
-        verifyAndGetPermissions();
-        initServices();
-        scheduleProviderJobs();
+            // Experimental for now
+            verifyAndGetPermissions();
+            initServices();
+            scheduleProviderJobs();
+        }
     }
 
     @Override
@@ -100,10 +96,17 @@ public class DelContainerActivity extends AppCompatActivity {
         Log.d(TAG, "onResume: Resuming location service");
         LocationService locationService = LocationService.getInstance();
         locationService.startLocationUpdates();
+
+        Intent intent = getIntent();
+        if(null != intent) {
+            String appId = intent.getStringExtra(Constants.INTENT_APP_ID);
+            Log.d(TAG, "onCreate: Notification App Id : " + appId);
+        }
     }
 
     /**
      * To show the close action bar menu button
+     *
      * @param menu
      * @return
      */
@@ -144,6 +147,8 @@ public class DelContainerActivity extends AppCompatActivity {
     private void initServices() {
 
         DelAppManager.getInstance().setFragmentManager(this.getSupportFragmentManager());
+        DelNotificationManager.getInstance().initNotificationManager(this);
+        DataManager.initDataManager(this);
 
         LocationService locationService = LocationService.getInstance();
         locationService.initLocationService(this);
@@ -202,7 +207,7 @@ public class DelContainerActivity extends AppCompatActivity {
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
                         this.setTitle(R.string.title_settings);
                         break;
-                }
+                }Intent notificationIntent = getIntent();
                 DelAppManager.getInstance().hideAllApps();
 
                 // Get the fragment manager and begin transaction. But only hide/show them
@@ -250,7 +255,10 @@ public class DelContainerActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_BACKGROUND_LOCATION,
                 Manifest.permission.INTERNET,
-                Manifest.permission.ACTIVITY_RECOGNITION
+                Manifest.permission.ACTIVITY_RECOGNITION,
+                Manifest.permission.CAMERA,
+                Manifest.permission.RECORD_AUDIO,
+                Manifest.permission.MODIFY_AUDIO_SETTINGS
         };
 
         for (String permission : permissionList) {

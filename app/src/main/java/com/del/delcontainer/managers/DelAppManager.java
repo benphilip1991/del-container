@@ -102,6 +102,7 @@ public class DelAppManager {
             Log.d(TAG, "launchApp: Creating new app instance : " + appName);
             DelAppContainerFragment delAppContainerFragment =
                     new DelAppContainerFragment(appId, appName, packageName);
+
             appCache.put(appId, delAppContainerFragment);
             appNameMap.put(appId, appName);
 
@@ -123,7 +124,7 @@ public class DelAppManager {
             app.setAppTitle();
         }
 
-        //transaction.hide(fragmentManager.findFragmentByTag(Constants.HOST_VIEW));
+        // TODO - investigate Container activity state loss when launching app after notification tap
         transaction.commit();
     }
 
@@ -161,7 +162,7 @@ public class DelAppManager {
             transaction.detach(appCache.get(appId));
         }
 
-        transaction.remove(appCache.get(appId));
+        transaction.remove(fragmentManager.findFragmentByTag(appId));
         appCache.remove(appId);
         appNameMap.remove(appId);
         transaction.commit();

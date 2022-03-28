@@ -5,6 +5,7 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.Fragment;
 
+import com.del.delcontainer.annotations.ServiceMarker;
 import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.services.HeartRateService;
@@ -27,6 +28,7 @@ import java.util.concurrent.TimeUnit;
  * broadcast locally and then stored by the DelBroadcastReceiver.
  * Need to make sure the HR data is handled here instead of anywhere else.
  */
+@ServiceMarker
 public class HeartRateDataHandler {
 
     private static final String TAG = "HeartRateDataHandler";
@@ -115,7 +117,7 @@ public class HeartRateDataHandler {
             Log.d(TAG, "checkDeviceConnectionTask: HR device connected. Starting provider.");
             try {
                 // Delay to allow gatt service initialization
-                Thread.sleep(5000);
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
