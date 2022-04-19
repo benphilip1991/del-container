@@ -56,6 +56,7 @@ public class PedometerDataHandler {
         Log.d(TAG, "startStepDataProviderTask: starting step count updates");
         isRunning = true;
 
+        sensorsService.enableStepCounter();
         taskHandler = scheduler.scheduleWithFixedDelay(
                 stepCountProviderTask, DELAY, INTERVAL, TimeUnit.SECONDS);
     }
@@ -67,6 +68,7 @@ public class PedometerDataHandler {
         Log.d(TAG, "stopStepDataProviderTask: No more requests. Stopping updates.");
         taskHandler.cancel(true);
         isRunning = false;
+        sensorsService.disableStepCounter();
     }
 
     /**

@@ -1,11 +1,15 @@
 package com.del.delcontainer.services;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Looper;
 import android.util.Log;
 import android.webkit.WebView;
 
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.del.delcontainer.managers.DataManager;
@@ -34,6 +38,7 @@ public class LocationService {
     private static final String TAG = "LocationService";
 
     private Context context;
+    private Activity activity;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private boolean gettingLocationUpdates = false;
     private boolean isLiveLocationEnabled = false;
@@ -57,6 +62,12 @@ public class LocationService {
         }
         fusedLocationProviderClient = LocationServices.
                 getFusedLocationProviderClient(this.context);
+    }
+
+    public void setActivity(Activity activity) {
+        if(null != activity) {
+            this.activity = activity;
+        }
     }
 
     public Location getLastLocation() {
@@ -88,9 +99,22 @@ public class LocationService {
             locationRequest.setFastestInterval(1000);
             locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-            fusedLocationProviderClient.requestLocationUpdates(locationRequest,
-                    locationCallback,
-                    Looper.getMainLooper());
+            // Self-check for permissions. Request if not already granted
+            if (ActivityCompat.checkSelfPermission(
+                    this.context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(
+                            this.context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                // Permissions not already granted - check now
+                ActivityCompat.requestPermissions(this.activity, new String[]{
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION}, Constants.LOCATION_REQUEST_CODE);
+
+            } else {
+                fusedLocationProviderClient.requestLocationUpdates(locationRequest,
+                        locationCallback,
+                        Looper.getMainLooper());
+            }
         }
     }
 
@@ -116,7 +140,6 @@ public class LocationService {
                 Log.d(TAG, "onLocationResult: Latitude : " + lastLocation.getLatitude()
                         + " | Longitude : " + lastLocation.getLongitude()
                         + " | Accuracy : " + lastLocation.getAccuracy());
-
             }
         }
     };

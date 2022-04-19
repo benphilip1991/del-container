@@ -1,5 +1,7 @@
 package com.del.delcontainer;
 
+import static com.del.delcontainer.R.id.host_fragment;
+
 import android.Manifest;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -10,22 +12,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
-
-import com.del.delcontainer.managers.DelNotificationManager;
-import com.del.delcontainer.managers.DataManager;
-import com.del.delcontainer.receivers.DelBroadcastReceiver;
-import com.del.delcontainer.services.LocationService;
-import com.del.delcontainer.services.SensorsService;
-import com.del.delcontainer.ui.chatbot.ChatBotDialog;
-import com.del.delcontainer.ui.services.ServicesFragment;
-import com.del.delcontainer.ui.settings.SettingsFragment;
-import com.del.delcontainer.ui.sources.SourcesFragment;
-import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.managers.DelAppManager;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -37,10 +24,22 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.del.delcontainer.managers.DataManager;
+import com.del.delcontainer.managers.DelAppManager;
+import com.del.delcontainer.managers.DelNotificationManager;
+import com.del.delcontainer.receivers.DelBroadcastReceiver;
+import com.del.delcontainer.services.LocationService;
+import com.del.delcontainer.services.SensorsService;
+import com.del.delcontainer.ui.chatbot.ChatBotDialog;
+import com.del.delcontainer.ui.services.ServicesFragment;
+import com.del.delcontainer.ui.settings.SettingsFragment;
+import com.del.delcontainer.ui.sources.SourcesFragment;
+import com.del.delcontainer.utils.Constants;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.del.delcontainer.R.id.host_fragment;
 
 public class DelContainerActivity extends AppCompatActivity {
     private static final String TAG = "DelContainerActivity";
@@ -95,6 +94,7 @@ public class DelContainerActivity extends AppCompatActivity {
 
         Log.d(TAG, "onResume: Resuming location service");
         LocationService locationService = LocationService.getInstance();
+        locationService.setActivity(this);
         locationService.startLocationUpdates();
 
         Intent intent = getIntent();
@@ -273,6 +273,7 @@ public class DelContainerActivity extends AppCompatActivity {
      */
     private void getPermissions(String permission) {
 
+        Log.d(TAG, "getPermissions: Fetching permission : " + permission);
         // if permission is not already granted, get it here,
         if (ContextCompat.checkSelfPermission(this, permission)
                 != PackageManager.PERMISSION_GRANTED) {

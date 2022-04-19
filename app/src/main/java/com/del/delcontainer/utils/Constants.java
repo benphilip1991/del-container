@@ -48,6 +48,7 @@ public class Constants {
 
     // Numerical types
     public static final int PERMISSION_REQUEST_CODE = 101;
+    public static final int LOCATION_REQUEST_CODE   = PERMISSION_REQUEST_CODE + 1;
     public static final long SCAN_PERIOD            = 20000; // 20 seconds
     public static final int REQUEST_ENABLE_BT       = 1;
 
@@ -124,8 +125,8 @@ public class Constants {
     //public static final String HTTPS_PREFIX         = "https://";
     //public static final String DEL_SERVICE_IP       = "10.24.0.3";
     //public static final String DEL_SERVICE_IP       = "dfb8ebe3c19b.ngrok.io";
-    //public static final String DEL_SERVICE_IP       = "192.168.29.200";
-    public static final String DEL_SERVICE_IP       = "10.140.2.124";
+    public static final String DEL_SERVICE_IP       = "192.168.1.112";
+    //public static final String DEL_SERVICE_IP       = "10.140.2.124";
     public static final String DEL_PORT             = "3050";
     //public static final String DEL_PORT             = "";
     public static final String API_BASE_PATH        = "/api/v1/";
