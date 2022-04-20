@@ -31,19 +31,14 @@ public class LocationDataHandler {
     private static LocationDataHandler instance = null;
 
     // Executors for periodic provider task
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> taskHandler = null;
 
-    private LocationService locationService = LocationService.getInstance();
+    private final LocationService locationService = LocationService.getInstance();
 
     private LocationDataHandler() {
     }
 
-    /**
-     * Get class instance
-     *
-     * @return
-     */
     public static synchronized LocationDataHandler getInstance() {
         if (null == instance) {
             instance = new LocationDataHandler();
@@ -90,7 +85,7 @@ public class LocationDataHandler {
     /**
      * Inject location data to services in a given interval
      */
-    private Runnable locationProviderTask = () -> {
+    private final Runnable locationProviderTask = () -> {
 
         Log.d(TAG, "locationProviderTask : Running location request.");
         if (0 == DataManager.getInstance().getCallBackRequests(Constants.ACCESS_LOCATION).size()) {
@@ -124,8 +119,8 @@ public class LocationDataHandler {
 
     /**
      * Provide requested data to the app -> callback
-     * @param appId
-     * @param callback
+     * @param appId micro-app id
+     * @param callback callback reference for the micro app
      */
     private void provideLocationData(String appId, String callback, JSONObject data) {
 
@@ -135,7 +130,7 @@ public class LocationDataHandler {
 
         if (null == targetFrag) {
             // Fragment doesn't exist. Clear location data request for the app.
-            DataManager.getInstance().getCallBackRequests(Constants.ACCESS_LOCATION).remove(appId);
+            DataManager.getInstance().removeCallbackRequests(Constants.ACCESS_LOCATION, appId);
             return;
         }
 

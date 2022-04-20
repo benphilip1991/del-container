@@ -38,20 +38,15 @@ public class HeartRateDataHandler {
     private static HeartRateDataHandler instance = null;
 
     // Executors for periodic provider task
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> taskHandler = null;
     private ScheduledFuture<?> checkDeviceTaskHandler = null;
 
-    private HeartRateService heartRateService = HeartRateService.getInstance();
+    private final HeartRateService heartRateService = HeartRateService.getInstance();
 
     private HeartRateDataHandler() {
     }
 
-    /**
-     * Get instance of HeartRateDataHandler
-     *
-     * @return
-     */
     public static synchronized HeartRateDataHandler getInstance() {
         if (null == instance) {
             instance = new HeartRateDataHandler();
@@ -88,7 +83,7 @@ public class HeartRateDataHandler {
      * Stop providing HR reading updates. Ideally, this method is called
      * when no apps are registered for the updates.
      *
-     * @param deviceDisconnected
+     * @param deviceDisconnected device disconnected status
      */
     public void stopHRProviderTask(boolean deviceDisconnected) {
         Log.d(TAG, "stopHRProviderTask: Stopping Heart Rate provider task");
@@ -110,7 +105,7 @@ public class HeartRateDataHandler {
      * Task activated only when peripheral disconnects unexpectedly.
      * Checks if the device is reconnected
      */
-    private Runnable checkDeviceConnectionTask = () -> {
+    private final Runnable checkDeviceConnectionTask = () -> {
         Log.d(TAG, "checkDeviceConnectionTask: Checking if HR device reconnected.");
 
         if(heartRateService.isDeviceActive()) {
@@ -128,7 +123,7 @@ public class HeartRateDataHandler {
     /**
      * Fetch latest HR value buffer, parse and push to requesting app.
      */
-    private Runnable hrProviderTask = () -> {
+    private final Runnable hrProviderTask = () -> {
 
         Log.d(TAG, "hrProviderTask: Running HR provider");
 
@@ -146,7 +141,7 @@ public class HeartRateDataHandler {
             JSONObject data = new JSONObject();
             try {
                 data.put("heart_rate", hr_avg);
-                Log.d(TAG, "hrProviderTask Data : " + data.toString());
+                Log.d(TAG, "hrProviderTask Data : " + data);
             } catch (Exception e) {
                 Log.e(TAG, "hrProviderTask : Exception : " + e.getMessage());
             }
@@ -167,9 +162,9 @@ public class HeartRateDataHandler {
     /**
      * Inject heart rate data to app -> callback
      *
-     * @param appId
-     * @param callback
-     * @param data
+     * @param appId micro-app id
+     * @param callback callback reference for the micro app
+     * @param data data to send
      */
     private void provideHRData(String appId, String callback, JSONObject data) {
 

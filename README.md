@@ -149,7 +149,6 @@ The project is currently a research prototype and offers limited functionality f
 | Accelerometer (Raw Data)      | `access_accelerometer` | 250ms |
 
 The step count and heart rate are currently provided as numbers while the location and raw accelerometer data are injected as a JSON string with the relevant details. The location object provides the _latitude_, _longitude_ and _accuracy_, and the accelerometer data comprises the raw acceleration in the _X_, _Y_ and _Z_ planes.
-By default, location updates are 
 The following example demonstrates how this data can be extracted and used - 
 ```
 // Handle accelerometer data

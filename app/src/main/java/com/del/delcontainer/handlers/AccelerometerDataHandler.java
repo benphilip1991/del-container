@@ -34,10 +34,10 @@ public class AccelerometerDataHandler {
     }
 
     // Task executors
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> taskHandler = null;
 
-    private SensorsService sensorsService = SensorsService.getInstance();
+    private final SensorsService sensorsService = SensorsService.getInstance();
 
     public static synchronized AccelerometerDataHandler getInstance() {
         if (null == instance) {
@@ -76,7 +76,7 @@ public class AccelerometerDataHandler {
     /**
      * Runnable instance to inject accelerometer data to the requesting app
      */
-    private Runnable accelerometerDataProviderTask = () -> {
+    private final Runnable accelerometerDataProviderTask = () -> {
 
         Log.d(TAG, "accelerometerDataProviderTask: Running accelerometer data request.");
 
@@ -114,9 +114,9 @@ public class AccelerometerDataHandler {
     /**
      * Provide accelerometer data to the requesting app's registered callback
      *
-     * @param appId
-     * @param callback
-     * @param accelerometerData
+     * @param appId micro-app id
+     * @param callback callback reference for the micro app
+     * @param accelerometerData data to send
      */
     private void provideAccelerometerData(String appId, String callback, JSONObject accelerometerData) {
 

@@ -32,10 +32,10 @@ public class PedometerDataHandler {
     }
 
     // Executors for periodic provider task
-    private ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
     private ScheduledFuture<?> taskHandler = null;
 
-    private SensorsService sensorsService = SensorsService.getInstance();
+    private final SensorsService sensorsService = SensorsService.getInstance();
 
     public static synchronized PedometerDataHandler getInstance() {
         if (null == instance) {
@@ -74,18 +74,22 @@ public class PedometerDataHandler {
     /**
      * Runnable instance to inject step data to requesting app
      */
-    private Runnable stepCountProviderTask = () -> {
+    private final Runnable stepCountProviderTask = () -> {
+
+        Map<String, String> callbacks = DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER);
 
         Log.d(TAG, "stepCountProviderTask: Running step count request.");
-        if (0 == DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).size()) {
+        if (0 == callbacks.size()) {
+            Log.d(TAG, "No more pedometer requests: ");
             stopStepDataProviderTask();
         } else {
-            String stepCount = String.valueOf(sensorsService.getStepCount());
-            if(DataManager.getLoggerRequestFlag(Constants.ACCESS_PEDOMETER))
-                DataManager.LogSensorRecord(Constants.ACCESS_PEDOMETER, stepCount);
-            for (Map.Entry<String, String> request :
-                    DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).entrySet()) {
 
+            String stepCount = String.valueOf(sensorsService.getStepCount());
+            if (DataManager.getLoggerRequestFlag(Constants.ACCESS_PEDOMETER)) {
+                DataManager.LogSensorRecord(Constants.ACCESS_PEDOMETER, stepCount);
+            }
+
+            for (Map.Entry<String, String> request : callbacks.entrySet()) {
                 provideStepData(request.getKey(), request.getValue(), stepCount);
             }
         }
@@ -93,8 +97,9 @@ public class PedometerDataHandler {
 
     /**
      * Provide requested data to app -> callback
-     * @param appId
-     * @param callback
+     *
+     * @param appId    micro-app id
+     * @param callback callback reference for the micro app
      */
     private void provideStepData(String appId, String callback, String stepCount) {
 
@@ -102,9 +107,9 @@ public class PedometerDataHandler {
         HashMap<String, Fragment> appCache = DelAppManager.getInstance().getAppCache();
         DelAppContainerFragment targetFrag = (DelAppContainerFragment) appCache.get(appId);
 
-        if(null == targetFrag) {
+        if (null == targetFrag) {
             // App doesn't exist - remove step count data request for app.
-            DataManager.getInstance().getCallBackRequests(Constants.ACCESS_PEDOMETER).remove(appId);
+            DataManager.getInstance().removeCallbackRequests(Constants.ACCESS_PEDOMETER, appId);
             return;
         }
 
@@ -112,5 +117,6 @@ public class PedometerDataHandler {
         WebView appView = targetFrag.getAppView();
         String functionCall = DELUtils.getInstance().getTargetFunctionString(callback, params);
         DELUtils.getInstance().callDelAppFunction(appView, functionCall);
+
     }
 }

@@ -114,7 +114,7 @@ public class DelNotificationManager {
      */
     public void createNotification(String appId, String notificationTitle, String notificationMessage) {
         PendingIntent pendingIntent = PendingIntent.getActivity(applicationContext, 0,
-                getLauncherIntent(appId), PendingIntent.FLAG_UPDATE_CURRENT);
+                getLauncherIntent(appId), PendingIntent.FLAG_IMMUTABLE);
 
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(applicationContext, CHANNEL_ID)
                 .setSmallIcon(R.drawable.del_image)
