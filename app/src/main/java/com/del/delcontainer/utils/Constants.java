@@ -137,12 +137,13 @@ public class Constants {
     public static final String DIALOG_WARNING       = "warning";
     public static final String DIALOG_INFO          = "information";
 
-    //Application permission resources
+    // Application permission resources
     public static final String PERM_READ_BODY_DESCRIPTION  = "read_body_description";
     public static final String PERM_ACCESS_LOCATION        = "access_location";
     public static final String PERM_ACCESS_PEDOMETER       = "access_pedometer";
     public static final String PERM_ACCESS_HEART_RATE      = "access_heart_rate";
     public static final String PERM_ACCESS_CAMERA          = "access_camera";
+    public static final String PERM_ACCESS_ACCELEROMETER   = "access_accelerometer";
 
     public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
         {
@@ -151,14 +152,17 @@ public class Constants {
             put(PERM_ACCESS_PEDOMETER, "Track your physical activity");
             put(PERM_ACCESS_HEART_RATE, "Access your heart rate");
             put(PERM_ACCESS_CAMERA, "Access your camera");
+            put(PERM_ACCESS_ACCELEROMETER, "Access your accelerometer");
         }
     };
 
-    //Resource request type
+    // Resource request type
     public static final String READ_BODY_DESCRIPTION ="read_body_description";
-    public static final String ACCESS_LOCATION = "access_location";
-    public static final String ACCESS_PEDOMETER = "access_pedometer";
-    public static final String ACCESS_HEART_RATE = "access_heart_rate";
+    public static final String ACCESS_LOCATION      = "access_location";
+    public static final String ACCESS_PEDOMETER     = "access_pedometer";
+    public static final String ACCESS_HEART_RATE    = "access_heart_rate";
+    public static final String ACCESS_ACCELEROMETER = "access_accelerometer";
+    public static final String ACCESS_GYROSCOPE     = "access_gyroscope";
 
     /**
      * Hack to get BLE UUIDs from the fixed values

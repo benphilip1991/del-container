@@ -17,6 +17,7 @@ public class SensorsService implements SensorEventListener {
     private SensorManager sensorManager;
 
     private float stepCount = 0;
+    private float accelerometerData[];
 
     private SensorsService() {
     }
@@ -118,7 +119,7 @@ public class SensorsService implements SensorEventListener {
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            getRawAccelerometerData(sensorEvent);
+            accelerometerData = sensorEvent.values;
         }
         if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
             Log.d(TAG, "onSensorChanged: Step counter : " + sensorEvent.values[0]);
@@ -131,18 +132,11 @@ public class SensorsService implements SensorEventListener {
 
     }
 
-    public void getRawAccelerometerData(SensorEvent sensorEvent) {
-        float[] values = sensorEvent.values;
-
-        // Accelerometer movement in cartesian coordinates
-        float x = values[0];
-        float y = values[1];
-        float z = values[2];
-
-        Log.d(TAG, "getNormalizedAccelerometerData: (X, Y, Z) : (" + x + ", " + y + ", " + z + ")");
-    }
-
     public float getStepCount() {
         return stepCount;
+    }
+
+    public float[] getAccelerometerData() {
+        return accelerometerData;
     }
 }
