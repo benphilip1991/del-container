@@ -141,11 +141,42 @@ _More details to come soon!_
 ## Currently Available Data
 The project is currently a research prototype and offers limited functionality for testing and usability evaluations. More features would be added as the platform is developed further. Currently, the container provides access to the following data - 
 
-|Data Type           | Resource Key     |
-|--------------------|------------------|
-| Location           | `access_location` |
-| Step Count         | `access_pedometer` |  
-| Heart Rate         | `access_heart_rate` |
+|Data Type           | Resource Key     | Update Interval |
+|--------------------|------------------|------------------|
+| Location           | `access_location` | 5s   |
+| Step Count         | `access_pedometer` | 3s  |
+| Heart Rate         | `access_heart_rate` | 5s |
+| Accelerometer (Raw Data)      | `access_accelerometer` | 250ms |
+
+The step count and heart rate are currently provided as numbers while the location and raw accelerometer data are injected as a JSON string with the relevant details. The location object provides the _latitude_, _longitude_ and _accuracy_, and the accelerometer data comprises the raw acceleration in the _X_, _Y_ and _Z_ planes.
+By default, location updates are 
+The following example demonstrates how this data can be extracted and used - 
+```
+// Handle accelerometer data
+function accelerometerDataCallback(dataType, accelerometerData) {
+    var accData = JSON.parse(data);
+    if ("accelerometer" == dataType && Object.keys(accData).length > 0) {
+        var X = accData.X;
+        var Y = accData.Y;
+        var Z = accData.Z;
+
+        // do something
+    }
+}
+
+
+// Handle location data
+function locationCallback(dataType, locationData) {
+    var coordinates = JSON.parse(location);
+    if (dataType == "location" && Object.keys(coordinates).length > 0) {
+        var lat = coordinates.latitude;
+        var long = coordinates.longitude;
+        var accuracy = coordinates.accuracy;
+            
+        // do something
+    }
+}
+```
 
 _Please note that platform only supports a Zephyr HXM heart rate monitor. More devices will be added shortly_  
 _More details to come soon!_  
