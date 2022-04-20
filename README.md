@@ -154,7 +154,7 @@ The following example demonstrates how this data can be extracted and used -
 ```
 // Handle accelerometer data
 function accelerometerDataCallback(dataType, accelerometerData) {
-    var accData = JSON.parse(data);
+    var accData = JSON.parse(accelerometerData);
     if ("accelerometer" == dataType && Object.keys(accData).length > 0) {
         var X = accData.X;
         var Y = accData.Y;

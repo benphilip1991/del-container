@@ -89,7 +89,6 @@ public class AccelerometerDataHandler {
             // Push ahead as a JSON object
             float[] accData = sensorsService.getAccelerometerData();
             JSONObject data = new JSONObject();
-            Log.d(TAG, ": ");
             try {
                 data.put("X", accData[0]);
                 data.put("Y", accData[1]);
@@ -103,11 +102,9 @@ public class AccelerometerDataHandler {
                 DataManager.LogSensorRecord(Constants.ACCESS_ACCELEROMETER, data.toString());
             }
 
-            Log.d(TAG, "accelerometerDataProviderTask: Providing data test ");
             for(Map.Entry<String, String> request :
                     DataManager.getInstance().getCallBackRequests(Constants.ACCESS_ACCELEROMETER).entrySet()) {
 
-                Log.d(TAG, "accelerometerDataProviderTask: Providing data to : " + request.getKey());
                 // AppId, Callback name
                 provideAccelerometerData(request.getKey(), request.getValue(), data);
             }
