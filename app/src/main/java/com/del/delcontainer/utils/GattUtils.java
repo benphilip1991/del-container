@@ -1,5 +1,6 @@
 package com.del.delcontainer.utils;
 
+import android.Manifest;
 import android.bluetooth.BluetoothGatt;
 import android.bluetooth.BluetoothGattCallback;
 import android.bluetooth.BluetoothGattCharacteristic;
@@ -8,8 +9,11 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothProfile;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.util.Log;
+import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.del.delcontainer.managers.DeviceManager;
@@ -25,11 +29,11 @@ import static android.bluetooth.BluetoothGatt.GATT_SUCCESS;
 public class GattUtils {
 
     private static final String TAG = "GattUtils";
-    private static DeviceManager deviceManager = DeviceManager.getDeviceManager();
+    private static final DeviceManager deviceManager = DeviceManager.getDeviceManager();
     private static Context context;
 
     private PeripheralDataServiceIntf peripheralDataService;
-    private HandleConnectedDevices handleConnectedDevices = null;
+    private HandleConnectedDevices handleConnectedDevices;
 
     public GattUtils(Context context, HandleConnectedDevices handleConnectedDevices) {
         this.context = context;
@@ -101,6 +105,14 @@ public class GattUtils {
         BluetoothGattCharacteristic rCharacteristic;
         BluetoothGattCharacteristic tCharacteristic = null;
 
+        if (ActivityCompat.checkSelfPermission(this.context,
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this.context,
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Log.d(TAG, "manageUARTProvider: Got UART device : " + gatt.getDevice().getName());
         rCharacteristic = gatt.getService(Constants.UART_SERVICE).getCharacteristic(Constants.UART_RX);
 
@@ -125,6 +137,14 @@ public class GattUtils {
      */
     private void manageISSCProvider(BluetoothGatt gatt) {
 
+        if (ActivityCompat.checkSelfPermission(this.context,
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this.context,
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Log.d(TAG, "manageISSCProvider: Connecting to ISSC provider : " + gatt.getDevice().getName());
 
         for (BluetoothGattCharacteristic chars : gatt.getService(Constants.ISSC_PROP_SERVICE).getCharacteristics()) {
@@ -146,6 +166,14 @@ public class GattUtils {
      * @param gatt
      */
     private void manageGeneralDevice(BluetoothGatt gatt) {
+        if (ActivityCompat.checkSelfPermission(this.context,
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this.context,
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Log.d(TAG, "manageGeneralDevice: Connecting to general BLE device : " + gatt.getDevice().getName());
 
         for (BluetoothGattService service : gatt.getServices()) {
@@ -252,6 +280,13 @@ public class GattUtils {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int state, int newState) {
 
+            if (ActivityCompat.checkSelfPermission(context,
+                    Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+                Toast.makeText(context,
+                        Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+                return;
+            }
             Log.d(TAG, "OnConnectionStateChange : " + newState);
             if (state == GATT_SUCCESS) {
                 if (newState == BluetoothProfile.STATE_CONNECTED) {

@@ -1,10 +1,12 @@
 package com.del.delcontainer.ui.sources;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -49,15 +52,11 @@ public class SourcesFragment extends Fragment
          * Setup an onClick listener for the sources fragment
          */
         TextView rescan = rootView.findViewById(R.id.rescan_devices_button);
-        rescan.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View view) {
-                Log.d(TAG, "rescanBluetooth: rescanning for bluetooth devices");
-                Toast.makeText(getActivity(), "Rescanning for devices", Toast.LENGTH_SHORT)
-                        .show();
-                setupBluetooth();
-            }
+        rescan.setOnClickListener(view -> {
+            Log.d(TAG, "rescanBluetooth: rescanning for bluetooth devices");
+            Toast.makeText(getActivity(), "Rescanning for devices", Toast.LENGTH_SHORT)
+                    .show();
+            setupBluetooth();
         });
 
         /**
@@ -121,12 +120,17 @@ public class SourcesFragment extends Fragment
     private void scanBLEDevices(final boolean enable) {
 
         Log.d(TAG, "Scanning for bluetooth peripherals");
+        if (ActivityCompat.checkSelfPermission(this.getActivity().getApplicationContext(),
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this.getActivity().getApplicationContext(),
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         if (enable) {
-            new Handler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    bluetoothAdapter.stopLeScan(leScanCallback);
-                }
+            new Handler().postDelayed(() -> {
+                bluetoothAdapter.stopLeScan(leScanCallback);
             }, Constants.SCAN_PERIOD);
 
             bluetoothAdapter.startLeScan(leScanCallback);
@@ -139,19 +143,24 @@ public class SourcesFragment extends Fragment
 
         @Override
         public void onLeScan(final BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
+            if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                    Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
 
-                    if (null != bluetoothDevice && bluetoothDevice.getName() != null &&
-                            !bluetoothDeviceList.contains((bluetoothDevice))) {
-                        Log.d(TAG, "Adding new Device : " + bluetoothDevice.getName()
-                                + " | " + bluetoothDevice.getAddress());
-                        bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
+                Toast.makeText(getActivity().getApplicationContext(),
+                        Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+                return;
+            }
 
-                        // Notifications should be enabled if more devices are added
-                        sourcesListViewAdapter.notifyDataSetChanged();
-                    }
+            getActivity().runOnUiThread(() -> {
+
+                if (null != bluetoothDevice && bluetoothDevice.getName() != null &&
+                        !bluetoothDeviceList.contains((bluetoothDevice))) {
+                    Log.d(TAG, "Adding new Device : " + bluetoothDevice.getName()
+                            + " | " + bluetoothDevice.getAddress());
+                    bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
+
+                    // Notifications should be enabled if more devices are added
+                    sourcesListViewAdapter.notifyDataSetChanged();
                 }
             });
         }
@@ -182,6 +191,14 @@ public class SourcesFragment extends Fragment
     @Override
     public void onDialogButtonPressed(BluetoothDevice device, String operation) {
 
+        if (ActivityCompat.checkSelfPermission(this.getActivity().getApplicationContext(),
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(this.getActivity().getApplicationContext(),
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Log.d(TAG, "onDialogButtonPressed: " + device.getName() + " " + operation);
 
         if (operation.equals(Constants.CONNECT)) {
@@ -205,6 +222,14 @@ public class SourcesFragment extends Fragment
         intent.putExtra(Constants.BLE_STATUS_RECEIVER, new ResultReceiver(new Handler()) {
             @Override
             protected void onReceiveResult(int resultCode, Bundle resultData) {
+
+                if (ActivityCompat.checkSelfPermission(getActivity().getApplicationContext(),
+                        Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+                    Toast.makeText(getActivity().getApplicationContext(),
+                            Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+                    return;
+                }
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Constants.BLE_STATUS_CHANGED) {
                     String status = resultData.getString(Constants.BLE_STATUS);

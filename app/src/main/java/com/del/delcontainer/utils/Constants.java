@@ -125,8 +125,8 @@ public class Constants {
     //public static final String HTTPS_PREFIX         = "https://";
     //public static final String DEL_SERVICE_IP       = "10.24.0.3";
     //public static final String DEL_SERVICE_IP       = "dfb8ebe3c19b.ngrok.io";
-    public static final String DEL_SERVICE_IP       = "192.168.1.112";
-    //public static final String DEL_SERVICE_IP       = "10.140.2.124";
+    public static final String DEL_SERVICE_IP       = "192.168.1.100";
+    //public static final String DEL_SERVICE_IP       = "10.140.35.177";
     public static final String DEL_PORT             = "3050";
     //public static final String DEL_PORT             = "";
     public static final String API_BASE_PATH        = "/api/v1/";
@@ -155,6 +155,9 @@ public class Constants {
             put(PERM_ACCESS_ACCELEROMETER, "Access your accelerometer");
         }
     };
+
+    // Permission requests
+    public static final String REQUEST_BLUETOOTH_PERM = "Please allow bluetooth access from the system settings";
 
     // Resource request type
     public static final String READ_BODY_DESCRIPTION ="read_body_description";

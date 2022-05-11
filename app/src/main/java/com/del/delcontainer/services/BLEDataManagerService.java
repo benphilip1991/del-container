@@ -1,14 +1,18 @@
 package com.del.delcontainer.services;
 
+import android.Manifest;
 import android.app.IntentService;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.ResultReceiver;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.core.app.ActivityCompat;
 
 import com.del.delcontainer.managers.DeviceManager;
 import com.del.delcontainer.utils.Constants;
@@ -69,9 +73,15 @@ public class BLEDataManagerService extends IntentService
             } else if (intent.getStringExtra(Constants.OPERATION).equals(Constants.CONNECT)) {
 
                 // Connection request
-                Log.d(TAG, "onHandleIntent: Device details : "
-                        + device.getName() + " "
-                        + device.getAddress());
+                try {
+                    Log.d(TAG, "onHandleIntent: Device details : "
+                            + device.getName() + " "
+                            + device.getAddress());
+                } catch (SecurityException e) {
+                    Toast.makeText(getApplicationContext(),
+                            Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+                }
+
 
                 validateDeviceAndFetchData(device);
                 Bundle status = new Bundle();
@@ -87,6 +97,14 @@ public class BLEDataManagerService extends IntentService
      * @param device
      */
     private void validateDeviceAndFetchData(BluetoothDevice device) {
+
+        if (ActivityCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+
+            Toast.makeText(getApplicationContext(),
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+            return;
+        }
 
         // Check if the device is not null
         if (null != device) {
@@ -119,10 +137,15 @@ public class BLEDataManagerService extends IntentService
             return;
         }
 
-        Log.d(TAG, "disconnectBLEDevice: Closing connection to : "
-                + gatt.getDevice().getName());
-        //gatt.disconnect();
-        gatt.close();
+        try {
+            Log.d(TAG, "disconnectBLEDevice: Closing connection to : "
+                    + gatt.getDevice().getName());
+            //gatt.disconnect();
+            gatt.close();
+        } catch (SecurityException e) {
+            Toast.makeText(getApplicationContext(),
+                    Constants.REQUEST_BLUETOOTH_PERM, Toast.LENGTH_LONG).show();
+        }
 
         deviceManager.getBluetoothGattObjects().remove(deviceAddress);
         deviceManager.getBluetoothServiceMap().remove(deviceAddress);
