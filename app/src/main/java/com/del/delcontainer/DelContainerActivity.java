@@ -3,6 +3,7 @@ package com.del.delcontainer;
 import static com.del.delcontainer.R.id.host_fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -30,7 +32,7 @@ import com.del.delcontainer.managers.DelNotificationManager;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
-import com.del.delcontainer.ui.chatbot.ChatBotDialog;
+import com.del.delcontainer.ui.dialogs.ChatBotDialogFragment;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
 import com.del.delcontainer.ui.sources.SourcesFragment;
@@ -48,7 +50,7 @@ public class DelContainerActivity extends AppCompatActivity {
 
     // May have to move to another global fragment manager
     private HashMap<Integer, Fragment> containerViewMap = new HashMap<>();
-    ChatBotDialog chatBotDialogFragment;
+    ChatBotDialogFragment chatBotDialogFragment;
 
 
     @RequiresApi(api = Build.VERSION_CODES.O)
@@ -62,7 +64,7 @@ public class DelContainerActivity extends AppCompatActivity {
             registerBroadcastReceiver();
             BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
             navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
-            chatBotDialogFragment = ChatBotDialog.newInstance();
+            chatBotDialogFragment = ChatBotDialogFragment.newInstance();
             /**
              * Explicitly setting the default view to the services on first run
              * This ensures the containerViewMap tracks the first view as well.
@@ -76,7 +78,6 @@ public class DelContainerActivity extends AppCompatActivity {
             // Experimental for now
             verifyAndGetPermissions();
             initServices();
-            scheduleProviderJobs();
         }
     }
 
@@ -157,19 +158,23 @@ public class DelContainerActivity extends AppCompatActivity {
         sensorsService.initSensorService(this);
     }
 
+    // TODO: Toggle chat floating action button visibility
+    /**
+     * Toggle chat button visibility. Hide the button when other apps
+     * are open or the app install drawer is opened
+     */
+    @SuppressLint("RestrictedApi")
+    public void toggleChatButtonVisibility(int view) {
+        FloatingActionButton chatButton = findViewById(R.id.chat_button);
+        chatButton.setVisibility(view);
+    }
+
     /**
      * Click handler for the chat bot pop-up button
      */
     public void showChatBot() {
         FragmentManager fm = getSupportFragmentManager();
         chatBotDialogFragment.show(fm, "chatBotDialogFragment");
-    }
-
-    /**
-     * Initialize data provider jobs
-     */
-    protected void scheduleProviderJobs() {
-        ;
     }
 
     /**
@@ -188,6 +193,7 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_services) == null) {
                             containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
+                        toggleChatButtonVisibility(View.VISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
                         this.setTitle(R.string.title_services);
                         break;
@@ -196,6 +202,7 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_sources) == null) {
                             containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
                         }
+                        toggleChatButtonVisibility(View.INVISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_sources);
                         this.setTitle(R.string.title_sources);
                         break;
@@ -204,10 +211,11 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_settings) == null) {
                             containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
                         }
+                        toggleChatButtonVisibility(View.INVISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
                         this.setTitle(R.string.title_settings);
                         break;
-                }Intent notificationIntent = getIntent();
+                }
                 DelAppManager.getInstance().hideAllApps();
 
                 // Get the fragment manager and begin transaction. But only hide/show them

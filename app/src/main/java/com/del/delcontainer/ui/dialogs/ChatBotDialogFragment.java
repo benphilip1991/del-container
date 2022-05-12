@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.chatbot;
+package com.del.delcontainer.ui.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,7 +30,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ChatBotDialog extends DialogFragment {
+public class ChatBotDialogFragment extends DialogFragment {
     FloatingActionButton chatButton;
     EditText inputText;
     Button sendButton;
@@ -42,7 +42,7 @@ public class ChatBotDialog extends DialogFragment {
     static int TIME_OUT = 3000;
     Handler mHandler = new Handler();
 
-    public ChatBotDialog() {
+    public ChatBotDialogFragment() {
         chatMessageList = new ArrayList<>();
         chatAdapter = new ChatBotMessageViewAdapter(chatMessageList, getContext());
         conversationManager = ConversationManager.getInstance();
@@ -54,8 +54,8 @@ public class ChatBotDialog extends DialogFragment {
         super.onCreate(savedInstanceState);
     }
 
-    public static ChatBotDialog newInstance() {
-        return new ChatBotDialog();
+    public static ChatBotDialogFragment newInstance() {
+        return new ChatBotDialogFragment();
     }
 
     @NonNull

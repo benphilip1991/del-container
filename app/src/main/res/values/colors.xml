@@ -3,17 +3,12 @@
     <color name="colorPrimary">#5AA69C</color>
     <color name="colorPrimaryDark">#22615A</color>
     <color name="colorPrimaryLight">#C6EFEA</color>
-    <color name="colorSecondary">#ED6A5A</color>
     <color name="colorSecondaryDark">#CA4D3E</color>
-    <color name="colorSecondaryLight">#D3A7A2</color>
     <color name="colorAccent">#D81B60</color>
     <color name="colorWarningDark">#c7454a</color>
     <color name="colorWarningLight">#ffa8a5</color>
     <color name="colorWarning">#ff7676</color>
-    <color name="bgSemi">#4B5FCF</color>
     <color name="springBud">#F4F1BB</color>
     <color name="springBudLight">#F6F5E7</color>
     <color name="charcoal">#3D5E73</color>
-    <color name="queenBlue">#33658A</color>
-    <color name="queenBlueLight">#C5DFF3</color>
 </resources>
