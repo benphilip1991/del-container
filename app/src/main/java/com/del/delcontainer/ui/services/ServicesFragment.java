@@ -1,5 +1,8 @@
 package com.del.delcontainer.ui.services;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,10 +13,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -21,11 +23,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
+import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.ui.dialogs.InstallConfirmationDialogFragment;
 import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.managers.DelAppManager;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ServicesFragment extends Fragment {
 
@@ -34,6 +37,7 @@ public class ServicesFragment extends Fragment {
     InstalledAppListViewAdapter installedAppListViewAdapter;
     AvailableAppListViewAdapter availableAppListViewAdapter;
 
+    MotionLayout motionLayout;
     ServicesViewModel servicesViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -44,8 +48,85 @@ public class ServicesFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
 
+        motionLayout = rootView.findViewById(R.id.services_drawer);
+        motionLayout.setTransitionListener(appDrawerTransitionListener);
+
         return rootView;
     }
+
+    /**
+     * Show/Hide chatbot button when using the available apps drawer.
+     * The button is disabled when the drawer is open.
+     *
+     * @param showChatButton Boolean parameter to toggle the chat button
+     */
+    @SuppressLint("RestrictedApi")
+    private void toggleChatButtonVisibility(boolean showChatButton) {
+        FloatingActionButton chatButton = getActivity().findViewById(R.id.chat_button);
+
+        if (showChatButton) {
+
+            Log.d(TAG, "Showing chat button - Closed app drawer");
+            chatButton.animate().alpha(1.0f).setDuration(150).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    chatButton.setAlpha(0.0f);
+                    chatButton.setVisibility(View.VISIBLE);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationStart(animation);
+                }
+            }).start();
+        } else {
+
+            Log.d(TAG, "Hiding chat button - Opening app drawer");
+            chatButton.animate().alpha(0.0f).setDuration(150).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationStart(Animator animation) {
+                    super.onAnimationStart(animation);
+                    chatButton.setAlpha(1.0f);
+                }
+
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    chatButton.setVisibility(View.INVISIBLE);
+                }
+            }).start();
+        }
+    }
+
+    /**
+     * New transition listener to hide/show the chat button when the app drawer is opened
+     */
+    private final MotionLayout.TransitionListener appDrawerTransitionListener = new MotionLayout.TransitionListener() {
+        @Override
+        public void onTransitionStarted(MotionLayout motionLayout, int i, int i1) {
+        }
+
+        @Override
+        public void onTransitionChange(MotionLayout motionLayout, int i, int i1, float v) {
+        }
+
+        @Override
+        public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
+
+            if (motionLayout == getView().findViewById(R.id.services_drawer)) {
+                if (currentId == R.id.app_drawer_anim_hidden) {
+                    toggleChatButtonVisibility(true);
+                } else if (currentId == R.id.app_drawer_anim_visible) {
+                    toggleChatButtonVisibility(false);
+                }
+            }
+        }
+
+        @Override
+        public void onTransitionTrigger(MotionLayout motionLayout, int i, boolean b, float v) {
+        }
+    };
 
     private void setupServices(View view) {
 

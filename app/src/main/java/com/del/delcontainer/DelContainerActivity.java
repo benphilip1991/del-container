@@ -158,17 +158,6 @@ public class DelContainerActivity extends AppCompatActivity {
         sensorsService.initSensorService(this);
     }
 
-    // TODO: Toggle chat floating action button visibility
-    /**
-     * Toggle chat button visibility. Hide the button when other apps
-     * are open or the app install drawer is opened
-     */
-    @SuppressLint("RestrictedApi")
-    public void toggleChatButtonVisibility(int view) {
-        FloatingActionButton chatButton = findViewById(R.id.chat_button);
-        chatButton.setVisibility(view);
-    }
-
     /**
      * Click handler for the chat bot pop-up button
      */
@@ -193,7 +182,6 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_services) == null) {
                             containerViewMap.put(R.id.navigation_services, new ServicesFragment());
                         }
-                        toggleChatButtonVisibility(View.VISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
                         this.setTitle(R.string.title_services);
                         break;
@@ -202,7 +190,6 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_sources) == null) {
                             containerViewMap.put(R.id.navigation_sources, new SourcesFragment());
                         }
-                        toggleChatButtonVisibility(View.INVISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_sources);
                         this.setTitle(R.string.title_sources);
                         break;
@@ -211,7 +198,6 @@ public class DelContainerActivity extends AppCompatActivity {
                         if (containerViewMap.get(R.id.navigation_settings) == null) {
                             containerViewMap.put(R.id.navigation_settings, new SettingsFragment());
                         }
-                        toggleChatButtonVisibility(View.INVISIBLE);
                         selectedFragment = containerViewMap.get(R.id.navigation_settings);
                         this.setTitle(R.string.title_settings);
                         break;
