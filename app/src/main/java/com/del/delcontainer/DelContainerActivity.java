@@ -3,7 +3,6 @@ package com.del.delcontainer;
 import static com.del.delcontainer.R.id.host_fragment;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -13,7 +12,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -32,6 +30,7 @@ import com.del.delcontainer.managers.DelNotificationManager;
 import com.del.delcontainer.receivers.DelBroadcastReceiver;
 import com.del.delcontainer.services.LocationService;
 import com.del.delcontainer.services.SensorsService;
+import com.del.delcontainer.ui.chatbot.ChatbotButtonHandler;
 import com.del.delcontainer.ui.dialogs.ChatBotDialogFragment;
 import com.del.delcontainer.ui.services.ServicesFragment;
 import com.del.delcontainer.ui.settings.SettingsFragment;
@@ -65,6 +64,8 @@ public class DelContainerActivity extends AppCompatActivity {
             BottomNavigationView navView = findViewById(R.id.nav_view); // BottomNavigationView object in activity_main xml file.
             navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
             chatBotDialogFragment = ChatBotDialogFragment.newInstance();
+
+            ChatbotButtonHandler.getInstance().initActivity(this);
             /**
              * Explicitly setting the default view to the services on first run
              * This ensures the containerViewMap tracks the first view as well.
@@ -184,6 +185,7 @@ public class DelContainerActivity extends AppCompatActivity {
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
                         this.setTitle(R.string.title_services);
+                        ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
                         break;
                     case R.id.navigation_sources:
                         Log.d(TAG, "onNavigationItemSelected: Selected Sources");

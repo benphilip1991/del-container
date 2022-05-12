@@ -1,8 +1,5 @@
 package com.del.delcontainer.ui.services;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,11 +21,11 @@ import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
 import com.del.delcontainer.managers.DelAppManager;
+import com.del.delcontainer.ui.chatbot.ChatbotButtonHandler;
 import com.del.delcontainer.ui.dialogs.InstallConfirmationDialogFragment;
 import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ServicesFragment extends Fragment {
 
@@ -55,51 +52,6 @@ public class ServicesFragment extends Fragment {
     }
 
     /**
-     * Show/Hide chatbot button when using the available apps drawer.
-     * The button is disabled when the drawer is open.
-     *
-     * @param showChatButton Boolean parameter to toggle the chat button
-     */
-    @SuppressLint("RestrictedApi")
-    private void toggleChatButtonVisibility(boolean showChatButton) {
-        FloatingActionButton chatButton = getActivity().findViewById(R.id.chat_button);
-
-        if (showChatButton) {
-
-            Log.d(TAG, "Showing chat button - Closed app drawer");
-            chatButton.animate().alpha(1.0f).setDuration(150).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    chatButton.setAlpha(0.0f);
-                    chatButton.setVisibility(View.VISIBLE);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationStart(animation);
-                }
-            }).start();
-        } else {
-
-            Log.d(TAG, "Hiding chat button - Opening app drawer");
-            chatButton.animate().alpha(0.0f).setDuration(150).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationStart(Animator animation) {
-                    super.onAnimationStart(animation);
-                    chatButton.setAlpha(1.0f);
-                }
-
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    chatButton.setVisibility(View.INVISIBLE);
-                }
-            }).start();
-        }
-    }
-
-    /**
      * New transition listener to hide/show the chat button when the app drawer is opened
      */
     private final MotionLayout.TransitionListener appDrawerTransitionListener = new MotionLayout.TransitionListener() {
@@ -116,9 +68,9 @@ public class ServicesFragment extends Fragment {
 
             if (motionLayout == getView().findViewById(R.id.services_drawer)) {
                 if (currentId == R.id.app_drawer_anim_hidden) {
-                    toggleChatButtonVisibility(true);
+                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
                 } else if (currentId == R.id.app_drawer_anim_visible) {
-                    toggleChatButtonVisibility(false);
+                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(false);
                 }
             }
         }
@@ -128,6 +80,12 @@ public class ServicesFragment extends Fragment {
         }
     };
 
+    /**
+     * Setup services - get user and app details and setup
+     * views
+     *
+     * @param view root view of this fragment
+     */
     private void setupServices(View view) {
 
         final TextView userName = view.findViewById(R.id.header_profile_text);
@@ -224,6 +182,8 @@ public class ServicesFragment extends Fragment {
                 installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
                         userServicesRepository.getUserServicesList(),
                         (position) -> {
+
+                            ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(false);
                             /**
                              * Handle clicks events on each service card
                              * Check if the service already exists in the fragment stack and bring

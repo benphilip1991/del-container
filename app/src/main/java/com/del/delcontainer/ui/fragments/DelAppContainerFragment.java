@@ -21,6 +21,7 @@ import androidx.fragment.app.Fragment;
 import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.managers.DelAppManager;
+import com.del.delcontainer.ui.chatbot.ChatbotButtonHandler;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.DELUtils;
 import com.del.delcontainer.utils.DelAppWebViewClient;
@@ -104,6 +105,7 @@ public class DelAppContainerFragment extends Fragment {
                 Toast.makeText(getContext().getApplicationContext(),
                         "Closing " + appName, Toast.LENGTH_SHORT).show();
                 DelAppManager.getInstance().terminateApp(appId);
+                ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
