@@ -16,7 +16,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 public class ChatbotButtonHandler {
 
     private static final String TAG = "ChatbotButtonHandler";
-    private Activity activity = null;
     private static ChatbotButtonHandler instance = null;
 
     private ChatbotButtonHandler() {
@@ -29,21 +28,16 @@ public class ChatbotButtonHandler {
         return instance;
     }
 
-    public void initActivity(Activity activity) {
-        if(null == this.activity) {
-            this.activity = activity;
-        }
-    }
-
     /**
      * Show/Hide chatbot button when using the available apps drawer.
      * The button is disabled when the drawer is open.
      *
+     * @param activity activity instance used to fetch the chat button
      * @param showChatButton Boolean parameter to toggle the chat button
      */
     @SuppressLint("RestrictedApi")
-    public void toggleChatButtonVisibility(boolean showChatButton) {
-        FloatingActionButton chatButton = this.activity.findViewById(R.id.chat_button);
+    public void toggleChatButtonVisibility(Activity activity, boolean showChatButton) {
+        FloatingActionButton chatButton = activity.findViewById(R.id.chat_button);
 
         if (showChatButton) {
 

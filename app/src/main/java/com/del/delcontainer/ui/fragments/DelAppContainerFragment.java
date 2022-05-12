@@ -38,7 +38,6 @@ public class DelAppContainerFragment extends Fragment {
     DelContainerActivity activity;
 
     public DelAppContainerFragment() {
-        ;
     }
 
     public DelAppContainerFragment(String appId, String appName, String packageName) {
@@ -52,7 +51,7 @@ public class DelAppContainerFragment extends Fragment {
      * Set the app title to the service name when it attaches to the
      * container activity
      *
-     * @param context
+     * @param context appilcation context
      */
     @Override
     public void onAttach(@NonNull Context context) {
@@ -105,7 +104,7 @@ public class DelAppContainerFragment extends Fragment {
                 Toast.makeText(getContext().getApplicationContext(),
                         "Closing " + appName, Toast.LENGTH_SHORT).show();
                 DelAppManager.getInstance().terminateApp(appId);
-                ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
+                ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), true);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -115,7 +114,7 @@ public class DelAppContainerFragment extends Fragment {
     /**
      * Set up the webview for running the DEL app
      *
-     * @param view
+     * @param view view instance
      */
     private void loadDelApp(View view) {
 
@@ -169,7 +168,7 @@ public class DelAppContainerFragment extends Fragment {
      * Get application URLs - apps are fetched using the appId
      * eg: http://hostname:port/app/appId
      *
-     * @return
+     * @return app url
      */
     private String getAppUrl() {
 

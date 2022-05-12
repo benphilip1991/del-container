@@ -68,9 +68,9 @@ public class ServicesFragment extends Fragment {
 
             if (motionLayout == getView().findViewById(R.id.services_drawer)) {
                 if (currentId == R.id.app_drawer_anim_hidden) {
-                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
+                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), true);
                 } else if (currentId == R.id.app_drawer_anim_visible) {
-                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(false);
+                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), false);
                 }
             }
         }
@@ -134,7 +134,7 @@ public class ServicesFragment extends Fragment {
                 availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
                         servicesList,
                         (position) -> {
-                            /**
+                            /*
                              * Handle click events when the user taps the GET button on
                              * the available apps card. Prompt the permissions used by the
                              * application and confirms installation
@@ -143,7 +143,7 @@ public class ServicesFragment extends Fragment {
                                     new InstallConfirmationDialogFragment(
                                             servicesList.get(position).getApplicationPermissions(),
                                             () -> {
-                                                /**
+                                                /*
                                                  * Handles app installation on positive button click of
                                                  * dialog. Adds app to user's linked services.
                                                  */
@@ -183,8 +183,8 @@ public class ServicesFragment extends Fragment {
                         userServicesRepository.getUserServicesList(),
                         (position) -> {
 
-                            ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(false);
-                            /**
+                            ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), false);
+                            /*
                              * Handle clicks events on each service card
                              * Check if the service already exists in the fragment stack and bring
                              * it to the foreground. If not, create a new fragment object.
@@ -211,7 +211,7 @@ public class ServicesFragment extends Fragment {
                                             .get(position).getApplicationUrl());
                         },
                         (position, cardView) -> {
-                            /**
+                            /*
                              * Listen for long click and provide option to delete app
                              * This function shows a chat_dialog menu with a delete option.
                              */
@@ -257,12 +257,5 @@ public class ServicesFragment extends Fragment {
     private void getFirstName() {
         servicesViewModel.getUserFirstName(LoginStateRepo.getInstance().getToken(),
                 LoginStateRepo.getInstance().getUserId());
-    }
-
-    /**
-     * Calls the del-api service to get the status of the view model processing
-     */
-    private void getStatusObserver() {
-        servicesViewModel.getStatusObserver();
     }
 }

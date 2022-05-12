@@ -65,7 +65,6 @@ public class DelContainerActivity extends AppCompatActivity {
             navView.setOnNavigationItemSelectedListener(navigationListener); // attach the custom listener
             chatBotDialogFragment = ChatBotDialogFragment.newInstance();
 
-            ChatbotButtonHandler.getInstance().initActivity(this);
             /**
              * Explicitly setting the default view to the services on first run
              * This ensures the containerViewMap tracks the first view as well.
@@ -185,7 +184,7 @@ public class DelContainerActivity extends AppCompatActivity {
                         }
                         selectedFragment = containerViewMap.get(R.id.navigation_services);
                         this.setTitle(R.string.title_services);
-                        ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(true);
+                        ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(this, true);
                         break;
                     case R.id.navigation_sources:
                         Log.d(TAG, "onNavigationItemSelected: Selected Sources");
