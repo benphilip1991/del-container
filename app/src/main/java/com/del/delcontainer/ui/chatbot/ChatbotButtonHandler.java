@@ -17,6 +17,7 @@ public class ChatbotButtonHandler {
 
     private static final String TAG = "ChatbotButtonHandler";
     private static ChatbotButtonHandler instance = null;
+    private boolean isDrawerOpen = false;
 
     private ChatbotButtonHandler() {
     }
@@ -39,7 +40,7 @@ public class ChatbotButtonHandler {
     public void toggleChatButtonVisibility(Activity activity, boolean showChatButton) {
         FloatingActionButton chatButton = activity.findViewById(R.id.chat_button);
 
-        if (showChatButton) {
+        if (showChatButton && !isDrawerOpen) {
 
             Log.d(TAG, "Showing chat button");
             chatButton.animate().alpha(1.0f).setDuration(150).setListener(new AnimatorListenerAdapter() {
@@ -68,4 +69,12 @@ public class ChatbotButtonHandler {
             }).start();
         }
     }
+
+    /**
+     * Set app drawer state - if open, don't show chat button
+     * @param isDrawerOpen
+     */
+   public void setIsDrawerOpen(boolean isDrawerOpen) {
+        this.isDrawerOpen = isDrawerOpen;
+   }
 }

@@ -68,8 +68,10 @@ public class ServicesFragment extends Fragment {
 
             if (motionLayout == getView().findViewById(R.id.services_drawer)) {
                 if (currentId == R.id.app_drawer_anim_hidden) {
+                    ChatbotButtonHandler.getInstance().setIsDrawerOpen(false);
                     ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), true);
                 } else if (currentId == R.id.app_drawer_anim_visible) {
+                    ChatbotButtonHandler.getInstance().setIsDrawerOpen(true);
                     ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), false);
                 }
             }
