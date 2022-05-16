@@ -29,7 +29,8 @@
                 android:padding="5dp"
                 app:layout_constraintBottom_toTopOf="@+id/installed_app_card_view_guideline"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="@string/micro_app_name" />
 
             <TextView
                 android:id="@+id/app_label"
@@ -37,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:textSize="13sp"
                 android:gravity="center_horizontal"
-                android:text="App Name"
+                android:text="@string/micro_app_name"
                 android:textColor="#000"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
