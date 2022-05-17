@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.settings;
+package com.del.delcontainer.ui.fragments.settings;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,7 +15,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import com.del.delcontainer.R;
-import com.del.delcontainer.ui.dialogs.LogoutDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.LogoutDialogFragment;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 
 public class SettingsFragment extends Fragment {

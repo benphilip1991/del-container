@@ -15,8 +15,8 @@ import androidx.fragment.app.Fragment;
 public class DelAppWebViewClient extends WebViewClient {
 
     private static final String TAG = "DelAppWebViewClient";
-    private static Fragment fragment = null;
-    private static String appId = null;
+    private Fragment fragment;
+    private String appId;
 
     public DelAppWebViewClient(Fragment fragment, String appId) {
         this.fragment = fragment;
@@ -65,7 +65,7 @@ public class DelAppWebViewClient extends WebViewClient {
 
     /**
      * TODO: Dangerous!!! This block overrides the default certificate validation mechanism
-     * TODO: Not to be used in Prod!
+     *
      * @param view
      * @param handler
      * @param error
@@ -73,11 +73,5 @@ public class DelAppWebViewClient extends WebViewClient {
     @Override
     public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
         //handler.proceed();
-    }
-
-    public void pushDataToApp(WebView view, String data) {
-        Log.d(TAG, "pushDataToApp: Pushing user data to app");
-        String methodUrl = "javascript:sensorDataPush(" + data + ")";
-        view.loadUrl(methodUrl);
     }
 }

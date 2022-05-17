@@ -1,8 +1,7 @@
-package com.del.delcontainer.ui.dialogs;
+package com.del.delcontainer.ui.fragments.dialogs;
 
 import android.app.Dialog;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.NonNull;

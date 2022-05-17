@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.dialogs;
+package com.del.delcontainer.ui.fragments.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

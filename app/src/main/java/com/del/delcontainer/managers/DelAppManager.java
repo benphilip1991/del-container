@@ -8,7 +8,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.del.delcontainer.R;
-import com.del.delcontainer.ui.dialogs.RunningAppsDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.RunningAppsDialogFragment;
 import com.del.delcontainer.ui.fragments.DelAppContainerFragment;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 

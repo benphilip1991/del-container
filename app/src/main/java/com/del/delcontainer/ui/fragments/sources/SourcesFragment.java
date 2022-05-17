@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.sources;
+package com.del.delcontainer.ui.fragments.sources;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -27,7 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.SourcesListViewAdapter;
 import com.del.delcontainer.services.BLEDataManagerService;
-import com.del.delcontainer.ui.dialogs.ConnectDeviceDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.ConnectDeviceDialogFragment;
 import com.del.delcontainer.utils.Constants;
 
 import java.util.ArrayList;

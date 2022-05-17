@@ -1,8 +1,6 @@
 package com.del.delcontainer.ui.login;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -19,7 +17,7 @@ import com.del.delcontainer.DelContainerActivity;
 import com.del.delcontainer.R;
 import com.del.delcontainer.database.entities.Auth;
 import com.del.delcontainer.repositories.AuthRepository;
-import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.MessageDialogFragment;
 import com.del.delcontainer.utils.Constants;
 
 public class LoginActivity extends AppCompatActivity

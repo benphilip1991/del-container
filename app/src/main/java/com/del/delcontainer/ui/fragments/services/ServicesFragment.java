@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.services;
+package com.del.delcontainer.ui.fragments.services;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -22,8 +22,8 @@ import com.del.delcontainer.adapters.AvailableAppListViewAdapter;
 import com.del.delcontainer.adapters.InstalledAppListViewAdapter;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.ui.chatbot.ChatbotButtonHandler;
-import com.del.delcontainer.ui.dialogs.InstallConfirmationDialogFragment;
-import com.del.delcontainer.ui.dialogs.MessageDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.InstallConfirmationDialogFragment;
+import com.del.delcontainer.ui.fragments.dialogs.MessageDialogFragment;
 import com.del.delcontainer.ui.login.LoginStateRepo;
 import com.del.delcontainer.utils.Constants;
 

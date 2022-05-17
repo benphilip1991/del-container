@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.settings;
+package com.del.delcontainer.ui.fragments.settings;
 
 import android.util.Log;
 import androidx.lifecycle.LiveData;

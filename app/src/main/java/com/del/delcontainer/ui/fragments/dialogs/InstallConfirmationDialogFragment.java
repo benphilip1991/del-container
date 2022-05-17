@@ -1,8 +1,7 @@
-package com.del.delcontainer.ui.dialogs;
+package com.del.delcontainer.ui.fragments.dialogs;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.bluetooth.BluetoothDevice;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -20,14 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.adapters.PermissionListViewAdapter;
 import com.del.delcontainer.utils.Constants;
-import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import static android.widget.LinearLayout.HORIZONTAL;
 
 
 public class InstallConfirmationDialogFragment extends DialogFragment {

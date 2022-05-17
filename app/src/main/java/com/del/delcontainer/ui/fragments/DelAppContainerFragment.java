@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
@@ -51,7 +52,7 @@ public class DelAppContainerFragment extends Fragment {
      * Set the app title to the service name when it attaches to the
      * container activity
      *
-     * @param context appilcation context
+     * @param context application context
      */
     @Override
     public void onAttach(@NonNull Context context) {
@@ -127,6 +128,7 @@ public class DelAppContainerFragment extends Fragment {
         appView.getSettings().setDatabaseEnabled(true);
         appView.getSettings().setDomStorageEnabled(true);
         appView.getSettings().setAppCacheEnabled(true);
+        appView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         appView.getSettings().setAllowFileAccessFromFileURLs(true);
         appView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         appView.getSettings().setSupportZoom(true);

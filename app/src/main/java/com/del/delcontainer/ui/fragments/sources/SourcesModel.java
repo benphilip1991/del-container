@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.sources;
+package com.del.delcontainer.ui.fragments.sources;
 
 import android.bluetooth.BluetoothDevice;
 

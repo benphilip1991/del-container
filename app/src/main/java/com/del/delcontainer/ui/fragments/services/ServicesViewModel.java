@@ -1,4 +1,4 @@
-package com.del.delcontainer.ui.services;
+package com.del.delcontainer.ui.fragments.services;
 
 import android.util.Log;
 
