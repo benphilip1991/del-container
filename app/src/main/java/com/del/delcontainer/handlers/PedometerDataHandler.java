@@ -86,7 +86,7 @@ public class PedometerDataHandler {
 
             String stepCount = String.valueOf(sensorsService.getStepCount());
             if (DataManager.getLoggerRequestFlag(Constants.ACCESS_PEDOMETER)) {
-                DataManager.LogSensorRecord(Constants.ACCESS_PEDOMETER, stepCount);
+                DataManager.logSensorRecord(Constants.ACCESS_PEDOMETER, stepCount);
             }
 
             for (Map.Entry<String, String> request : callbacks.entrySet()) {

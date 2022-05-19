@@ -147,7 +147,7 @@ public class HeartRateDataHandler {
             }
             // Log data if required
             if (DataManager.getLoggerRequestFlag(Constants.ACCESS_HEART_RATE)) {
-                DataManager.LogSensorRecord(Constants.ACCESS_HEART_RATE, data.toString());
+                DataManager.logSensorRecord(Constants.ACCESS_HEART_RATE, data.toString());
             }
 
             for (Map.Entry<String, String> request :

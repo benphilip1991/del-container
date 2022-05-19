@@ -127,7 +127,7 @@ public class DELUtils {
      * @param requestDefinition
      */
     @JavascriptInterface
-    public void setLoggerRequest(String requestDefinition) {
+    public void setSensorLoggerRequest(String requestDefinition) {
 
         try {
             JSONObject reqObject = new JSONObject(requestDefinition);
@@ -175,7 +175,7 @@ public class DELUtils {
      * @return
      */
     @JavascriptInterface
-    public String getData(String AppId, String sensor) {
+    public String getSensorData(String AppId, String sensor) {
         return DataManager.getSensorLogs(AppId, sensor);
     }
 
@@ -189,7 +189,7 @@ public class DELUtils {
      * @return
      */
     @JavascriptInterface
-    public String getData(String appId, String sensor, String start, String end) {
+    public String getSensorData(String appId, String sensor, String start, String end) {
         return DataManager.getSensorLogs(appId, sensor, start, end);
     }
 

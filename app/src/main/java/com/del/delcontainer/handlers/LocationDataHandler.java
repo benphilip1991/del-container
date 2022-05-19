@@ -105,7 +105,7 @@ public class LocationDataHandler {
             }
             //Log data if required
             if(DataManager.getLoggerRequestFlag(Constants.ACCESS_LOCATION)) {
-                DataManager.LogSensorRecord(Constants.ACCESS_LOCATION, data.toString());
+                DataManager.logSensorRecord(Constants.ACCESS_LOCATION, data.toString());
             }
 
             for (Map.Entry<String, String> request :

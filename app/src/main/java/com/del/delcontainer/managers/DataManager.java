@@ -132,7 +132,7 @@ public class DataManager {
      * @param appId
      */
     public static String getAppData(String appId) {
-        return fileStorage.ReadFile(appId);
+        return fileStorage.readFile(appId);
     }
 
     /**
@@ -141,7 +141,7 @@ public class DataManager {
      * @param appId
      */
     public static void setAppData(String appId, String content) {
-        fileStorage.WriteFile(appId, content);
+        fileStorage.writeFile(appId, content);
     }
 
     /**
@@ -262,11 +262,12 @@ public class DataManager {
 
     /**
      * Logging utility for sensor handlers to store sensor records
+     * in the database
      *
      * @param sensor
      * @param reading
      */
-    public static void LogSensorRecord(String sensor, String reading) {
+    public static void logSensorRecord(String sensor, String reading) {
         Log.d(TAG, "LogSensorRecord: Logged record for sensor:" + sensor);
         new SensorEventLoggerTask()
                 .execute(new SensorRecord(new Date(), sensor, reading));

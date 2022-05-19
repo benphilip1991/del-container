@@ -127,7 +127,7 @@ Smartphone sensors are often used in the micro-mHealth apps with the initializat
 | getSensorData(appId, type, start-date, end-date)   | _Get sensor data stored previously filtered by date_   |
 
 Setting the sensor logger request notifies the container data provider to log the requested sensor data in the database. The following figure shows an overview of the events starting/stopping this activity.
-<p align="center"><img src="./assets/del-sensor-log-flow.png" width="60%" height="60%"></p>
+<p align="center"><img src="./assets/del-sensor-log-flow.png" width="80%" height="80%"></p>
 
 Like the initial resource requests, sensor logs also require an object with two properties **resource** (see [Currently Available Data](#currently-available-data)) and **toggle** (true or false to enable or disable log requests) - 
 ```

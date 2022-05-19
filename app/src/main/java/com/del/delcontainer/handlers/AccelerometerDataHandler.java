@@ -99,7 +99,7 @@ public class AccelerometerDataHandler {
             }
 
             if(DataManager.getLoggerRequestFlag(Constants.ACCESS_ACCELEROMETER)) {
-                DataManager.LogSensorRecord(Constants.ACCESS_ACCELEROMETER, data.toString());
+                DataManager.logSensorRecord(Constants.ACCESS_ACCELEROMETER, data.toString());
             }
 
             for(Map.Entry<String, String> request :
