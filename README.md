@@ -19,7 +19,7 @@ _The [__del-api__](https://github.com/benphilip1991/del-api) service is required
 The container is based on the following architecture -  
 <p align="center"><img src="./assets/del-container-arch.png" width="80%" height="80%"></p>
 
-The figure shows four main components - the Application Manager, Data Manager, Conversation Manager and the Device Manager. These components are respoonsible for managing active mini-apps, handling the conversations with the bot, managing connected devices and user data.
+The figure shows four main components - the Application Manager, Data Manager, Conversation Manager and the Device Manager. These components are responsible for managing active mini-apps, handling the conversations with the bot, managing connected devices and user data.
 Health data can be fetched from several sources including manual entry, from connected devices and even from other services. These can be divided into personal and environmental factors and are highlighted in the following figure -  
 
 <p align="center"><img src="./assets/datapoints.png" width="80%" height="80%"></p>
@@ -27,6 +27,8 @@ Health data can be fetched from several sources including manual entry, from con
 The following sequence diagram outlines a high level control and data flow within the container -  
 
 <p align="center"><img src="./assets/mini-app-data-flow.png" width="80%" height="80%"></p>
+
+
 
 _Please note that the current prototype implementation does not support all these metrics. They will be added as the container is developed further._
 
@@ -42,7 +44,7 @@ function setAppId(appId) {
 }
 ```
 
-The mini apps can request available data from the container (see [Currently Available Data](#currently-available-data)) and these requests can be registered with the container with a call to the **setCallbackRequest** function in DelUtils that accepts a JSON string with the app id injected by the container on app launch along with an array (**requests**) of JSON objects specifying the **resource** and the **callback** function the container should call once the data is available. The following example shows a request object - 
+The mini apps can request available data from the container (see [Currently Available Data](#currently-available-data)) and these requests can be registered with the container with a call to the `setCallbackRequest` function in DelUtils that accepts a JSON string with the app id injected by the container on app launch along with an array (**requests**) of JSON objects specifying the **resource** and the **callback** function the container should call once the data is available. The following example shows a request object - 
 ```
 {
     "resource" : "access_pedometer",
@@ -92,8 +94,16 @@ function processLocation(dataType, location) {
 }
 ```  
 
-Data private to a mini app can be stored through the container using the setAppData function which accepts the application id and a JSON string. The following example shows how 
+Data specific to a mini app can be managed in separate files on the container through the following functions - 
+|Function     | Description     |
+|-------------|-----------------|
+| setAppData(appId, content)   | _Store app-specific data in a separate file_   |
+| getAppData(appId)   | _Get previously stored app-specific data_   |
+
+
+The following example shows their implementation - 
 ```
+// Storing app specific data in file
 function storeWorkoutData() {
     let appData = {
         // Application specific data stored in a separate file
@@ -101,18 +111,56 @@ function storeWorkoutData() {
 
     DelUtils.setAppData(appId, appData);
 }
+
+// Getting app-specific data from file
+function fetchWorkoutData() {
+    let workoutData = DelUtils.getAppData(appId);
+    // parse workout data and use as required
+}
 ```
 
-Fetching stored data also follows a similar approach through the overloaded getData functions - 
+Smartphone sensors are often used in the micro-mHealth apps with the initialization process setting up the data provider tasks on the container. However, this does not implicitly enable sensor logs (i.e., storing data in the database). If needed, sensor data can be stored in the app database and later fetched using the following functions - 
 |Function     | Description     |
 |-------------|-----------------|
-| getData(appId, type)   | Get app-specific data stored previously   |
-| getData(appId, type, start-date, end-date)   | Get app-specific data stored previously filtered by date   |
+| setSensorLoggerRequest(requestDefinition)   | _Request the container to set logging requests_   |
+| getSensorData(appId, type)   | _Get sensor data stored previously_  |
+| getSensorData(appId, type, start-date, end-date)   | _Get sensor data stored previously filtered by date_   |
 
-The following example shows the use of the function to fetch stored location details -   
+Setting the sensor logger request notifies the container data provider to log the requested sensor data in the database. The following figure shows an overview of the events starting/stopping this activity.
+<p align="center"><img src="./assets/del-sensor-log-flow.png" width="60%" height="60%"></p>
+
+Like the initial resource requests, sensor logs also require an object with two properties **resource** (see [Currently Available Data](#currently-available-data)) and **toggle** (true or false to enable or disable log requests) - 
+```
+{
+    "resource": <requested resource>,
+    "toggle"  : <true / false>
+}
+```
+
+The following snippet shows how sensor logs are enabled for two sensors - 
+```
+function startWorkout() {
+    // Log requests - set toggle to true to enable
+    let loggerRequests = {
+        "appId": this.appId,
+        "requests": [{
+            "resource": "access_pedometer",
+            "toggle": true
+        }, {
+            "resource": "access_location",
+            "toggle": true
+        }]
+    };
+
+    // Start recording data
+    DelUtils.setSensorLoggerRequest(JSON.stringify(loggerRequests));
+}
+```
+
+Stored data can then be fetched using the overloaded `getSensorData` functions. The following example shows the use of the function to fetch stored location details -   
 ```
 function getWorkoutData() {
-    var appData = DelUtils.getData(appId,
+    var appData = DelUtils.getSensorData(appId,
     "access_location",
     startTime,
     endTime);
@@ -124,7 +172,7 @@ function getWorkoutData() {
 Similarly, a mini app can also push a notification to the user through the `createNotification` function - 
 |Function          | Description      |
 |------------------|------------------|
-|createNotification(appId, notificationMessage)     | Push a notification through the container   |
+|createNotification(appId, notificationMessage)     | _Push a notification through the container_   |
 
 The following example shows the use of the notification function - 
 ```
@@ -143,10 +191,10 @@ The project is currently a research prototype and offers limited functionality f
 
 |Data Type           | Resource Key     | Update Interval |
 |--------------------|------------------|------------------|
-| Location           | `access_location` | 5s   |
-| Step Count         | `access_pedometer` | 3s  |
-| Heart Rate         | `access_heart_rate` | 5s |
-| Accelerometer (Raw Data)      | `access_accelerometer` | 250ms |
+| Location           | `access_location` | _5s_   |
+| Step Count         | `access_pedometer` | _3s_  |
+| Heart Rate         | `access_heart_rate` | _5s_ |
+| Accelerometer (Raw Data)      | `access_accelerometer` | _250ms_ |
 
 The step count and heart rate are currently provided as numbers while the location and raw accelerometer data are injected as a JSON string with the relevant details. The location object provides the _latitude_, _longitude_ and _accuracy_, and the accelerometer data comprises the raw acceleration in the _X_, _Y_ and _Z_ planes.
 The following example demonstrates how this data can be extracted and used - 
