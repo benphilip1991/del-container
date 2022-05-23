@@ -1,13 +1,11 @@
 package com.del.delcontainer.adapters;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -16,34 +14,27 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
-import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
-import okhttp3.OkHttpClient;
 
 public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledAppListViewAdapter.ViewHolder> {
 
     private static final String TAG = "InstalledAppListViewAda";
 
-    private ArrayList<LinkedApplicationDetails> linkedAppDetails;
-    private AppClickListener appClickListener;
-    private AppLongClickListener appLongClickListener;
-    private Context context;
+    private final ArrayList<LinkedApplicationDetails> linkedAppDetails;
+    private final AppClickListener appClickListener;
+    private final AppLongClickListener appLongClickListener;
 
     /**
      * Constructor to initialize the adapter
      *
-     * @param context
-     * @param linkedAppDetails
-     * @param appClickListener
+     * @param linkedAppDetails list of linked application
+     * @param appClickListener implementation of click handler
      */
-    public InstalledAppListViewAdapter(Context context,
-                                       ArrayList<LinkedApplicationDetails> linkedAppDetails,
+    public InstalledAppListViewAdapter(ArrayList<LinkedApplicationDetails> linkedAppDetails,
                                        AppClickListener appClickListener,
                                        AppLongClickListener appLongClickListener) {
-        this.context = context;
         this.linkedAppDetails = linkedAppDetails;
         this.appClickListener = appClickListener;
         this.appLongClickListener = appLongClickListener;
@@ -56,8 +47,7 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.installedservice_listitem, parent, false);
         view.getLayoutParams().width = parent.getMeasuredWidth() / 3;
-        ViewHolder viewHolder = new ViewHolder(view, appClickListener);
-        return viewHolder;
+        return new ViewHolder(view, appClickListener);
     }
 
     @Override
@@ -109,9 +99,6 @@ public class InstalledAppListViewAdapter extends RecyclerView.Adapter<InstalledA
 
             Log.d(TAG, "onClick: Launching : " + linkedAppDetails.get(getAdapterPosition())
                     .getApplicationName());
-            Toast.makeText(context, "Launching " + linkedAppDetails
-                            .get(getAdapterPosition()).getApplicationName(),
-                    Toast.LENGTH_SHORT).show();
             appClickListener.onAppClick(getAdapterPosition());
         }
     }

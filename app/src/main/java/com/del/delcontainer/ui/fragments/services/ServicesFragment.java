@@ -12,8 +12,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.motion.widget.MotionLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -41,7 +42,7 @@ public class ServicesFragment extends Fragment {
                              ViewGroup container, Bundle savedInstanceState) {
 
         Log.d(TAG, "onCreateView: Service Fragment created");
-        servicesViewModel = ViewModelProviders.of(this).get(ServicesViewModel.class);
+        servicesViewModel = new ViewModelProvider(this).get(ServicesViewModel.class);
         View rootView = inflater.inflate(R.layout.fragment_services, container, false);
         setupServices(rootView);
 
@@ -66,13 +67,16 @@ public class ServicesFragment extends Fragment {
         @Override
         public void onTransitionCompleted(MotionLayout motionLayout, int currentId) {
 
-            if (motionLayout == getView().findViewById(R.id.services_drawer)) {
-                if (currentId == R.id.app_drawer_anim_hidden) {
-                    ChatbotButtonHandler.getInstance().setIsDrawerOpen(false);
-                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), true);
-                } else if (currentId == R.id.app_drawer_anim_visible) {
-                    ChatbotButtonHandler.getInstance().setIsDrawerOpen(true);
-                    ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), false);
+            FragmentActivity activity = getActivity();
+            if (null != activity) {
+                if (motionLayout == getView().findViewById(R.id.services_drawer)) {
+                    if (currentId == R.id.app_drawer_anim_hidden) {
+                        ChatbotButtonHandler.getInstance().setIsDrawerOpen(false);
+                        ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(activity, true);
+                    } else if (currentId == R.id.app_drawer_anim_visible) {
+                        ChatbotButtonHandler.getInstance().setIsDrawerOpen(true);
+                        ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(activity, false);
+                    }
                 }
             }
         }
@@ -93,16 +97,14 @@ public class ServicesFragment extends Fragment {
         final TextView userName = view.findViewById(R.id.header_profile_text);
         getFirstName();
 
-        // Attach observer to the viewmodel for username
-        servicesViewModel.getFirstName().observe(this, (name) -> {
-            userName.setText(name);
-        });
+        // Attach observer to the view model for username
+        servicesViewModel.getFirstName().observe(getViewLifecycleOwner(), userName::setText);
 
-        servicesViewModel.getStatusObserver().observe(this, (type) -> {
+        servicesViewModel.getStatusObserver().observe(getViewLifecycleOwner(), (type) -> {
             //Call dialog
             MessageDialogFragment infoDialog = new MessageDialogFragment(type,
                     servicesViewModel.getStatusMessage());
-            infoDialog.show(getFragmentManager(), "information");
+            infoDialog.show(getParentFragmentManager(), "information");
         });
 
         getAppsList();
@@ -123,18 +125,17 @@ public class ServicesFragment extends Fragment {
     /**
      * Initialize recycler view and setup
      *
-     * @param view
+     * @param view root view
      */
     private void initRecyclerView(View view) {
 
         // Set available services fetched from del-api
-        servicesViewModel.getServicesList().observe(this, (servicesList) -> {
+        servicesViewModel.getServicesList().observe(getViewLifecycleOwner(), (servicesList) -> {
             if (null != servicesList) {
 
                 RecyclerView recyclerViewAvailableApps = view.
                         findViewById(R.id.available_app_list_view);
-                availableAppListViewAdapter = new AvailableAppListViewAdapter(getContext(),
-                        servicesList,
+                availableAppListViewAdapter = new AvailableAppListViewAdapter(servicesList,
                         (position) -> {
                             /*
                              * Handle click events when the user taps the GET button on
@@ -161,13 +162,14 @@ public class ServicesFragment extends Fragment {
                                                             servicesList.get(position)
                                                                     .get_id(), Constants.APP_ADD);
 
-                                                    installedAppListViewAdapter.notifyDataSetChanged();
+                                                    installedAppListViewAdapter.notifyItemRangeChanged(0,
+                                                            servicesList.size());
                                                 } catch (Exception e) {
                                                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT)
                                                             .show();
                                                 }
                                             });
-                            installConfirmationDialog.show(getFragmentManager(), "installConfirmDialog");
+                            installConfirmationDialog.show(getParentFragmentManager(), "installConfirmDialog");
                         });
                 recyclerViewAvailableApps.setAdapter(availableAppListViewAdapter);
                 recyclerViewAvailableApps.setLayoutManager(new GridLayoutManager(getContext(), 1,
@@ -176,16 +178,20 @@ public class ServicesFragment extends Fragment {
         });
 
         // Set linked services fetched from del-api
-        servicesViewModel.getUserServicesRepo().observe(this, (userServicesRepository) -> {
+        servicesViewModel.getUserServicesRepo().observe(getViewLifecycleOwner(), (userServicesRepository) -> {
             if (null != userServicesRepository) {
 
                 RecyclerView recyclerView = view.
                         findViewById(R.id.installed_app_list_view);
-                installedAppListViewAdapter = new InstalledAppListViewAdapter(getContext(),
+                installedAppListViewAdapter = new InstalledAppListViewAdapter(
                         userServicesRepository.getUserServicesList(),
                         (position) -> {
 
-                            ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), false);
+                            FragmentActivity activity = getActivity();
+                            if (null != activity) {
+                                ChatbotButtonHandler.getInstance().
+                                        toggleChatButtonVisibility(getActivity(), false);
+                            }
                             /*
                              * Handle clicks events on each service card
                              * Check if the service already exists in the fragment stack and bring
@@ -234,7 +240,9 @@ public class ServicesFragment extends Fragment {
                                                 userServicesRepository.getUserServicesList()
                                                         .get(position).getApplicationId(),
                                                 Constants.APP_DELETE);
-                                        installedAppListViewAdapter.notifyDataSetChanged();
+
+                                        installedAppListViewAdapter.notifyItemRangeChanged(0,
+                                                userServicesRepository.getUserServicesList().size());
                                     } catch (Exception e) {
                                         Toast.makeText(getContext(),
                                                 e.getMessage(), Toast.LENGTH_SHORT).show();

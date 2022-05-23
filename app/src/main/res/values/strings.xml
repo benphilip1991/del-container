@@ -23,6 +23,8 @@
     <string name="okay_text">OK</string>
     <string name="install_text">Install</string>
     <string name="cancel_text">Cancel</string>
+    <string name="disconnect">Disconnect</string>
+    <string name="connect">Connect</string>
     <string name="notification_channel_name">DEL Container</string>
     <string name="notification_channel_description">DEL Container Notification Channel</string>
 </resources>

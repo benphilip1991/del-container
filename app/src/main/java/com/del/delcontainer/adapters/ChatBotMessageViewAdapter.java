@@ -5,6 +5,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.del.delcontainer.R;
@@ -13,11 +15,11 @@ import com.del.delcontainer.utils.chatBotUtils.ChatMessage;
 import java.util.List;
 
 public class ChatBotMessageViewAdapter extends RecyclerView.Adapter<ChatBotMessageViewAdapter.CustomViewHolder> {
-    private static final String TAG = "ChatBotMessageViewAdapter";
+
     List<ChatMessage> chatMessages;
     Context context;
 
-    class CustomViewHolder extends RecyclerView.ViewHolder{
+    static class CustomViewHolder extends RecyclerView.ViewHolder{
         TextView textView;
         public CustomViewHolder(View itemView) {
             super(itemView);
@@ -43,6 +45,7 @@ public class ChatBotMessageViewAdapter extends RecyclerView.Adapter<ChatBotMessa
         return  chatMessages.size();
     }
 
+    @NonNull
     @Override
     public CustomViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return new CustomViewHolder(LayoutInflater.from(parent.getContext())

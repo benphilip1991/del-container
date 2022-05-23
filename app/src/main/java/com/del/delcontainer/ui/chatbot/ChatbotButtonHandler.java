@@ -11,11 +11,11 @@ import com.del.delcontainer.R;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 /**
- * Simple utility class to manage the chatbot button behaviour
+ * Simple utility class to manage the chat bot button behaviour
  */
 public class ChatbotButtonHandler {
 
-    private static final String TAG = "ChatbotButtonHandler";
+    private static final String TAG = "ChatBotButtonHandler";
     private static ChatbotButtonHandler instance = null;
     private boolean isDrawerOpen = false;
 
@@ -30,7 +30,7 @@ public class ChatbotButtonHandler {
     }
 
     /**
-     * Show/Hide chatbot button when using the available apps drawer.
+     * Show/Hide chat bot button when using the available apps drawer.
      * The button is disabled when the drawer is open.
      *
      * @param activity activity instance used to fetch the chat button
@@ -72,7 +72,7 @@ public class ChatbotButtonHandler {
 
     /**
      * Set app drawer state - if open, don't show chat button
-     * @param isDrawerOpen
+     * @param isDrawerOpen set true if app drawer is open
      */
    public void setIsDrawerOpen(boolean isDrawerOpen) {
         this.isDrawerOpen = isDrawerOpen;

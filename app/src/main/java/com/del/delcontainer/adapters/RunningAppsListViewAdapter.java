@@ -18,11 +18,11 @@ import java.util.Map;
 
 public class RunningAppsListViewAdapter extends RecyclerView.Adapter<RunningAppsListViewAdapter.ViewHolder> {
 
-    private static final String TAG = "RunningAppsListViewAdap";
+    private static final String TAG = "RunningAppsListViewAdapter";
 
-    private HashMap<String, String> appNameMap;
+    private final HashMap<String, String> appNameMap;
     private ArrayList<String> appNameList;
-    private CloseRunningAppClickListener closeRunningAppClickListener;
+    private final CloseRunningAppClickListener closeRunningAppClickListener;
 
     public RunningAppsListViewAdapter(HashMap<String, String> appNameMap,
                                       CloseRunningAppClickListener closeRunningAppClickListener) {
@@ -46,14 +46,13 @@ public class RunningAppsListViewAdapter extends RecyclerView.Adapter<RunningApps
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.runningapps_listitem, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     /**
      * Bind app name to the list item
-     * @param holder
-     * @param position
+     * @param holder view holder
+     * @param position running app index
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {

@@ -1,6 +1,5 @@
 package com.del.delcontainer.adapters;
 
-import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,31 +14,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.del.delcontainer.R;
 import com.del.delcontainer.utils.Constants;
 import com.del.delcontainer.utils.apiUtils.pojo.ApplicationDetails;
-import com.squareup.picasso.OkHttp3Downloader;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-
-import okhttp3.OkHttpClient;
 
 public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableAppListViewAdapter.ViewHolder> {
 
     private static final String TAG = "AvailableAppListViewAda";
 
-    private ArrayList<ApplicationDetails> availableAppsList; // from del-api
-    private GetAppClickListener getAppClickListener;
-    private Context context;
+    private final ArrayList<ApplicationDetails> availableAppsList; // from del-api
+    private final GetAppClickListener getAppClickListener;
 
     /**
      * Initialize the available apps list adapter
-     * @param context
-     * @param availableApps
-     * @param getAppClickListener
+     * @param availableApps list of available apps
+     * @param getAppClickListener implementation of click handler
      */
-    public AvailableAppListViewAdapter(Context context,
-                                       ArrayList<ApplicationDetails> availableApps,
+    public AvailableAppListViewAdapter(ArrayList<ApplicationDetails> availableApps,
                                        GetAppClickListener getAppClickListener) {
-        this.context = context;
         this.availableAppsList = availableApps;
         this.getAppClickListener = getAppClickListener;
     }
@@ -51,15 +43,14 @@ public class AvailableAppListViewAdapter extends RecyclerView.Adapter<AvailableA
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.availableservice_listitem, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(view);
-        return viewHolder;
+        return new ViewHolder(view);
     }
 
     /**
      * Add names, descriptions and images in the cards
      *
-     * @param holder
-     * @param position
+     * @param holder view holder for the apps
+     * @param position list index of the app
      */
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {

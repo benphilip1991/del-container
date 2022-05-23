@@ -22,10 +22,10 @@ import java.util.ArrayList;
 public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecyclerViewAdapter";
-    private ArrayList<BluetoothDevice> devices;
-    private Context mContext;
+    private final ArrayList<BluetoothDevice> devices;
+    private final Context mContext;
 
-    private DeviceClickListener deviceClickListener;
+    private final DeviceClickListener deviceClickListener;
 
     public SourcesListViewAdapter(Context mContext, ArrayList<BluetoothDevice> devices,
                                   DeviceClickListener deviceClickListener) {
@@ -36,9 +36,10 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
 
     /**
      * Function responsible for inflating the view
-     * @param parent
-     * @param viewType
-     * @return
+     *
+     * @param parent   view group parent
+     * @param viewType view type
+     * @return return a view holder
      */
     @NonNull
     @Override
@@ -47,9 +48,7 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.sources_listitem, parent, false);
 
-        ViewHolder viewHolder = new ViewHolder(view, deviceClickListener);
-
-        return viewHolder;
+        return new ViewHolder(view, deviceClickListener);
     }
 
     @Override
@@ -59,13 +58,13 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
         holder.deviceAddress.setText(devices.get(position).getAddress());
         holder.device = devices.get(position);
         //Set button text based on connection status
-        if(BLEDataManagerService.checkBluetoothGattObjectExists
-                (devices.get(position).getAddress())){
-            holder.connectButton.setText("Disconnect");
+        if (BLEDataManagerService.checkBluetoothGattObjectExists
+                (devices.get(position).getAddress())) {
+            holder.connectButton.setText(R.string.disconnect);
             holder.connectButton.setBackgroundResource(R.drawable.custom_warning_rounded_button);
             holder.connectButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorWarningDark));
         } else {
-            holder.connectButton.setText("Connect");
+            holder.connectButton.setText(R.string.connect);
             holder.connectButton.setBackgroundResource(R.drawable.custom_primary_rounded_button);
             holder.connectButton.setTextColor(ContextCompat.getColor(mContext, R.color.colorPrimaryDark));
         }
@@ -82,7 +81,7 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
      * entry (all BLE devices)
      * Need to list out items in the list
      */
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         TextView deviceName;
         TextView deviceAddress;
@@ -114,7 +113,6 @@ public class SourcesListViewAdapter extends RecyclerView.Adapter<SourcesListView
 
     /**
      * Interface to help detect and interpret an item click
-     *
      */
     public interface DeviceClickListener {
         void onDeviceClick(int position);
