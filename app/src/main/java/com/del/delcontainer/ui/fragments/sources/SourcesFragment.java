@@ -31,6 +31,7 @@ import com.del.delcontainer.ui.fragments.dialogs.ConnectDeviceDialogFragment;
 import com.del.delcontainer.utils.Constants;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class SourcesFragment extends Fragment
         implements SourcesListViewAdapter.DeviceClickListener,
@@ -41,16 +42,15 @@ public class SourcesFragment extends Fragment
     private BluetoothAdapter bluetoothAdapter;
 
     SourcesListViewAdapter sourcesListViewAdapter;
-    private ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
+    private final ArrayList<BluetoothDevice> bluetoothDeviceList = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_sources, container, false);
 
-        /**
-         * Setup an onClick listener for the sources fragment
-         */
+
+        //Setup an onClick listener for the sources fragment
         TextView rescan = rootView.findViewById(R.id.rescan_devices_button);
         rescan.setOnClickListener(view -> {
             Log.d(TAG, "rescanBluetooth: rescanning for bluetooth devices");
@@ -59,13 +59,13 @@ public class SourcesFragment extends Fragment
             setupBluetooth();
         });
 
-        /**
-         * Start searching for bluetooth devices and when the user selects a device,
-         * connect (and add to device list) and stay in the view till the user moves
-         * to another tab.
-         *
-         * The device data can be fetched by services that store the readings in the
-         * database till an 'app' requests it
+        /*
+          Start searching for bluetooth devices and when the user selects a device,
+          connect (and add to device list) and stay in the view till the user moves
+          to another tab.
+
+          The device data can be fetched by services that store the readings in the
+          database till an 'app' requests it
          */
         setupBluetooth();
 
@@ -129,17 +129,14 @@ public class SourcesFragment extends Fragment
         }
 
         if (enable) {
-            new Handler().postDelayed(() -> {
-                bluetoothAdapter.stopLeScan(leScanCallback);
-            }, Constants.SCAN_PERIOD);
-
+            new Handler().postDelayed(() -> bluetoothAdapter.stopLeScan(leScanCallback), Constants.SCAN_PERIOD);
             bluetoothAdapter.startLeScan(leScanCallback);
         } else {
             bluetoothAdapter.stopLeScan(leScanCallback);
         }
     }
 
-    private BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
+    private final BluetoothAdapter.LeScanCallback leScanCallback = new BluetoothAdapter.LeScanCallback() {
 
         @Override
         public void onLeScan(final BluetoothDevice bluetoothDevice, int rssi, byte[] scanRecord) {
@@ -160,7 +157,8 @@ public class SourcesFragment extends Fragment
                     bluetoothDeviceList.add(bluetoothDevice); // Scan devices and add to list
 
                     // Notifications should be enabled if more devices are added
-                    sourcesListViewAdapter.notifyDataSetChanged();
+                    sourcesListViewAdapter.notifyItemRangeChanged(0,
+                            bluetoothDeviceList.size());
                 }
             });
         }
@@ -169,7 +167,7 @@ public class SourcesFragment extends Fragment
     /**
      * Implement interface from Adapter to hold selected device
      *
-     * @param position
+     * @param position device list index
      */
     @Override
     public void onDeviceClick(int position) {
@@ -179,14 +177,14 @@ public class SourcesFragment extends Fragment
 
         ConnectDeviceDialogFragment connectDialog = new ConnectDeviceDialogFragment(
                 bluetoothDeviceList.get(position), this);
-        connectDialog.show(getFragmentManager(), "ble_connect");
+        connectDialog.show(getParentFragmentManager(), "ble_connect");
     }
 
     /**
      * Implemented handler to manage user button presses - Connect or Disconnect device
      *
-     * @param device
-     * @param operation
+     * @param device    device
+     * @param operation connect/disconnect operation
      */
     @Override
     public void onDialogButtonPressed(BluetoothDevice device, String operation) {
@@ -233,14 +231,15 @@ public class SourcesFragment extends Fragment
                 super.onReceiveResult(resultCode, resultData);
                 if (resultCode == Constants.BLE_STATUS_CHANGED) {
                     String status = resultData.getString(Constants.BLE_STATUS);
-                    if(status == Constants.BLE_STATUS_CONNECTED){
+                    if (Objects.equals(status, Constants.BLE_STATUS_CONNECTED)) {
                         Toast.makeText(getContext(), "Connected to "
                                 + device.getName(), Toast.LENGTH_SHORT).show();
-                    } else if (status == Constants.BLE_STATUS_DISCONNECTED){
+                    } else if (Objects.equals(status, Constants.BLE_STATUS_DISCONNECTED)) {
                         Toast.makeText(getContext(), "Disconnected from "
                                 + device.getName(), Toast.LENGTH_SHORT).show();
                     }
-                    sourcesListViewAdapter.notifyDataSetChanged();
+                    sourcesListViewAdapter.notifyItemRangeChanged(0,
+                            bluetoothDeviceList.size());
                 }
             }
         });
