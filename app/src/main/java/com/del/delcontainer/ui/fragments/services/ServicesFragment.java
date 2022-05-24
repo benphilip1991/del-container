@@ -199,9 +199,6 @@ public class ServicesFragment extends Fragment {
                              */
                             Log.d(TAG, "onAppClick: launching " + userServicesRepository
                                     .getUserServicesList().get(position).getApplicationName());
-                            Toast.makeText(getContext(), "Launching " + userServicesRepository
-                                            .getUserServicesList().get(position).getApplicationName(),
-                                    Toast.LENGTH_SHORT).show();
 
                             // Get fragment manager instance and launch app
                             FragmentManager fragmentManager = getActivity()

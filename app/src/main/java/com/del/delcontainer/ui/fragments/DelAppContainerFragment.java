@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -102,8 +100,6 @@ public class DelAppContainerFragment extends Fragment {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case R.id.close_app:
-                Toast.makeText(getContext().getApplicationContext(),
-                        "Closing " + appName, Toast.LENGTH_SHORT).show();
                 DelAppManager.getInstance().terminateApp(appId);
                 ChatbotButtonHandler.getInstance().toggleChatButtonVisibility(getActivity(), true);
                 return true;
@@ -128,7 +124,7 @@ public class DelAppContainerFragment extends Fragment {
         appView.getSettings().setDatabaseEnabled(true);
         appView.getSettings().setDomStorageEnabled(true);
         appView.getSettings().setAppCacheEnabled(true);
-        appView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        //appView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
         appView.getSettings().setAllowFileAccessFromFileURLs(true);
         appView.getSettings().setAllowUniversalAccessFromFileURLs(true);
         appView.getSettings().setSupportZoom(true);
