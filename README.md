@@ -1,7 +1,6 @@
 # del-container
 Digital Enhanced Living service container app  
-_This container application is still under development and features are constantly being added.
-Additions may break existing functionality. Please refer to the development branch for the latest changes._
+_This container application is a research prototype and is currently under development. New features are constantly being added which may break existing functionality. Please refer to the development\_v2 branch for the latest changes._
 
 ## Table of Contents
 1. [About](#about)
