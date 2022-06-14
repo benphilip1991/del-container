@@ -229,14 +229,36 @@ _More details to come soon!_
 
 
 ## Examples
-The following gifs show a sample mini-health-app on the container.  
+The following GIFs show a sample mini-health-app on the container.  
+_The design has been updated since the GIFs were recorded. This will be updated soon!_  
 
+  
 Installation
-<p style="align:left"><img src="./assets/install.gif" width="30%" height="30%"></p>  
+<p style="align:left"><img src="./assets/install.gif" width="25%" height="25%"></p>  
   
 Running  
-<p style="align:right"><img src="./assets/run.gif" width="30%" height="30%"></p>
+<p style="align:right"><img src="./assets/run.gif" width="25%" height="25%"></p>
 
 Sample App Demo  
-<video src="https://user-images.githubusercontent.com/33706460/151330252-6893c4c0-802a-44af-91c2-71b09c0741aa.MP4" width="30%" height="30%">
+<video src="https://user-images.githubusercontent.com/33706460/151330252-6893c4c0-802a-44af-91c2-71b09c0741aa.MP4" width="25%" height="25%">
 
+
+### Sample Micro mHealth Apps
+The following images show three single-feature micro-mHealth apps that were inspired by commercially available health and fitness apps.  
+_Please note that these apps need to be registered with [__del-api__](https://github.com/benphilip1991/del-api) to work_
+
+Exercise Tracker
+<p style="align: left"><img src="./assets/micro_apps/MyMaps.png" width="25%" height="25%"></p>
+
+Food Logger
+<p style="align: left">
+    <img src="./assets/micro_apps/FoodLogger.png" width="25%" height="25%">&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="./assets/micro_apps/FoodLogger_Breakfast.png" width="25%" height="25%">
+</p>
+
+Mood Tracker
+<p style="align: left">
+    <img src="./assets/micro_apps/MyMoods_Stats.png" width="25%" height="25%">&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="./assets/micro_apps/MyMoods_Daily_Mood.png" width="25%" height="25%">&nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="./assets/micro_apps/MyMoods_Daily Activities.png" width="25%" height="25%">
+</p>
