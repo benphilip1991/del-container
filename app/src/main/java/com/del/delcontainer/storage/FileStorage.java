@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,18 +14,13 @@ import java.nio.charset.StandardCharsets;
 public class FileStorage {
     private static final String TAG = "FileStorage";
     Context context;
-    public FileStorage(Context context){
+
+    public FileStorage(Context context) {
         this.context = context;
     }
 
-    private boolean isFilePresent(String fileName) {
-        String path = context.getFilesDir().getAbsolutePath() + "/" + fileName;
-        File file = new File(path);
-        return file.exists();
-    }
-
-    public String ReadFile(String appId) {
-        try(FileInputStream fis = context.openFileInput(appId)){
+    public String readFile(String appId) {
+        try (FileInputStream fis = context.openFileInput(appId)) {
             InputStreamReader inputStreamReader =
                     new InputStreamReader(fis, StandardCharsets.UTF_8);
             StringBuilder stringBuilder = new StringBuilder();
@@ -37,27 +31,31 @@ public class FileStorage {
                     line = reader.readLine();
                 }
             } catch (IOException e) {
-                Log.d(TAG, "Error while opening file for "+appId);
+                Log.d(TAG, "Error while opening file for " + appId);
             } finally {
                 return stringBuilder.toString();
             }
-        } catch(FileNotFoundException e) {
-            Log.d(TAG, "Creating empty file storage for "+appId);
-            WriteFile(appId, "{}");
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "Creating empty file storage for " + appId);
+            writeFile(appId, "{}");
             return "{}";
-        }
-        catch (Exception e) {
-            Log.d(TAG, "Error while reading file for "+appId);
+        } catch (Exception e) {
+            Log.d(TAG, "Error while reading file for " + appId);
         }
         return null;
     }
 
-    public void WriteFile(String appId, String content){
+    /**
+     * Store app date in files unique to each app
+     *
+     * @param appId   application id - filename
+     * @param content app content to store
+     */
+    public void writeFile(String appId, String content) {
         try (FileOutputStream fos = context.openFileOutput(appId, Context.MODE_PRIVATE)) {
             fos.write(content.getBytes());
-        }catch(Exception e) {
-            Log.d(TAG, "Error while writing file for "+appId);
+        } catch (Exception e) {
+            Log.d(TAG, "Error while writing file for " + appId);
         }
     }
-
 }
