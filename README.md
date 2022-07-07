@@ -194,6 +194,7 @@ The project is currently a research prototype and offers limited functionality f
 | Step Count         | `access_pedometer` | _3s_  |
 | Heart Rate         | `access_heart_rate` | _5s_ |
 | Accelerometer (Raw Data)      | `access_accelerometer` | _250ms_ |
+| Gyroscope (Raw Data)      | `access_gyroscope` | _250ms_ |
 
 The step count and heart rate are currently provided as numbers while the location and raw accelerometer data are injected as a JSON string with the relevant details. The location object provides the _latitude_, _longitude_ and _accuracy_, and the accelerometer data comprises the raw acceleration in the _X_, _Y_ and _Z_ planes.
 The following example demonstrates how this data can be extracted and used - 
