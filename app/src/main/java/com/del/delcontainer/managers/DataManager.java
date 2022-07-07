@@ -10,6 +10,7 @@ import com.del.delcontainer.database.DelDatabase;
 import com.del.delcontainer.database.dao.SensorRecordDao;
 import com.del.delcontainer.database.entities.SensorRecord;
 import com.del.delcontainer.handlers.AccelerometerDataHandler;
+import com.del.delcontainer.handlers.GyroscopeDataHandler;
 import com.del.delcontainer.handlers.HeartRateDataHandler;
 import com.del.delcontainer.handlers.LocationDataHandler;
 import com.del.delcontainer.handlers.PedometerDataHandler;
@@ -311,6 +312,9 @@ public class DataManager {
                 if (!AccelerometerDataHandler.getInstance().isRunning())
                     AccelerometerDataHandler.getInstance().startAccelerometerDataProviderTask();
                 break;
+            case Constants.ACCESS_GYROSCOPE:
+                if(!GyroscopeDataHandler.getInstance().isRunning())
+                    GyroscopeDataHandler.getInstance().startGyroscopeDataProviderTask();
             default:
         }
     }

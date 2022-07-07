@@ -18,6 +18,7 @@ public class SensorsService implements SensorEventListener {
 
     private float stepCount = 0;
     private float accelerometerData[];
+    private float gyroscopeData[];
 
     private SensorsService() {
     }
@@ -47,7 +48,7 @@ public class SensorsService implements SensorEventListener {
     public void enableAccelerometerData() {
 
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        if(null != sensor) {
+        if (null != sensor) {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
             Log.d(TAG, "enableAccelerometerData: Accelerometer enabled");
         } else {
@@ -70,7 +71,7 @@ public class SensorsService implements SensorEventListener {
     public void enableGyroscopeData() {
 
         Sensor sensor = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
-        if(null != sensor) {
+        if (null != sensor) {
             sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
             Log.d(TAG, "enableGyroscopeData: Gyroscope enabled");
         } else {
@@ -118,12 +119,18 @@ public class SensorsService implements SensorEventListener {
      */
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) {
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            accelerometerData = sensorEvent.values;
-        }
-        if (sensorEvent.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            Log.d(TAG, "onSensorChanged: Step counter : " + sensorEvent.values[0]);
-            stepCount = sensorEvent.values[0];
+
+        switch (sensorEvent.sensor.getType()) {
+            case Sensor.TYPE_ACCELEROMETER:
+                accelerometerData = sensorEvent.values;
+                break;
+            case Sensor.TYPE_GYROSCOPE:
+                gyroscopeData = sensorEvent.values;
+                break;
+            case Sensor.TYPE_STEP_COUNTER:
+                Log.d(TAG, "onSensorChanged: Step counter : " + sensorEvent.values[0]);
+                stepCount = sensorEvent.values[0];
+                break;
         }
     }
 
@@ -138,5 +145,9 @@ public class SensorsService implements SensorEventListener {
 
     public float[] getAccelerometerData() {
         return accelerometerData;
+    }
+
+    public float[] getGyroscopeData() {
+        return gyroscopeData;
     }
 }

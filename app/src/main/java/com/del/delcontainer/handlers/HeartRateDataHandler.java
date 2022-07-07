@@ -5,7 +5,6 @@ import android.webkit.WebView;
 
 import androidx.fragment.app.Fragment;
 
-import com.del.delcontainer.annotations.ServiceMarker;
 import com.del.delcontainer.managers.DataManager;
 import com.del.delcontainer.managers.DelAppManager;
 import com.del.delcontainer.services.HeartRateService;
@@ -28,7 +27,6 @@ import java.util.concurrent.TimeUnit;
  * broadcast locally and then stored by the DelBroadcastReceiver.
  * Need to make sure the HR data is handled here instead of anywhere else.
  */
-@ServiceMarker
 public class HeartRateDataHandler {
 
     private static final String TAG = "HeartRateDataHandler";
@@ -65,7 +63,7 @@ public class HeartRateDataHandler {
         Log.d(TAG, "startHRProviderTask: Starting Heart Rate provider task");
 
         // Cancel
-        if(null!= checkDeviceTaskHandler && !checkDeviceTaskHandler.isCancelled()) {
+        if (null != checkDeviceTaskHandler && !checkDeviceTaskHandler.isCancelled()) {
             checkDeviceTaskHandler.cancel(true);
         }
 
@@ -94,7 +92,7 @@ public class HeartRateDataHandler {
         heartRateService.stopHRUpdate();
 
         // If device disconnected, check for reconnection
-        if(deviceDisconnected) {
+        if (deviceDisconnected) {
             Log.d(TAG, "stopHRProviderTask: Scheduling reconnect scanner");
             checkDeviceTaskHandler = scheduler.scheduleWithFixedDelay(
                     checkDeviceConnectionTask, DELAY, INTERVAL, TimeUnit.SECONDS);
@@ -108,7 +106,7 @@ public class HeartRateDataHandler {
     private final Runnable checkDeviceConnectionTask = () -> {
         Log.d(TAG, "checkDeviceConnectionTask: Checking if HR device reconnected.");
 
-        if(heartRateService.isDeviceActive()) {
+        if (heartRateService.isDeviceActive()) {
             Log.d(TAG, "checkDeviceConnectionTask: HR device connected. Starting provider.");
             try {
                 // Delay to allow gatt service initialization
@@ -127,7 +125,7 @@ public class HeartRateDataHandler {
 
         Log.d(TAG, "hrProviderTask: Running HR provider");
 
-        if(!heartRateService.isDeviceActive()) {
+        if (!heartRateService.isDeviceActive()) {
             Log.d(TAG, "hrProviderTask: HR device no longer active. Stopping service.");
             stopHRProviderTask(true);
         }
@@ -162,9 +160,9 @@ public class HeartRateDataHandler {
     /**
      * Inject heart rate data to app -> callback
      *
-     * @param appId micro-app id
+     * @param appId    micro-app id
      * @param callback callback reference for the micro app
-     * @param data data to send
+     * @param data     data to send
      */
     private void provideHRData(String appId, String callback, JSONObject data) {
 

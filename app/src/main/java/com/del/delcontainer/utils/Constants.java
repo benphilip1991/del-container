@@ -123,10 +123,9 @@ public class Constants {
     //public static final String WSS_PREFIX            = "wss://";
     public static final String HTTP_PREFIX          = "http://";
     //public static final String HTTPS_PREFIX         = "https://";
-    //public static final String DEL_SERVICE_IP       = "10.24.0.3";
     //public static final String DEL_SERVICE_IP       = "dfb8ebe3c19b.ngrok.io";
-    public static final String DEL_SERVICE_IP       = "192.168.1.100";
-    //public static final String DEL_SERVICE_IP       = "10.140.35.177";
+    public static final String DEL_SERVICE_IP       = "192.168.1.104";
+    //public static final String DEL_SERVICE_IP       = "10.140.26.254";
     public static final String DEL_PORT             = "3050";
     //public static final String DEL_PORT             = "";
     public static final String API_BASE_PATH        = "/api/v1/";
@@ -144,6 +143,7 @@ public class Constants {
     public static final String PERM_ACCESS_HEART_RATE      = "access_heart_rate";
     public static final String PERM_ACCESS_CAMERA          = "access_camera";
     public static final String PERM_ACCESS_ACCELEROMETER   = "access_accelerometer";
+    public static final String PERM_ACCESS_GYROSCOPE       = "access_gyroscope";
 
     public static final HashMap<String, String> PERM_DESCRIPTION = new HashMap<String,String>() {
         {
@@ -153,6 +153,7 @@ public class Constants {
             put(PERM_ACCESS_HEART_RATE, "Access your heart rate");
             put(PERM_ACCESS_CAMERA, "Access your camera");
             put(PERM_ACCESS_ACCELEROMETER, "Access your accelerometer");
+            put(PERM_ACCESS_GYROSCOPE, "Access your gyroscope");
         }
     };
 

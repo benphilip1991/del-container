@@ -9,6 +9,7 @@ import com.del.delcontainer.utils.apiUtils.pojo.LinkedApplicationDetails;
 
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -105,13 +106,19 @@ public class ConversationManager {
                         // Params will have an entity_health_metric like the below sample - use it to get the metric type
                         // "entity_health_metric" : {"stringValue":"weight","kind":"stringValue"}
                         JSONObject botParamsEntity = (JSONObject) botParams.get(Constants.BOT_ENTITY);
-                        String healthMetricType = botParamsEntity.getString(botParamsEntity.getString(Constants.BOT_ENTITY_KIND));
+                        JSONObject healthMetricType = (JSONObject) botParamsEntity.get(botParamsEntity.getString(Constants.BOT_ENTITY_KIND));
 
                         Log.d(TAG, "onMessage: botParamsEntity     : " + botParamsEntity.toString());
                         Log.d(TAG, "onMessage: botParamsMetricType : " + healthMetricType);
 
+                        String metricType = "";
+                        if (healthMetricType.has("values")) {
+                            JSONArray metricsList = (JSONArray) healthMetricType.get("values");
+                            metricType = metricsList.getJSONObject(0).getString(metricsList.getJSONObject(0).getString("kind"));
+                        }
+
                         // Check and get applications that can handle the healthMetricType - weight, hr etc.
-                        LinkedApplicationDetails app = DelAppManager.getInstance().getQueryResponseApp(healthMetricType);
+                        LinkedApplicationDetails app = DelAppManager.getInstance().getQueryResponseApp(metricType);
                         if (null != app) {
                             botResponseMessageListener.onBotResponseMessage(Constants.BOT_LAUNCHING_APP + app.getApplicationName());
                             botResponseActionListener.onBotResponseAction(app.getApplicationId(),
